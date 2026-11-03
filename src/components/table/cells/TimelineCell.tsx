@@ -48,7 +48,7 @@ export const TimelineCell: React.FC<TimelineCellProps> = memo(({ itemId, column,
     const displayValue = formatRange(value);
     const days = countDays(value);
 
-    const barColor = groupColor || '#ff158a';
+    const barColor = groupColor || 'hsl(var(--color-brand-primary))';
 
     const startEditing = useCallback(() => {
         if (!can('edit_items')) return;
@@ -85,23 +85,25 @@ export const TimelineCell: React.FC<TimelineCellProps> = memo(({ itemId, column,
                 {displayValue ? (
                     <div style={{
                         backgroundColor: barColor,
-                        color: 'white',
-                        padding: '0 12px',
+                        color: '#FFEFD2',
+                        padding: '0 10px',
                         borderRadius: '6px',
                         fontSize: '11px',
                         fontWeight: 600,
+                        letterSpacing: '0.02em',
+                        fontVariantNumeric: 'tabular-nums',
                         whiteSpace: 'nowrap',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: '90%',
-                        height: '19px',
-                        minHeight: '19px',
-                        maxHeight: '19px',
+                        height: '22px',
+                        minHeight: '22px',
+                        maxHeight: '22px',
                         position: 'relative',
                         overflow: 'hidden',
                         transition: 'all 0.2s ease',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                        boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 1px 2px rgba(21, 42, 0, 0.16)'
                     }} title={`${displayValue} (${days} days)`}>
                         {isHovered ? (
                             <>

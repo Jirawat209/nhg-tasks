@@ -21,7 +21,7 @@ export const BoardCard = ({ board, workspace, onOpen, onToggleFavorite }: {
         <article className="card-surface board-card">
             <div className="board-card__top">
                 <span className="board-card__tile" aria-hidden="true">
-                    <Layout size={22} />
+                    <Layout size={17} />
                 </span>
                 <button
                     type="button"
@@ -31,7 +31,7 @@ export const BoardCard = ({ board, workspace, onOpen, onToggleFavorite }: {
                     title={board.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                     onClick={() => onToggleFavorite(board.id)}
                 >
-                    <Star size={18} />
+                    <Star size={16} />
                 </button>
             </div>
 

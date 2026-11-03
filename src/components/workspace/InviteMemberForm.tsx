@@ -121,9 +121,9 @@ export const InviteMemberForm = ({ onInvite, defaultRole = 'member', type = 'boa
                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
                                 >
                                     {user.avatar_url ? (
-                                        <img src={user.avatar_url} alt="" style={{ width: '24px', height: '24px', borderRadius: '28%' }} />
+                                        <img src={user.avatar_url} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%' }} />
                                     ) : (
-                                        <div style={{ width: '24px', height: '24px', borderRadius: '28%', backgroundColor: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>
+                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>
                                             {(user.full_name?.[0] || user.email?.[0] || '?').toUpperCase()}
                                         </div>
                                     )}

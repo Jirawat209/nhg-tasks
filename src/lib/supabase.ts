@@ -1,14 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+// Local-only build: there is no real Supabase project here. Everything the
+// app does — auth, queries, edge functions, storage, realtime — runs against
+// an in-memory mock backed by localStorage. See src/lib/mock/.
+import { mockSupabaseClient } from './mock/mockClient';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-        'Missing Supabase credentials. Please configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.'
-    );
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-
+export const supabase: any = mockSupabaseClient;

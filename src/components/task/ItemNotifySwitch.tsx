@@ -76,19 +76,21 @@ export const ItemNotifySwitch = ({ itemId }: { itemId: string }) => {
                 aria-haspopup="dialog"
                 aria-expanded={open}
                 onClick={toggleOpen}
+                className="glass-chip"
                 title="Choose who is notified (in the app and by email) about this item"
                 style={{
-                    marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none',
-                    padding: '2px 0', cursor: 'pointer', fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap',
+                    marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '7px',
+                    padding: '4px 10px 4px 11px', borderRadius: '999px', cursor: 'pointer', fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap',
                     color: active ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-secondary))',
+                    transition: 'background-color 0.15s ease'
                 }}
             >
-                {active ? <Bell size={14} /> : <BellOff size={14} />}
+                {active ? <Bell size={13.5} /> : <BellOff size={13.5} />}
                 Notification
                 <span style={{
-                    padding: '1px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: 700,
-                    background: active ? 'hsl(var(--color-brand-light))' : 'hsl(var(--color-bg-subtle))',
-                    color: active ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-tertiary))',
+                    padding: '1.5px 8px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.03em',
+                    background: active ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-bg-subtle))',
+                    color: active ? '#FFEFD2' : 'hsl(var(--color-text-tertiary))',
                 }}>{summary}</span>
             </button>
 
@@ -97,10 +99,11 @@ export const ItemNotifySwitch = ({ itemId }: { itemId: string }) => {
                     ref={panelRef}
                     role="dialog"
                     aria-label="Who is notified"
+                    className="glass-pop"
                     style={{
                         position: 'fixed', top: pos.top, right: pos.right, width: 320, maxHeight: 'min(420px, 70vh)', overflowY: 'auto', zIndex: 100001,
-                        background: 'hsl(var(--color-bg-surface))', border: '1px solid hsl(var(--color-border))', borderRadius: '12px',
-                        boxShadow: '0 12px 32px rgba(0,0,0,0.18)', padding: '6px',
+                        background: 'hsl(var(--color-bg-surface))', border: '1px solid hsl(var(--color-border))', borderRadius: '14px',
+                        boxShadow: '0 12px 32px rgba(0,0,0,0.18)', padding: '8px',
                     }}
                 >
                     <div style={{ padding: '8px 10px 6px', fontSize: '12px', lineHeight: 1.4, color: 'hsl(var(--color-text-secondary))' }}>
@@ -134,7 +137,7 @@ export const ItemNotifySwitch = ({ itemId }: { itemId: string }) => {
                                 }}
                             >
                                 <span style={{
-                                    width: 28, height: 28, borderRadius: '28%', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     background: person.avatar ? 'transparent' : 'hsl(var(--color-brand-primary))', color: '#fff', fontSize: '12px', fontWeight: 600,
                                 }}>
                                     {person.avatar

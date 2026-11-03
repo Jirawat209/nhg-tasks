@@ -18,32 +18,40 @@ export const FavoritesPage = () => {
 
 
     return (
-        <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-            <header style={{ marginBottom: '40px' }}>
-                <h1 style={{
-                    fontSize: '32px',
-                    fontWeight: 600,
+        <div className="home-page" style={{ padding: '20px 28px 32px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+            <header style={{ marginBottom: '22px' }}>
+                <div className="bh-eyebrow" style={{ marginBottom: '4px' }}>
+                    STARRED COLLECTION
+                </div>
+                <h1 className="narai-heading" style={{
+                    fontFamily: 'var(--font-family-display)',
+                    fontSize: '28px',
+                    fontWeight: 500,
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1.15,
                     color: 'hsl(var(--color-text-primary))',
-                    marginBottom: '8px'
+                    marginBottom: '4px'
                 }}>
                     Favorites
                 </h1>
-                <p style={{ color: 'hsl(var(--color-text-secondary))', fontSize: '16px' }}>
+                <p style={{ color: 'hsl(var(--color-text-secondary))', fontSize: '13.5px', margin: 0 }}>
                     Access your most important boards quickly.
                 </p>
             </header>
 
-            <section style={{ marginBottom: '40px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                    <Star size={20} color="#ffcb00" fill="#ffcb00" />
-                    <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'hsl(var(--color-text-primary))', margin: 0 }}>Favorited Boards</h2>
+            <section style={{ marginBottom: '24px' }}>
+                <div className="home-section-head">
+                    <div className="home-section-title-group">
+                        <Star size={16} color="#E5A93C" fill="#E5A93C" />
+                        <h2 className="home-section-title">Favorited Boards</h2>
+                    </div>
                 </div>
 
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                    gap: '24px',
-                    marginBottom: '20px'
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                    gap: '14px',
+                    marginBottom: '12px'
                 }}>
                     {displayedBoards.length > 0 ? (
                         displayedBoards.map(board => (
@@ -57,22 +65,19 @@ export const FavoritesPage = () => {
                         ))
                     )
                         : (
-                            <div style={{ 
-                                gridColumn: '1 / -1', 
-                                padding: '60px 40px', 
-                                textAlign: 'center', 
-                                backgroundColor: 'hsl(var(--color-bg-surface))', 
-                                borderRadius: '12px', 
-                                border: '1px dashed hsl(var(--color-border))',
+                            <div className="card-surface" style={{
+                                gridColumn: '1 / -1',
+                                padding: '60px 40px',
+                                textAlign: 'center',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 gap: '16px'
                             }}>
-                                <Star size={48} color="hsl(var(--color-text-tertiary))" style={{ opacity: 0.5 }} />
+                                <Star size={40} color="hsl(var(--color-text-tertiary))" style={{ opacity: 0.45 }} />
                                 <div>
-                                    <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'hsl(var(--color-text-primary))', marginBottom: '8px' }}>No favorites yet</h3>
-                                    <p style={{ color: 'hsl(var(--color-text-secondary))', margin: 0 }}>Start starring boards to see them here!</p>
+                                    <h3 style={{ fontFamily: 'var(--font-family-display)', fontSize: '20px', fontWeight: 500, color: 'hsl(var(--color-text-primary))', marginBottom: '6px' }}>No favorites yet</h3>
+                                    <p style={{ color: 'hsl(var(--color-text-secondary))', margin: 0, fontSize: '14px' }}>Start starring boards to see them here!</p>
                                 </div>
                             </div>
                         )}

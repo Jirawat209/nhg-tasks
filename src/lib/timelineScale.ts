@@ -21,7 +21,7 @@ export const DAY_VIEW_SPAN = 45;
 
 // A one-day bar is only ~2.7px wide at month zoom and ~0.3px at year zoom.
 // Floor it so short items stay visible and clickable instead of vanishing.
-export const MIN_BAR_WIDTH = 8;
+export const MIN_BAR_WIDTH = 22;
 
 export const unitWidthFor = (viewType: TimelineViewType): number =>
     viewType === 'day' ? 40 : viewType === 'month' ? 80 : 120;

@@ -18,17 +18,18 @@ const readReturnedAuthError = (): string | null => {
 };
 
 export const LoginPage = () => {
-    // The sign-in page is always Saturday's look. A person's own palette (Narai)
-    // is theirs once they are signed in; on this page, where nobody has been
-    // identified yet, the palette left in the browser by the last person is
-    // set aside before paint and put back when the page goes away.
+    // The sign-in page is always Narai's look (the app's default brand). A
+    // person's own chosen palette is theirs once they are signed in; on this
+    // page, where nobody has been identified yet, whatever palette the last
+    // person left in the browser is set aside before paint and put back when
+    // the page goes away.
     useLayoutEffect(() => {
         const root = document.documentElement;
         const had = root.getAttribute('data-palette');
         root.removeAttribute('data-palette');
         return () => {
             const palette = useThemeStore.getState().palette;
-            if (palette === 'saturday') root.removeAttribute('data-palette');
+            if (palette === 'narai') root.removeAttribute('data-palette');
             else root.setAttribute('data-palette', had || palette);
         };
     }, []);
@@ -160,38 +161,13 @@ export const LoginPage = () => {
             justifyContent: 'center',
             height: '100vh',
             overflow: 'hidden',
-            // Plain fallback while the video loads (or if it never can — an
-            // ad blocker, a flaky connection) so the page is never blank.
-            backgroundColor: '#0f172a',
-            fontFamily: 'Inter, -apple-system, sans-serif'
+            // Local-only build: no remote video banner (it previously streamed
+            // live from naraihospitalitygroup.com, the one network dependency
+            // this page had). A flat Narai Green field stands in for it.
+            backgroundColor: '#152A00',
+            backgroundImage: 'radial-gradient(120% 90% at 15% 10%, rgba(63,125,50,0.35) 0%, transparent 55%), radial-gradient(100% 80% at 85% 100%, rgba(167,100,0,0.2) 0%, transparent 60%)',
+            fontFamily: 'var(--font-family)'
         }}>
-            <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    zIndex: 0
-                }}
-            >
-                <source src="https://naraihospitalitygroup.com/wp-content/uploads/2024/10/narai-video-banner-compressed.webm" type="video/webm" />
-                <source src="https://naraihospitalitygroup.com/wp-content/uploads/2024/11/Narai_Header-2.mp4" type="video/mp4" />
-            </video>
-
-            {/* Darkens the video so the white card keeps the same contrast it had
-                against the old plain gradient, regardless of how bright any given
-                frame of the footage is. */}
-            <div style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundColor: 'rgba(15, 23, 42, 0.45)',
-                zIndex: 1
-            }} />
 
             <div style={{
                 position: 'relative',
@@ -219,13 +195,13 @@ export const LoginPage = () => {
                         justifyContent: 'center'
                     }}>
                         <img
-                            src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png"
-                            alt="NHG Logo"
+                            src="/narai-logo-icon-dark.png"
+                            alt="Narai Hospitality Group"
                             style={{ width: '80%', height: '80%', objectFit: 'contain' }}
                         />
                     </div>
                     <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.025em' }}>
-                        NHG Saturday.com
+                        NHG Tasks
                     </h1>
                     <p style={{ marginTop: '8px', fontSize: '14px', color: '#64748b' }}>
                         Log in to your workspace

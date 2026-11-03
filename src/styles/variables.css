@@ -1,38 +1,42 @@
 :root {
-  /* Brand CI Color System v1.1.0 */
+  /* Narai Brand System — Narai Green on Galangal, from the Narai Design
+     System (narai-design-system.vercel.app, Narai Brand Guide v.27.08.24).
+     This is now the app's default palette (bare :root, no attribute) — see
+     src/lib/palettes.ts and src/store/useThemeStore.ts. The legacy violet
+     "Saturday" look lives under :root[data-palette='saturday'] below. */
 
-  /* ── Primary Violet Scale ── */
-  --color-brand-primary: 255 83% 60%; /* #7C3FE4 */
-  --color-brand-hover: 255 83% 48%;   /* #6327CC (violet-600) */
-  --color-brand-active: 255 83% 36%;  /* #4A1C99 (violet-700) */
-  --color-brand-light: 255 83% 95%;   /* #F0EEFF (violet-50) */
-  --color-brand-subtle: 255 83% 88%;  /* #D9CEFF (violet-100) */
+  /* ── Brand (Narai Green) ── */
+  --color-brand-primary: 90 100% 8%;   /* #152A00 Narai Green */
+  --color-brand-hover: 92 76% 13%;     /* #1f3a08 narai-green-90 */
+  --color-brand-active: 94 61% 18%;    /* #2a4a12 narai-green-80 */
+  --color-brand-light: 38 75% 86%;     /* #f6e3c1 galangal-90: selected row, active tab */
+  --color-brand-subtle: 38 58% 80%;    /* #ead4af galangal-80 */
 
-  /* ── Neutrals (White Canvas) ── */
-  --color-bg: 0 0% 100%;               /* White */
-  --color-bg-canvas: 0 0% 100%;
-  --color-bg-surface: 255 40% 98%;    /* #F8F7FF (Very Light Violet Tint for Surface) */
-  --color-bg-surface-hover: 255 20% 91%; /* #E4E1F0 (neutral-200) */
-  --color-bg-subtle: 255 40% 95%;
+  /* ── Neutrals (warm paper) ── */
+  --color-bg: 39 100% 91%;             /* #FFEFD2 Galangal — canvas / margins */
+  --color-bg-canvas: 39 100% 91%;
+  --color-bg-surface: 40 100% 97%;     /* #FFFAF0 Surface — the main panel */
+  --color-bg-surface-hover: 38 75% 86%;
+  --color-bg-subtle: 40 60% 95%;
 
-  /* ── Text ── */
-  --color-text-primary: 255 22% 12%;   /* #1A1728 (neutral-900) */
-  --color-text-secondary: 255 13% 38%; /* #5A5470 (neutral-700) */
-  --color-text-tertiary: 255 13% 60%;  /* #8B85A8 (neutral-500) */
-  --color-text-disabled: 255 13% 60%;
+  /* ── Text (Narai Green ink) ── */
+  --color-text-primary: 90 100% 8%;    /* #152A00 */
+  --color-text-secondary: 82 14% 42%;  /* #6e795b — Narai Green at 62% over Surface */
+  --color-text-tertiary: 76 12% 61%;   /* #a1a790 — Narai Green at 40% over Surface */
+  --color-text-disabled: 76 12% 61%;
 
-  /* ── Borders ── */
-  --color-border: 255 20% 91%;         /* #E4E1F0 (neutral-200) */
-  --color-border-hover: 255 20% 82%;   /* #C9C4E0 (neutral-300) */
-  --color-cell-border: 255 20% 91%;
-  --color-border-strong: 255 20% 82%;
+  /* ── Borders (hairline, per brand) ── */
+  --color-border: 56 20% 84%;          /* #deddce — Narai Green at 14% over Surface */
+  --color-border-hover: 63 14% 75%;    /* #c7c8b6 — Narai Green at 24% over Surface */
+  --color-cell-border: 56 20% 84%;
+  --color-border-strong: 63 14% 75%;
 
-  /* ── Semantic Colors ── */
-  --color-status-green-bg: 155 60% 40%;  /* #279966 (success-500) */
+  /* ── Semantic Colors (unchanged — not Monday-derived) ── */
+  --color-status-green-bg: 155 60% 40%;
   --color-status-green-text: 0 0% 100%;
-  --color-status-red-bg: 0 75% 57%;      /* #E03333 (danger-500) */
+  --color-status-red-bg: 0 75% 57%;
   --color-status-red-text: 0 0% 100%;
-  --color-status-gray-bg: 255 13% 60%;   /* #8B85A8 (neutral-500) */
+  --color-status-gray-bg: 255 13% 60%;
   --color-status-gray-text: 0 0% 100%;
 
   --color-success: 155 60% 40%;
@@ -42,24 +46,230 @@
   --color-danger: 0 75% 57%;
   --color-danger-bg: 0 75% 93%;
 
-  /* ── Gradients ── */
+  /* ── Gradients (subtle, in-palette — the brand is flat, these are only for
+       spots that structurally need one, e.g. a tile sheen) ── */
+  --gradient-brand: linear-gradient(135deg, #152A00, #2a4a12);
+  --gradient-spectrum: linear-gradient(135deg, #152A00, #3F7D32, #A76400);
+  --gradient-energy: linear-gradient(90deg, #152A00, #AAA024);
+  --gradient-depth: linear-gradient(135deg, #250719, #152A00);
+
+  /* Table specific mapping — matches the Surface panel, not the Galangal canvas */
+  --color-table-header-bg: 40 100% 97%;
+  --color-group-header-bg: 40 100% 97%;
+
+  /* Shadows — hairline-first brand, so these stay deliberately subtle
+     (Monday leans on big soft colour shadows; this doesn't) */
+  --shadow-sm: 0 1px 0 rgba(21, 42, 0, 0.04), 0 1px 3px rgba(21, 42, 0, 0.03);
+  --shadow-md: 0 1px 0 rgba(21, 42, 0, 0.05), 0 4px 10px rgba(21, 42, 0, 0.05);
+  --shadow-lg: 0 2px 0 rgba(21, 42, 0, 0.05), 0 10px 24px rgba(21, 42, 0, 0.07);
+
+  /* Home cards (board cards and the Update feed, styles/home.css): warm
+     paper lifted off the Galangal canvas by a soft ink-tinted shadow, a
+     faint ginger glow in its top-left corner, and an icon tile that lights
+     up Narai Green on hover. */
+  --card-bg: linear-gradient(165deg, #fffaf0 0%, #fdf5e4 100%);
+  --card-border: hsl(38 40% 88%);
+  --card-border-hover: hsl(36 60% 70%);
+  --card-edge: #fffaf0;
+  --card-shadow: 0 1px 2px rgba(21, 42, 0, 0.05), 0 6px 14px -6px rgba(21, 42, 0, 0.07), 0 16px 32px -18px rgba(21, 42, 0, 0.18);
+  --card-shadow-hover: 0 2px 4px rgba(21, 42, 0, 0.06), 0 12px 22px -10px rgba(21, 42, 0, 0.16), 0 28px 50px -24px rgba(21, 42, 0, 0.28);
+  --card-sheen: rgba(167, 100, 0, 0.06);
+  --card-row-hover: hsl(38 60% 95%);
+  --card-solid: #fffaf0;
+  --card-grid: hsl(38 30% 92%);
+  --card-tray: hsl(39 55% 94%);
+  --card-tile: linear-gradient(160deg, #fffaf0 0%, #f6e3c1 100%);
+  --card-tile-ink: #152A00;
+  --card-tile-ring: rgba(21, 42, 0, 0.14);
+  --card-tile-shadow: 0 6px 14px -8px rgba(21, 42, 0, 0.35);
+  --card-tile-lit: linear-gradient(160deg, #3F7D32 0%, #1f3a08 100%);
+  --card-tile-lit-ring: rgba(255, 239, 210, 0.5);
+  --card-tile-lit-shadow: 0 10px 18px -8px rgba(21, 42, 0, 0.45);
+
+  /* Spacing & Radius — sharp-cornered per brand (0 / 2px / 4px / pill) */
+  --spacing-board-x: 40px;
+  --spacing-board-y: 24px;
+  --spacing-group-gap: 32px;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* Typography — IBM Plex Sans everywhere, Nib Pro reserved for large
+     page/section headings only (see src/styles/fonts.css + narai_core.css) */
+  --font-family: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-family-display: 'Nib Pro', 'Forum', 'Cormorant Garamond', serif;
+
+  --font-size-xs: 11px;
+  --font-size-sm: 12.5px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+
+  /* Spots elsewhere in the app that hardcode a violet fallback inline
+     (var(--x, #violetHex)) — defining these here is what actually makes
+     Narai the default everywhere, not just where components read the
+     --color-* tokens above. */
+  --color-action: #152A00;
+  --color-action-2: #A76400;
+  --color-action-2-dark: #7A4A00;
+  --color-action-2-glow: rgba(167, 100, 0, 0.28);
+  --color-icon-accent: #2a4a12;
+  --color-nav-accent: #152A00;
+  --color-nav-accent-bg: #f6e3c1;
+
+  /* Dashboard's cat-farm room illustration */
+  --dash-wall: #FBF4E6;
+  --dash-wall-edge: #f6e3c1;
+  --dash-window: #3F7D32;
+  --dash-window-text: #152A00;
+
+  /* Status / dropdown labels: deep brand fill with light Galangal ink (src/lib/labelTint.ts) */
+  --label-tint: 0%;
+  --label-tint-base: #fffaf0;
+  --label-text: #FFEFD2;
+
+  /* Workspace badge tiles / avatar tiles: the squircle app-icon look */
+  --ws-badge-radius: 28%;
+
+  /* Loading screens / big empty panels */
+  --color-bg-base: 40 70% 95%;
+}
+
+[data-theme='dark'],
+.dark {
+  /* ── Dark Surfaces (deep mossy green-black) ── */
+  --color-bg: 95 38% 6%;               /* #0f160a */
+  --color-bg-canvas: 95 38% 6%;
+  --color-bg-surface: 97 41% 9%;       /* #141f0d */
+  --color-bg-surface-hover: 98 39% 12%; /* #1c2b13 */
+  --color-bg-subtle: 97 35% 11%;
+
+  /* ── Dark Text (Galangal ink) ── */
+  --color-text-primary: 39 100% 91%;   /* #FFEFD2 */
+  --color-text-secondary: 43 26% 73%;  /* #cbc1a7 — Galangal at 78% over dark surface */
+  --color-text-tertiary: 53 11% 50%;   /* #8e8b73 — Galangal at 52% over dark surface */
+
+  /* ── Dark Borders ── */
+  --color-border: 79 17% 21%;          /* #3a402d */
+  --color-border-hover: 71 14% 29%;    /* #515540 */
+  --color-cell-border: 79 17% 21%;
+
+  /* ── Dark Brand Adjustments (lighter green for contrast on dark bg) ── */
+  --color-brand-primary: 106 36% 44%;  /* #5B9A48 */
+  --color-brand-hover: 104 36% 54%;    /* #74B35E */
+  --color-brand-active: 106 39% 37%;   /* #4A8339 */
+  --color-brand-light: 106 36% 44% / 0.18;
+  --color-brand-subtle: 106 30% 25%;
+
+  /* ── Dark Semantic (unchanged) ── */
+  --color-success: 155 52% 49%;
+  --color-success-bg: 155 52% 11%;
+  --color-warning: 35 90% 59%;
+  --color-warning-bg: 35 78% 10%;
+  --color-danger: 0 80% 69%;
+  --color-danger-bg: 0 62% 11%;
+
+  --color-table-header-bg: 95 38% 6%;
+  --color-group-header-bg: 95 38% 6%;
+
+  /* Home cards: a raised dark green sheet with a lit top edge */
+  --card-bg: linear-gradient(180deg, hsl(97 30% 11%), hsl(97 35% 8%));
+  --card-border: hsl(90 20% 18%);
+  --card-border-hover: hsl(36 55% 40%);
+  --card-edge: rgba(255, 239, 210, 0.06);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 14px -6px rgba(0, 0, 0, 0.45), 0 20px 40px -20px rgba(0, 0, 0, 0.7);
+  --card-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.45), 0 24px 48px -22px rgba(0, 0, 0, 0.8);
+  --card-sheen: rgba(167, 100, 0, 0.1);
+  --card-row-hover: hsl(97 30% 13%);
+  --card-solid: hsl(97 35% 9.5%);
+  --card-grid: hsl(90 20% 16%);
+  --card-tray: hsl(97 35% 8%);
+  --card-tile: linear-gradient(160deg, hsl(106 30% 22%), hsl(106 35% 15%));
+  --card-tile-ink: #c7e3b8;
+  --card-tile-ring: rgba(255, 255, 255, 0.08);
+  --card-tile-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.6);
+  --card-tile-lit: linear-gradient(160deg, #5B9A48 0%, #3a6d2f 100%);
+  --card-tile-lit-ring: rgba(255, 239, 210, 0.35);
+  --card-tile-lit-shadow: 0 10px 18px -8px rgba(0, 0, 0, 0.55);
+
+  --color-action: #8CC477;
+  --color-action-2: #D79A3F;
+  --color-action-2-dark: #B5803A;
+  --color-action-2-glow: rgba(215, 154, 63, 0.3);
+  --color-icon-accent: #8CC477;
+  --color-nav-accent: #8CC477;
+  --color-nav-accent-bg: rgba(140, 196, 119, 0.14);
+
+  --dash-wall: #1c2b13;
+  --dash-wall-edge: #233a17;
+  --dash-window: #6FA85C;
+  --dash-window-text: #c7e3b8;
+
+  --label-tint: 0%;
+  --label-tint-base: #141f0d;
+  --label-text: #FFEFD2;
+
+  --ws-badge-radius: 28%;
+  --color-bg-base: 97 30% 10%;
+}
+
+/* ── Legacy "Saturday" palette ────────────────────────────────────────────
+ * The original violet-on-white look, kept as an opt-in alternative
+ * (Profile Settings › Theme). Narai above is now the default — see
+ * src/lib/palettes.ts and src/store/useThemeStore.ts.
+ */
+:root[data-palette='saturday']:not(.dark) {
+  /* Brand CI Color System v1.1.0 */
+
+  --color-brand-primary: 255 83% 60%; /* #7C3FE4 */
+  --color-brand-hover: 255 83% 48%;
+  --color-brand-active: 255 83% 36%;
+  --color-brand-light: 255 83% 95%;
+  --color-brand-subtle: 255 83% 88%;
+
+  --color-bg: 0 0% 100%;
+  --color-bg-canvas: 0 0% 100%;
+  --color-bg-surface: 255 40% 98%;
+  --color-bg-surface-hover: 255 20% 91%;
+  --color-bg-subtle: 255 40% 95%;
+
+  --color-text-primary: 255 22% 12%;
+  --color-text-secondary: 255 13% 38%;
+  --color-text-tertiary: 255 13% 60%;
+  --color-text-disabled: 255 13% 60%;
+
+  --color-border: 255 20% 91%;
+  --color-border-hover: 255 20% 82%;
+  --color-cell-border: 255 20% 91%;
+  --color-border-strong: 255 20% 82%;
+
+  --color-status-green-bg: 155 60% 40%;
+  --color-status-green-text: 0 0% 100%;
+  --color-status-red-bg: 0 75% 57%;
+  --color-status-red-text: 0 0% 100%;
+  --color-status-gray-bg: 255 13% 60%;
+  --color-status-gray-text: 0 0% 100%;
+
+  --color-success: 155 60% 40%;
+  --color-success-bg: 155 60% 90%;
+  --color-warning: 35 90% 52%;
+  --color-warning-bg: 35 90% 92%;
+  --color-danger: 0 75% 57%;
+  --color-danger-bg: 0 75% 93%;
+
   --gradient-brand: linear-gradient(135deg, #7C3FE4, #C03FE4);
   --gradient-spectrum: linear-gradient(135deg, #3F6FE4, #7C3FE4, #C03FE4);
   --gradient-energy: linear-gradient(90deg, #7C3FE4, #B8E030);
   --gradient-depth: linear-gradient(135deg, #311266, #7C3FE4);
 
-  /* Table specific mapping */
   --color-table-header-bg: 0 0% 100%;
   --color-group-header-bg: 0 0% 100%;
 
-  /* Shadows */
   --shadow-sm: 0 1px 3px rgba(80, 60, 160, 0.1);
   --shadow-md: 0 4px 12px rgba(80, 60, 160, 0.12);
   --shadow-lg: 0 8px 24px rgba(80, 60, 160, 0.15);
 
-  /* Home cards (board cards and the Update feed, styles/home.css): a white card
-     lifted off the page by a soft tinted shadow, a faint glow in its top-left
-     corner, and an icon tile that lights up like the open workspace on hover */
   --card-bg: #ffffff;
   --card-border: hsl(255 30% 92.5%);
   --card-border-hover: hsl(255 62% 86%);
@@ -68,9 +278,9 @@
   --card-shadow-hover: 0 2px 4px rgba(45, 30, 110, 0.07), 0 14px 26px -12px rgba(70, 40, 170, 0.26), 0 36px 64px -28px rgba(90, 50, 210, 0.5);
   --card-sheen: rgba(124, 63, 228, 0.07);
   --card-row-hover: hsl(255 70% 97.6%);
-  --card-solid: #ffffff;              /* the card as one opaque colour (sticky cells) */
-  --card-grid: hsl(255 30% 95.5%);    /* faint lines inside a card: chart and timeline grids */
-  --card-tray: hsl(255 45% 96.6%);    /* what cards sit in: a Kanban column, a calendar's off days */
+  --card-solid: #ffffff;
+  --card-grid: hsl(255 30% 95.5%);
+  --card-tray: hsl(255 45% 96.6%);
   --card-tile: linear-gradient(160deg, #ffffff 0%, #efe9ff 100%);
   --card-tile-ink: #7c3fe4;
   --card-tile-ring: rgba(124, 63, 228, 0.16);
@@ -79,63 +289,44 @@
   --card-tile-lit-ring: rgba(255, 255, 255, 0.22);
   --card-tile-lit-shadow: 0 10px 18px -8px rgba(100, 50, 220, 0.6);
 
-  /* Spacing & Radius */
-  --spacing-board-x: 40px;
-  --spacing-board-y: 24px;
-  --spacing-group-gap: 32px;
-  
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
 
-  /* Typography - Reverted to Original */
   --font-family: 'Roboto', 'Inter', 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-
-  --font-size-xs: 11px;
-  --font-size-sm: 12.5px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 20px;
+  --font-family-display: 'Roboto', 'Inter', 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
-[data-theme='dark'],
-.dark {
-  /* ── Dark Surfaces ── */
-  --color-bg: 255 45% 7%;             /* #0C0A1A (dark-bg) */
+:root[data-palette='saturday'].dark {
+  --color-bg: 255 45% 7%;
   --color-bg-canvas: 255 45% 7%;
-  --color-bg-surface: 255 43% 11%;    /* #13102A (dark-surface) */
+  --color-bg-surface: 255 43% 11%;
   --color-bg-surface-hover: 255 35% 20%;
   --color-bg-subtle: 255 32% 16%;
 
-  /* ── Dark Text ── */
-  --color-text-primary: 255 100% 97%;   /* #F0EEFF (dark-text-primary) */
-  --color-text-secondary: 255 18% 74%; /* #B3ADCC (dark-text-secondary) */
-  --color-text-tertiary: 255 13% 46%;  /* #6B6487 (dark-text-disabled) */
+  --color-text-primary: 255 100% 97%;
+  --color-text-secondary: 255 18% 74%;
+  --color-text-tertiary: 255 13% 46%;
 
-  /* ── Dark Borders ── */
-  --color-border: 255 32% 24%;         /* #2E2850 (dark-border) */
-  --color-border-hover: 255 32% 31%;   /* #3D3668 (dark-border-strong) */
+  --color-border: 255 32% 24%;
+  --color-border-hover: 255 32% 31%;
   --color-cell-border: 255 32% 24%;
 
-  /* ── Dark Brand Adjustments ── */
-  --color-brand-primary: 255 83% 60%;  /* #7C3FE4 */
-  --color-brand-hover: 255 100% 78%;   /* #B28EFF (dark-brand-hover) */
-  --color-brand-active: 255 80% 68%;   /* #9B6FF0 (dark-brand-link) */
-  --color-brand-light: 255 83% 60% / 0.15; /* dark-brand-subtle */
+  --color-brand-primary: 255 83% 60%;
+  --color-brand-hover: 255 100% 78%;
+  --color-brand-active: 255 80% 68%;
+  --color-brand-light: 255 83% 60% / 0.15;
 
-  /* ── Dark Semantic ── */
-  --color-success: 155 52% 49%;        /* #3DBD85 */
-  --color-success-bg: 155 52% 11%;     /* #0D2B1E */
-  --color-warning: 35 90% 59%;         /* #F5AE3A */
-  --color-warning-bg: 35 78% 10%;      /* #2B1E06 */
-  --color-danger: 0 80% 69%;           /* #F07070 */
-  --color-danger-bg: 0 62% 11%;        /* #2B0A0A */
+  --color-success: 155 52% 49%;
+  --color-success-bg: 155 52% 11%;
+  --color-warning: 35 90% 59%;
+  --color-warning-bg: 35 78% 10%;
+  --color-danger: 0 80% 69%;
+  --color-danger-bg: 0 62% 11%;
 
-  /* The table's column header bar is the page, not the light theme's white */
   --color-table-header-bg: 255 45% 7%;
   --color-group-header-bg: 255 45% 7%;
 
-  /* Home cards: a raised violet-black sheet with a lit top edge */
   --card-bg: linear-gradient(180deg, hsl(255 38% 13%), hsl(255 42% 10.5%));
   --card-border: hsl(255 30% 20%);
   --card-border-hover: hsl(255 48% 36%);
@@ -154,217 +345,4 @@
   --card-tile-lit: linear-gradient(160deg, #9a6cf3 0%, #6a2fe0 100%);
   --card-tile-lit-ring: rgba(255, 255, 255, 0.18);
   --card-tile-lit-shadow: 0 10px 18px -8px rgba(110, 60, 230, 0.55);
-}
-/* ── Narai palette ─────────────────────────────────────────────────────────
- * Pastel sage and grass green with forest-green ink, after the NHGOne campus
- * picture. Chosen per person (src/lib/palettes.ts); useThemeStore.setPalette
- * puts data-palette="narai" on <html>. Saturday is :root above and needs no
- * attribute. The :not(.dark) / .dark pairs keep the light block from reaching
- * the dark one whichever comes later in the cascade.
- * Status and dropdown colours are people's data, stored as they were picked;
- * --label-tint pulls each one toward --label-tint-base so they read as pastels
- * (src/lib/labelTint.ts). Group colours stay as chosen.
- */
-:root[data-palette='narai']:not(.dark) {
-  /* Forest green (the "NHG OPERATIONS" sign) */
-  --color-brand-primary: 104 30% 38%;  /* #4F7F43 */
-  --color-brand-hover: 104 33% 31%;
-  --color-brand-active: 104 36% 25%;
-  --color-brand-light: 86 55% 95%;     /* sage mist: selected row, active tab */
-  --color-brand-subtle: 86 48% 89%;
-
-  /* Pale grass green surfaces */
-  --color-bg: 0 0% 100%;                /* white */
-  --color-bg-canvas: 0 0% 100%;
-  --color-bg-surface: 0 0% 100%;
-  --color-bg-surface-hover: 88 30% 95.5%;
-  --color-bg-subtle: 90 30% 98.5%;      /* #FBFCF9 sidebar */
-
-  /* Deep green-olive ink */
-  --color-text-primary: 92 24% 14%;    /* #222B1B */
-  --color-text-secondary: 92 14% 32%;
-  --color-text-tertiary: 90 10% 49%;
-  --color-text-disabled: 90 10% 49%;
-
-  --color-border: 88 26% 92%;          /* #E9F0DE */
-  --color-border-hover: 88 22% 84%;
-  --color-cell-border: 88 26% 92%;
-  --color-border-strong: 88 22% 84%;
-
-  --color-status-gray-bg: 90 10% 58%;
-
-  --gradient-brand: linear-gradient(135deg, #4f7f43, #9cc472);
-  --gradient-spectrum: linear-gradient(135deg, #5b8a4a, #466f37, #a5c86a);
-  --gradient-energy: linear-gradient(90deg, #466f37, #e9d27a);
-  --gradient-depth: linear-gradient(135deg, #24391c, #466f37);
-
-  --color-table-header-bg: 0 0% 100%;
-  --color-group-header-bg: 0 0% 100%;
-
-  --shadow-sm: 0 1px 3px rgba(70, 110, 60, 0.07);
-  --shadow-md: 0 4px 12px rgba(70, 110, 60, 0.09);
-  --shadow-lg: 0 8px 24px rgba(70, 110, 60, 0.11);
-
-  /* Status / dropdown labels: pastel, with dark ink */
-  --label-tint: 68%;
-  --label-tint-base: #fcfdf6;
-  --label-text: #2a3322;
-
-  /* Spots that were hard-coded violet (read with the old value as fallback) */
-  --color-nav-accent: #4f7f43;
-  --color-nav-accent-bg: #eaf5d9;
-  --color-icon-accent: #5b8a4a;
-  --color-action: #4f7f43;
-  --color-action-2: #6a9d55;
-  --color-action-2-dark: #548544;
-  --color-action-2-glow: rgba(95, 147, 72, 0.26);
-
-  /* Dashboard's cat-farm room */
-  --dash-wall: #f4faea;
-  --dash-wall-edge: #e6f1d2;
-  --dash-window: #86ad6c;
-  --dash-window-text: #4f7f43;
-
-  /* Crystal: translucent panels over a soft green mesh, rounded like iOS
-     (styles/narai_crystal.css reads these) */
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, 'Noto Sans Thai', 'Helvetica Neue', sans-serif;
-  --color-bg-base: 84 50% 94%;
-  --glass-mesh: radial-gradient(55% 45% at 8% 6%, #f7fbef 0%, transparent 62%), radial-gradient(45% 40% at 94% 10%, #f1faf6 0%, transparent 60%), radial-gradient(55% 55% at 78% 100%, #f9fcf0 0%, transparent 62%), linear-gradient(160deg, #ffffff, #fbfdf8);
-  --glass-panel: #ffffff;
-  /* One background: the sidebar and the margins round the white panel are the same green */
-  --glass-desk-bg: linear-gradient(180deg, #ddedca 0%, #e3f1d1 100%);
-  --glass-side: transparent;
-  --glass-pop: rgba(253, 255, 251, 0.68);
-  --glass-card: linear-gradient(160deg, rgba(255, 255, 255, 0.8), rgba(253, 255, 250, 0.6));
-  --glass-edge: rgba(255, 255, 255, 0.88);
-  --glass-line: rgba(140, 180, 110, 0.16);
-  --glass-shadow: 0 30px 60px -30px rgba(70, 110, 60, 0.3), 0 8px 24px -12px rgba(70, 110, 60, 0.12);
-  --glass-pop-shadow: 0 28px 60px -20px rgba(70, 110, 60, 0.3), 0 6px 16px -8px rgba(70, 110, 60, 0.12);
-  --glass-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 52%, rgba(0, 0, 0, 0.07));
-  --glass-glint: rgba(236, 217, 150, 0.4);
-  --glass-sheen: rgba(255, 255, 255, 0.42);
-  --glass-scrim: rgba(70, 100, 60, 0.2);
-  --glass-solid: #fdfffb;
-  --ws-badge-radius: 28%;
-
-  /* Home cards: white paper, a green-tinted shadow, a champagne edge on hover
-     and the open workspace's forest green when the tile lights up */
-  --card-bg: linear-gradient(165deg, #ffffff 0%, #fbfdf7 100%);
-  --card-border: #e7efdd;
-  --card-border-hover: rgba(206, 182, 104, 0.6);
-  --card-edge: #ffffff;
-  --card-shadow: 0 1px 2px rgba(50, 80, 40, 0.06), 0 6px 14px -6px rgba(50, 80, 40, 0.1), 0 20px 40px -20px rgba(60, 100, 45, 0.36);
-  --card-shadow-hover: 0 2px 4px rgba(50, 80, 40, 0.07), 0 14px 26px -12px rgba(60, 100, 45, 0.26), 0 36px 64px -28px rgba(60, 100, 45, 0.5);
-  --card-sheen: rgba(156, 196, 114, 0.12);
-  --card-row-hover: hsl(86 45% 96.5%);
-  --card-solid: #fdfefb;
-  --card-grid: #eef4e6;
-  --card-tray: hsl(88 36% 95.6%);
-  --card-tile: linear-gradient(160deg, #ffffff 0%, #eaf5d9 100%);
-  --card-tile-ink: #4f7f43;
-  --card-tile-ring: rgba(79, 127, 67, 0.16);
-  --card-tile-shadow: 0 6px 14px -8px rgba(60, 100, 45, 0.5);
-  --card-tile-lit: linear-gradient(180deg, #52903f, #3a6d2f);
-  --card-tile-lit-ring: rgba(236, 217, 150, 0.7);
-  --card-tile-lit-shadow: 0 10px 18px -8px rgba(50, 90, 35, 0.6);
-}
-
-:root[data-palette='narai'].dark {
-  /* Deep olive */
-  --color-bg: 90 18% 8%;               /* #141810 */
-  --color-bg-canvas: 90 18% 8%;
-  --color-bg-surface: 90 15% 11%;
-  --color-bg-surface-hover: 90 12% 20%;
-  --color-bg-subtle: 90 13% 15%;
-
-  --color-text-primary: 84 40% 94%;
-  --color-text-secondary: 86 16% 72%;
-  --color-text-tertiary: 88 9% 48%;
-  --color-text-disabled: 88 9% 48%;
-
-  --color-border: 90 11% 22%;
-  --color-border-hover: 90 11% 30%;
-  --color-cell-border: 90 11% 22%;
-  --color-border-strong: 90 11% 30%;
-
-  --color-brand-primary: 100 34% 40%;
-  --color-brand-hover: 92 45% 64%;
-  --color-brand-active: 92 38% 56%;
-  --color-brand-light: 100 34% 45% / 0.18;
-  --color-brand-subtle: 100 25% 25%;
-
-  --color-status-gray-bg: 88 9% 45%;
-
-  --color-table-header-bg: 90 18% 8%;
-  --color-group-header-bg: 90 18% 8%;
-
-  --gradient-brand: linear-gradient(135deg, #4f8a3e, #8db35c);
-  --gradient-spectrum: linear-gradient(135deg, #5b8a4a, #4f8a3e, #a5c86a);
-  --gradient-energy: linear-gradient(90deg, #4f8a3e, #e9d27a);
-  --gradient-depth: linear-gradient(135deg, #141810, #4f8a3e);
-
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
-
-  --label-tint: 40%;
-  --label-tint-base: #f3f6e4;
-  --label-text: #222b1b;
-
-  --color-nav-accent: #9cc77f;
-  --color-nav-accent-bg: hsl(100 34% 45% / 0.18);
-  --color-icon-accent: #8db35c;
-  --color-action: #4f8a3e;
-  --color-action-2: #5f9348;
-  --color-action-2-dark: #4a7737;
-  --color-action-2-glow: rgba(0, 0, 0, 0.35);
-
-  --dash-wall: #e3efcc;
-  --dash-wall-edge: #cfe2ad;
-  --dash-window: #6f9a54;
-  --dash-window-text: #466f37;
-
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, 'Noto Sans Thai', 'Helvetica Neue', sans-serif;
-  --color-bg-base: 90 18% 8%;
-  --glass-mesh: radial-gradient(55% 45% at 8% 6%, #2c4426 0%, transparent 62%), radial-gradient(45% 40% at 94% 10%, #1e3b33 0%, transparent 60%), radial-gradient(55% 55% at 78% 100%, #34421f 0%, transparent 62%), linear-gradient(160deg, #0f140c, #172010);
-  --glass-panel: linear-gradient(155deg, rgba(40, 54, 34, 0.84), rgba(22, 30, 18, 0.8));
-  --glass-side: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  --glass-pop: rgba(30, 41, 26, 0.8);
-  --glass-card: linear-gradient(160deg, rgba(48, 64, 40, 0.7), rgba(28, 38, 24, 0.6));
-  --glass-edge: rgba(255, 255, 255, 0.16);
-  --glass-line: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.75), 0 8px 24px -10px rgba(0, 0, 0, 0.4);
-  --glass-pop-shadow: 0 28px 60px -18px rgba(0, 0, 0, 0.7), 0 6px 16px -6px rgba(0, 0, 0, 0.4);
-  --glass-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 52%, rgba(0, 0, 0, 0.12));
-  --glass-glint: rgba(236, 217, 150, 0.3);
-  --glass-sheen: rgba(255, 255, 255, 0.07);
-  --glass-scrim: rgba(0, 0, 0, 0.5);
-  --glass-solid: #222b1d;
-  --ws-badge-radius: 28%;
-
-  /* Home cards: tinted glass, a champagne edge on hover */
-  --card-bg: linear-gradient(160deg, rgba(48, 64, 40, 0.7), rgba(28, 38, 24, 0.6));
-  --card-border: rgba(255, 255, 255, 0.1);
-  --card-border-hover: rgba(236, 217, 150, 0.35);
-  --card-edge: rgba(255, 255, 255, 0.12);
-  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 14px -6px rgba(0, 0, 0, 0.4), 0 20px 40px -20px rgba(0, 0, 0, 0.8);
-  --card-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.4), 0 28px 56px -24px rgba(0, 0, 0, 0.9);
-  --card-sheen: rgba(190, 228, 160, 0.08);
-  --card-row-hover: rgba(255, 255, 255, 0.05);
-  --card-solid: #222b1d;
-  --card-grid: rgba(255, 255, 255, 0.06);
-  --card-tray: rgba(0, 0, 0, 0.16);
-  --card-tile: linear-gradient(160deg, rgba(190, 228, 160, 0.22), rgba(140, 196, 110, 0.12));
-  --card-tile-ink: #d4ecc2;
-  --card-tile-ring: rgba(255, 255, 255, 0.12);
-  --card-tile-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.7);
-  --card-tile-lit: linear-gradient(180deg, #52903f, #3a6d2f);
-  --card-tile-lit-ring: rgba(236, 217, 150, 0.55);
-  --card-tile-lit-shadow: 0 10px 18px -8px rgba(0, 0, 0, 0.7);
 }

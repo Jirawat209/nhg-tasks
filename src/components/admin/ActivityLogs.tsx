@@ -75,52 +75,66 @@ export const ActivityLogs = () => {
     }, []);
 
     const getActionColor = (actionType: string) => {
-        if (actionType.includes('delete')) return '#dc2626';
-        if (actionType.includes('created')) return '#10b981';
-        if (actionType.includes('updated')) return '#f59e0b';
-        return '#6366f1';
+        if (actionType.includes('delete')) return '#C83E2B';
+        if (actionType.includes('created')) return '#2A4A12';
+        if (actionType.includes('updated')) return '#A76400';
+        return '#2E7D8C';
     };
 
     return (
         <div className="card-surface" style={{ overflow: 'hidden' }}>
             {/* Header */}
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>Recent Activity</h3>
+            <div style={{
+                padding: '14px 20px',
+                backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)))',
+                borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+            }}>
+                <h3 className="narai-heading" style={{
+                    margin: 0,
+                    fontFamily: 'var(--font-family-display)',
+                    fontSize: '18px',
+                    fontWeight: 600,
+                    color: 'hsl(var(--color-text-primary))'
+                }}>
+                    Recent Audit Activity
+                </h3>
                 <button
+                    type="button"
+                    className="glass-chip"
                     onClick={fetchLogs}
                     style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#f1f5f9',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '4px',
+                        height: '30px',
+                        padding: '0 12px',
+                        borderRadius: '999px',
                         cursor: 'pointer',
-                        display: 'flex',
+                        display: 'inline-flex',
                         alignItems: 'center',
                         gap: '6px',
-                        fontSize: '13px',
-                        color: '#475569'
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: 'hsl(var(--color-text-primary))'
                     }}
                 >
-                    <RefreshCw size={14} />
-                    Refresh
+                    <RefreshCw size={13} />
+                    <span>Refresh</span>
                 </button>
             </div>
 
             {/* Logs List */}
             {loading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading activity logs...</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', fontSize: '13.5px' }}>Loading activity logs…</div>
             ) : error ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#ef4444' }}>
+                <div style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--color-danger))' }}>
                     Error: {error}
-                    <div style={{ fontSize: '12px', marginTop: '8px', color: '#64748b' }}>
-                        Make sure you've run the activity_logs_schema.sql script
-                    </div>
                 </div>
             ) : logs.length === 0 ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>No activity logs yet</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', fontSize: '13.5px' }}>No activity logs yet</div>
             ) : (
                 <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                    {logs.map((log) => {
+                    {logs.map((log, idx) => {
                         const Icon = ACTION_ICONS[log.action_type] || User;
                         const color = getActionColor(log.action_type);
 
@@ -128,32 +142,28 @@ export const ActivityLogs = () => {
                             <div
                                 key={log.id}
                                 style={{
-                                    padding: '16px 20px',
-                                    borderBottom: '1px solid #f1f5f9',
+                                    padding: '14px 20px',
+                                    borderBottom: idx < logs.length - 1 ? '1px solid var(--paper-row-line, hsl(var(--color-border)))' : 'none',
                                     display: 'flex',
                                     alignItems: 'flex-start',
                                     gap: '12px'
                                 }}
                             >
                                 <div
+                                    className="admin-tile"
                                     style={{
                                         width: '36px',
                                         height: '36px',
-                                        borderRadius: '8px',
-                                        backgroundColor: `${color}15`,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        flexShrink: 0
-                                    }}
+                                        '--tile-color': color
+                                    } as React.CSSProperties}
                                 >
-                                    <Icon size={18} color={color} />
+                                    <Icon size={17} />
                                 </div>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontSize: '13.5px', fontWeight: 600, color: 'hsl(var(--color-text-primary))' }}>
                                         {ACTION_LABELS[log.action_type] || log.action_type}
                                     </div>
-                                    <div style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>
+                                    <div style={{ fontSize: '12.5px', color: 'hsl(var(--color-text-secondary))', marginTop: '2px' }}>
                                         by {log.actor_name} ({log.actor_email})
                                     </div>
                                     {log.metadata && (() => {
@@ -161,41 +171,41 @@ export const ActivityLogs = () => {
 
                                         switch (log.action_type) {
                                             case 'role_updated':
-                                                return <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{`Changed role from ${meta.old_role || 'N/A'} to ${meta.new_role || 'N/A'} for ${meta.target_email || 'user'}`}</div>;
+                                                return <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', marginTop: '4px' }}>{`Changed role from ${meta.old_role || 'N/A'} to ${meta.new_role || 'N/A'} for ${meta.target_email || 'user'}`}</div>;
                                             case 'user_signup':
-                                                return <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{`New user: ${meta.full_name || 'Unknown'} (${meta.email || 'N/A'}) as ${meta.system_role || 'user'}`}</div>;
+                                                return <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', marginTop: '4px' }}>{`New user: ${meta.full_name || 'Unknown'} (${meta.email || 'N/A'}) as ${meta.system_role || 'user'}`}</div>;
                                             case 'user_deleted':
-                                                return <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{`Deleted user: ${meta.full_name || 'Unknown'} (${meta.email || 'N/A'})`}</div>;
+                                                return <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', marginTop: '4px' }}>{`Deleted user: ${meta.full_name || 'Unknown'} (${meta.email || 'N/A'})`}</div>;
                                             case 'workspace_created':
-                                                return <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{`Created workspace: "${meta.workspace_title || 'Untitled'}"`}</div>;
+                                                return <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', marginTop: '4px' }}>{`Created workspace: "${meta.workspace_title || 'Untitled'}"`}</div>;
                                             case 'board_created':
-                                                return <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{`Created board: "${meta.board_title || 'Untitled'}" in workspace "${meta.workspace_title || 'Unknown'}"`}</div>;
+                                                return <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', marginTop: '4px' }}>{`Created board: "${meta.board_title || 'Untitled'}" in workspace "${meta.workspace_title || 'Unknown'}"`}</div>;
                                             default:
                                                 return (
-                                                    <details style={{ marginTop: '8px' }}>
-                                                        <summary style={{ 
-                                                            fontSize: '12px', 
-                                                            color: '#0ea5e9', 
-                                                            cursor: 'pointer', 
-                                                            outline: 'none', 
-                                                            fontWeight: 500,
-                                                            display: 'inline-block' 
+                                                    <details style={{ marginTop: '6px' }}>
+                                                        <summary style={{
+                                                            fontSize: '12px',
+                                                            color: 'hsl(var(--color-brand-primary))',
+                                                            cursor: 'pointer',
+                                                            outline: 'none',
+                                                            fontWeight: 600,
+                                                            display: 'inline-block'
                                                         }}>
                                                             View Details
                                                         </summary>
-                                                        <pre style={{ 
-                                                            fontSize: '11px', 
-                                                            color: '#64748b', 
+                                                        <pre style={{
+                                                            fontSize: '11px',
+                                                            color: 'hsl(var(--color-text-secondary))',
                                                             marginTop: '6px',
-                                                            padding: '12px',
-                                                            backgroundColor: '#f8fafc',
-                                                            borderRadius: '6px',
-                                                            border: '1px solid #e2e8f0',
+                                                            padding: '10px 12px',
+                                                            backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)))',
+                                                            borderRadius: '10px',
+                                                            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
                                                             overflowX: 'auto',
                                                             whiteSpace: 'pre-wrap',
                                                             wordBreak: 'break-word',
                                                             fontFamily: 'monospace',
-                                                            maxHeight: '300px',
+                                                            maxHeight: '260px',
                                                             overflowY: 'auto'
                                                         }}>
                                                             {JSON.stringify(meta, null, 2)}
@@ -205,7 +215,7 @@ export const ActivityLogs = () => {
                                         }
                                     })()}
                                 </div>
-                                <div style={{ fontSize: '12px', color: '#94a3b8', flexShrink: 0 }}>
+                                <div style={{ fontSize: '11.5px', color: 'hsl(var(--color-text-tertiary))', flexShrink: 0 }}>
                                     {new Date(log.created_at).toLocaleString()}
                                 </div>
                             </div>

@@ -9,7 +9,7 @@ const MOBILE_QUERY = '(max-width: 767px), (pointer: coarse) and (max-height: 500
 // "desktop" / "mobile" pins the layout regardless of screen size — More > Desktop
 // site on a phone, and the pill that brings the phone layout back. Absent = auto.
 const LAYOUT_KEY = 'saturday:layout';
-const LAYOUT_EVENT = 'saturday:layout-change';
+const LAYOUT_EVENT = 'nhg-tasks:layout-change';
 
 export type LayoutOverride = 'desktop' | 'mobile' | null;
 

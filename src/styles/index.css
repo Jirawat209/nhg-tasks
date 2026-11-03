@@ -1,9 +1,12 @@
 @import "tailwindcss";
 @import './variables.css';
+@import './fonts.css';
 @import './components.css';
 @import './table.css';
 @import './cards.css';
-@import './narai_crystal.css';
+@import './narai_core.css';
+@import './narai_glass.css';
+@import './board_glass.css';
 
 @variant dark (&:where(.dark, .dark *));
 

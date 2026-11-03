@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { SidebarHeader } from './sidebar/SidebarHeader';
 import { WorkspaceList } from './sidebar/WorkspaceList';
 import { CollapsedSidebar } from './sidebar/CollapsedSidebar';
+import { SidebarProfile } from './sidebar/SidebarProfile';
 import '../../styles/sidebar_tree.css';
 
 // Width of the collapsed icon rail — fits a 40px button with 12px of
@@ -96,7 +97,7 @@ export const Sidebar = () => {
                 />
 
                 <div className="sidebar-footer">
-                    <span className="footer-power">Powered by jirawat.k</span>
+                    <SidebarProfile />
                 </div>
             </div>
 

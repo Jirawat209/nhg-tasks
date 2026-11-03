@@ -98,17 +98,14 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
     return createPortal(
         <div
             ref={menuRef}
-            className="dropdown-picker-menu"
+            className="dropdown-picker-menu glass-pop"
             style={{
                 position: 'absolute',
                 top: listTop,
                 left: position.left,
                 width: Math.max(position.width, 240),
                 zIndex: 9999,
-                backgroundColor: 'hsl(var(--color-bg-surface))',
-                border: '1px solid hsl(var(--color-border))',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                borderRadius: '16px',
                 display: 'flex',
                 flexDirection: 'column',
                 maxHeight: '300px',
@@ -118,7 +115,7 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
             {!isEditingLabels ? (
                 <>
                     {/* Search / Create Input */}
-                    <div style={{ padding: '8px', borderBottom: '1px solid hsl(var(--color-border))' }}>
+                    <div style={{ padding: '8px', borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))' }}>
                         <input
                             autoFocus
                             type="text"
@@ -130,18 +127,19 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                             }}
                             style={{
                                 width: '100%',
-                                padding: '6px 8px',
-                                borderRadius: '4px',
-                                border: '1px solid hsl(var(--color-border))',
-                                backgroundColor: 'hsl(var(--color-bg-base))',
+                                padding: '6px 10px',
+                                borderRadius: '8px',
+                                border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                backgroundColor: 'hsl(var(--paper, var(--color-bg-base)))',
                                 color: 'hsl(var(--color-text-primary))',
+                                fontSize: '13px',
                                 outline: 'none'
                             }}
                         />
                     </div>
 
                     {/* Options List */}
-                    <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '4px' }}>
+                    <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '6px' }}>
                         {filteredOptions.length > 0 ? (
                             filteredOptions.map((opt, idx) => {
                                 const isSelected = currentValue.includes(opt.label);
@@ -152,24 +150,29 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                                         style={{
                                             padding: '6px 8px',
                                             cursor: 'pointer',
-                                            borderRadius: '4px',
+                                            borderRadius: '8px',
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '8px',
                                             marginBottom: '2px',
-                                            backgroundColor: isSelected ? 'hsl(var(--color-bg-subtle))' : 'transparent',
+                                            backgroundColor: isSelected ? 'hsl(var(--color-text-primary) / 0.06)' : 'transparent',
                                             transition: 'background-color 0.1s'
                                         }}
-                                        className="hover:bg-gray-700/50"
+                                        onMouseEnter={(e) => {
+                                            if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--color-text-primary) / 0.04)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
+                                        }}
                                     >
                                         <div style={{
-                                            width: '8px',
-                                            height: '8px',
+                                            width: '9px',
+                                            height: '9px',
                                             borderRadius: '50%',
                                             backgroundColor: tintLabel(opt.color)
                                         }} />
-                                        <span style={{ flex: 1, fontSize: '13px' }}>{opt.label}</span>
-                                        {isSelected && <Check size={14} className="text-brand-primary" />}
+                                        <span style={{ flex: 1, fontSize: '13px', color: 'hsl(var(--color-text-primary))' }}>{opt.label}</span>
+                                        {isSelected && <Check size={14} style={{ color: 'hsl(var(--color-brand-primary))' }} />}
                                     </div>
                                 );
                             })
@@ -196,7 +199,7 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                     {/* Footer Actions */}
                     <div style={{
                         padding: '8px',
-                        borderTop: '1px solid hsl(var(--color-border))',
+                        borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
                         display: 'flex',
                         justifyContent: 'center'
                     }}>
@@ -207,6 +210,7 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                                 border: 'none',
                                 color: 'hsl(var(--color-text-secondary))',
                                 fontSize: '12px',
+                                fontWeight: 500,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -230,9 +234,9 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                 // own overflow:hidden silently clipped whatever didn't fit,
                 // "+ New label" and "Apply" included.
                 <>
-                    <div style={{ padding: '8px', borderBottom: '1px solid hsl(var(--color-border))', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                    <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                         <button onClick={() => setIsEditingLabels(false)} className="icon-btn"><X size={14} /></button>
-                        <span style={{ fontWeight: 500, fontSize: '13px' }}>Edit Labels</span>
+                        <span style={{ fontWeight: 600, fontSize: '13px', color: 'hsl(var(--color-text-primary))' }}>Edit Labels</span>
                     </div>
                     <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '8px' }}>
                         {options.map((opt, idx) => (
@@ -244,7 +248,7 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                                         width: '24px',
                                         height: '24px',
                                         backgroundColor: tintLabel(opt.color),
-                                        borderRadius: '4px',
+                                        borderRadius: '6px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -272,8 +276,16 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                                             e.currentTarget.blur();
                                         }
                                     }}
-                                    className="cell-input"
-                                    style={{ flex: 1, padding: '4px 8px' }}
+                                    style={{
+                                        flex: 1,
+                                        padding: '4px 8px',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                        backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                                        color: 'hsl(var(--color-text-primary))',
+                                        fontSize: '13px',
+                                        outline: 'none'
+                                    }}
                                 />
                                 <button
                                     onClick={() => {
@@ -296,11 +308,12 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                                 justifyContent: 'center',
                                 gap: '6px',
                                 width: '100%',
-                                backgroundColor: 'transparent',
-                                border: '1px solid hsl(var(--color-border))',
-                                borderRadius: '4px',
+                                backgroundColor: 'hsl(var(--paper, transparent))',
+                                border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                borderRadius: '8px',
                                 padding: '6px',
                                 fontSize: '13px',
+                                fontWeight: 500,
                                 cursor: 'pointer',
                                 color: 'hsl(var(--color-text-primary))'
                             }}
@@ -316,16 +329,16 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                             style={{
                                 backgroundColor: 'hsl(var(--color-brand-primary))',
                                 border: 'none',
-                                borderRadius: '4px',
-                                fontSize: '14px',
-                                fontWeight: 500,
-                                padding: '8px 24px',
+                                borderRadius: '999px',
+                                fontSize: '13px',
+                                fontWeight: 600,
+                                padding: '7px 24px',
                                 cursor: 'pointer',
-                                color: 'white',
-                                transition: 'background-color 0.2s',
+                                color: '#FFEFD2',
+                                transition: 'opacity 0.15s',
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-brand-hover))'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-brand-primary))'}
+                            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                         >
                             Apply
                         </button>
@@ -334,18 +347,16 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                     {colorPicker && createPortal(
                         <div
                             ref={colorPaletteRef}
+                            className="glass-pop"
                             style={{
                                 position: 'fixed',
                                 top: colorPicker.top,
                                 left: colorPicker.left,
-                                backgroundColor: 'white',
-                                border: '1px solid hsl(var(--color-border))',
-                                borderRadius: '6px',
-                                padding: '8px',
+                                borderRadius: '12px',
+                                padding: '10px',
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(10, 1fr)',
-                                gap: '4px',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                gap: '5px',
                                 zIndex: 10000,
                                 width: `${PALETTE_WIDTH}px`
                             }}
@@ -363,9 +374,9 @@ export const DropdownPicker = ({ columnId, options, currentValue = [], position,
                                             width: '18px',
                                             height: '18px',
                                             backgroundColor: tintLabel(c),
-                                            borderRadius: '3px',
+                                            borderRadius: '4px',
                                             cursor: 'pointer',
-                                            border: current?.color === c ? '2px solid #333' : '1px solid rgba(0,0,0,0.1)'
+                                            border: current?.color === c ? '2px solid hsl(var(--color-text-primary))' : '1px solid rgba(21, 42, 0, 0.12)'
                                         }}
                                     />
                                 ));

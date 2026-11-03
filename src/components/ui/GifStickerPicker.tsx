@@ -30,32 +30,15 @@ export const GifStickerPicker = ({ onSelect, onClose, anchorBottom, anchorLeft }
     const [error, setError] = useState(false);
     const searchRef = useRef<HTMLInputElement>(null);
 
-    const fetchItems = useCallback(async (searchQuery: string, type: 'gifs' | 'stickers') => {
-        setLoading(true);
-        setError(false);
-        try {
-            const isTrending = !searchQuery || searchQuery === 'trending';
-            const q = searchQuery.replace(/^#/, '');
-            const endpoint = isTrending
-                ? `https://api.giphy.com/v1/${type}/trending?api_key=${GIPHY_KEY}&limit=18&rating=g`
-                : `https://api.giphy.com/v1/${type}/search?api_key=${GIPHY_KEY}&q=${encodeURIComponent(q)}&limit=18&rating=g`;
-
-            const res = await fetch(endpoint);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
-
-            setItems((json.data || []).map((g: any) => ({
-                id: g.id,
-                previewUrl: g.images?.fixed_height_downsampled?.url || g.images?.fixed_height?.url || g.images?.downsized?.url,
-                originalUrl: g.images?.original?.url,
-                title: g.title || '',
-            })).filter((g: GifItem) => g.previewUrl && g.originalUrl));
-        } catch {
-            setError(true);
-            setItems([]);
-        } finally {
-            setLoading(false);
-        }
+    // Disabled in the local demo build: this app must never make outbound
+    // network calls, and Giphy's API is the one real external dependency
+    // this picker had. Left wired up (incl. GIPHY_KEY) in case a real key is
+    // ever configured for a non-local deployment.
+    const fetchItems = useCallback(async (_searchQuery: string, _type: 'gifs' | 'stickers') => {
+        void GIPHY_KEY;
+        setLoading(false);
+        setError(true);
+        setItems([]);
     }, []);
 
     useEffect(() => {

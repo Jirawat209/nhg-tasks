@@ -1,0 +1,585 @@
+/*
+ * Board view layout for the Narai palette: the board header, the command bar
+ * (views + tools + add), and the table drawn as one paper card per group.
+ *
+ * Classes here are applied by BoardHeader, BoardViewsTabs, BoardViewsToolbar,
+ * Table, GroupRow and Row. The --paper fallbacks keep the legacy Saturday
+ * palette (which doesn't define --paper) on its own canvas colour.
+ */
+
+/* ── Board header ─────────────────────────────────────────────────────── */
+.bh {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 24px 4px;
+    position: relative;
+}
+.bh-titles { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.bh-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--color-text-tertiary));
+}
+.bh-eyebrow-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: hsl(var(--color-text-tertiary));
+}
+.bh-title {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.12;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: hsl(var(--color-text-primary));
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.bh-title-input {
+    font-family: var(--font-family-display);
+    font-size: 30px;
+    font-weight: 600;
+    border: 1px solid hsl(var(--color-border-strong));
+    border-radius: 10px;
+    padding: 0 8px;
+    outline: none;
+    background: hsl(var(--paper, var(--color-bg-surface)));
+    color: hsl(var(--color-text-primary));
+    min-width: 220px;
+}
+.bh-desc {
+    font-size: 13px;
+    color: hsl(var(--color-text-secondary));
+    max-width: 520px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.bh-desc.is-empty { font-style: italic; opacity: 0.7; color: hsl(var(--color-text-tertiary)); }
+.bh-desc-input {
+    font-size: 13px;
+    border: 1px solid hsl(var(--color-border-strong));
+    border-radius: 8px;
+    padding: 2px 8px;
+    outline: none;
+    background: hsl(var(--paper, var(--color-bg-surface)));
+    color: hsl(var(--color-text-primary));
+    min-width: 280px;
+}
+.bh-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-top: -10px; }
+
+
+.bh-icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: hsl(var(--color-text-secondary));
+    transition: background-color 0.15s, color 0.15s;
+}
+.bh-icon-btn:hover, .bh-icon-btn.is-on {
+    background: var(--glass-chip-hover);
+    color: hsl(var(--color-text-primary));
+}
+
+.bh-share {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 36px; padding: 0 16px;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    color: hsl(var(--color-text-primary));
+    transition: background-color 0.15s;
+}
+.bh-share:hover { background: var(--glass-chip-hover); }
+.bh-share[aria-disabled='true'] { opacity: 0.6; cursor: not-allowed; }
+
+.bh-divider { width: 1px; height: 22px; background: hsl(var(--color-border)); margin: 0 4px; }
+
+.menu-item {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 9px 14px;
+    font-size: 13.5px;
+    color: hsl(var(--color-text-primary));
+    border-radius: 8px;
+    transition: background-color 0.1s;
+}
+.menu-item:hover { background: hsl(var(--color-text-primary) / 0.06); }
+.menu-item.is-danger { color: hsl(var(--color-danger)); }
+.menu-sep { height: 1px; background: hsl(var(--color-border)); margin: 4px 6px; }
+.menu-label {
+    padding: 8px 14px 4px;
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: hsl(var(--color-text-tertiary));
+}
+
+/* ── Command bar: views on the left, tools + add on the right ─────────── */
+.cmd-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0 2px;
+    flex-wrap: wrap;
+}
+.cmd-spacer { flex: 1; }
+
+.seg {
+    display: inline-flex;
+    padding: 3px;
+    gap: 2px;
+    border-radius: 999px;
+}
+.seg-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 30px; padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12.5px; font-weight: 500;
+    color: hsl(var(--color-text-secondary));
+    transition: background-color 0.18s, color 0.18s, box-shadow 0.18s;
+    white-space: nowrap;
+}
+.seg-btn:hover { color: hsl(var(--color-text-primary)); background: hsl(var(--color-text-primary) / 0.05); }
+.seg-btn.is-active {
+    background: hsl(var(--color-brand-primary));
+    color: #FFEFD2;
+    box-shadow: 0 6px 14px -8px hsl(var(--color-brand-primary) / 0.8);
+}
+
+.cmd-search {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 36px; padding: 0 12px;
+    border-radius: 999px;
+    color: hsl(var(--color-text-tertiary));
+    transition: box-shadow 0.15s, background-color 0.15s;
+}
+.cmd-search:focus-within {
+    background: var(--glass-chip-hover);
+    box-shadow: 0 0 0 3px hsl(var(--color-brand-primary) / 0.12), var(--glass-chip-shadow);
+}
+.cmd-search input {
+    border: none; background: none; outline: none;
+    font-size: 12.5px; width: 140px;
+    color: hsl(var(--color-text-primary));
+}
+.cmd-search input::placeholder { color: hsl(var(--color-text-tertiary)); }
+
+.cmd-tools {
+    display: inline-flex; align-items: center;
+    padding: 3px; gap: 2px;
+    border-radius: 999px;
+}
+.cmd-tool {
+    position: relative;
+    display: inline-flex; align-items: center; gap: 5px;
+    height: 30px; padding: 0 10px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    color: hsl(var(--color-text-secondary));
+    transition: background-color 0.15s, color 0.15s;
+}
+.cmd-tool:hover, .cmd-tool.is-on {
+    background: hsl(var(--color-text-primary) / 0.07);
+    color: hsl(var(--color-text-primary));
+}
+.cmd-tool-count {
+    min-width: 17px; height: 17px; padding: 0 5px;
+    border-radius: 999px;
+    background: hsl(var(--color-brand-primary));
+    color: #FFEFD2;
+    font-size: 10px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+
+.cmd-add {
+    display: inline-flex;
+    height: 36px;
+    border-radius: 999px;
+    background: hsl(var(--color-brand-primary));
+    color: #FFEFD2;
+    box-shadow: 0 10px 22px -12px hsl(var(--color-brand-primary) / 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+}
+.cmd-add button {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 0 14px;
+    font-size: 12.5px; font-weight: 600;
+    color: #FFEFD2;
+    transition: background-color 0.15s;
+}
+.cmd-add button:hover { background: rgba(255, 239, 210, 0.08); }
+.cmd-add .cmd-add-more { padding: 0 12px; border-left: 1px solid rgba(255, 239, 210, 0.18); }
+
+.chip-toggle {
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    border: 1px solid hsl(var(--color-border));
+    color: hsl(var(--color-text-secondary));
+    transition: background-color 0.1s, color 0.1s, border-color 0.1s;
+}
+.chip-toggle:hover { border-color: hsl(var(--color-border-strong)); }
+
+/* ── Table: frozen column header ──────────────────────────────────────── */
+html:not([data-palette='saturday']) .board-sheet {
+    border-radius: 24px;
+}
+html:not([data-palette='saturday']) .table-container {
+    background: transparent;
+}
+/* The bar's chrome is a ::before starting at the horizontal scroll offset, like
+   the group cards below, so its rounded left end stays in view when scrolled. */
+html:not([data-palette='saturday']) .table-header-row {
+    background: transparent !important;
+    border: none !important;
+    isolation: isolate;
+    height: 36px !important;
+    /* As wide as the cards below it (its cells sum to the table width), not the viewport */
+    width: max-content;
+}
+html:not([data-palette='saturday']) .table-header-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--table-sx, 0px);
+    right: 0;
+    z-index: -1;
+    pointer-events: none;
+    box-sizing: border-box;
+    background: hsl(var(--paper));
+    border: 1px solid var(--paper-edge);
+    border-radius: 16px;
+}
+html:not([data-palette='saturday']) .table-header-row > .sticky-col {
+    border-radius: 16px 0 0 16px;
+    background: hsl(var(--paper)) !important;
+    border-left: 1px solid var(--paper-edge) !important;
+    border-top: 1px solid var(--paper-edge);
+    border-bottom: 1px solid var(--paper-edge);
+    box-sizing: border-box;
+    height: 100%;
+    padding-left: 18px !important;
+}
+html:not([data-palette='saturday']) .table-header-cell,
+html:not([data-palette='saturday']) .table-header-row > .sticky-col {
+    font-size: 10.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: hsl(var(--color-text-tertiary)) !important;
+    border-right: none !important;
+}
+
+/* No vertical grid lines in the body — rows separate with a soft hairline only */
+html:not([data-palette='saturday']) .table-col { border-right: none; }
+html:not([data-palette='saturday']) .table-row {
+    background-color: transparent;
+    border-bottom: 1px solid var(--paper-row-line);
+}
+html:not([data-palette='saturday']) .table-row:hover {
+    background-color: hsl(var(--color-text-primary) / 0.025);
+}
+
+/* ── Group cards ───────────────────────────────────────────────────────
+ * A virtualised table can't wrap a group's rows in one element, so each
+ * row draws its own slice of the card: the group header is the top, item
+ * and sub-item rows the sides, the add-item row the bottom.
+ *
+ * The slice's chrome (fill, edges, corners, shadow) is a ::before that starts
+ * at the table's horizontal scroll offset (--table-sx, set by Table.tsx), so
+ * the card's left edge and rounded corners stay at the visible left edge when
+ * the table is scrolled sideways instead of scrolling away with the rows.
+ * The frozen first-column cells sit on top of that edge, so they repeat it
+ * (border + matching radius) themselves. */
+.gcard {
+    position: relative;
+    isolation: isolate;
+}
+.gcard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--table-sx, 0px);
+    right: 0;
+    z-index: -1;
+    pointer-events: none;
+    box-sizing: border-box;
+    background: hsl(var(--paper, var(--color-bg-canvas)));
+    border-left: 1px solid var(--paper-edge, transparent);
+    border-right: 1px solid var(--paper-edge, transparent);
+}
+.gcard-top::before {
+    border-top: 1px solid var(--paper-edge, transparent);
+    border-radius: 16px 16px 0 0;
+    background: hsl(var(--paper-head, var(--color-bg-canvas)));
+    border-bottom: 1px solid var(--paper-row-line, transparent);
+}
+.gcard-top.is-collapsed::before {
+    border-bottom: 1px solid var(--paper-edge, transparent);
+    border-radius: 16px;
+    box-shadow: var(--paper-shadow, none);
+}
+.gcard-bottom::before {
+    border-bottom: 1px solid var(--paper-edge, transparent);
+    border-radius: 0 0 16px 16px;
+    box-shadow: var(--paper-shadow, none);
+}
+/* Frozen item cell of item / sub-item / summary rows: the card's left edge */
+.gcard .table-row > .sticky-col {
+    border-left: 1px solid var(--paper-edge, transparent);
+}
+
+/* Right-edge drop shadow on the frozen first column so scrolling cells tuck
+   cleanly behind a subtle divider line and shadow. */
+.table-header-row > .sticky-col::after,
+.gcard .table-row > .sticky-col::after,
+.gh-sticky::after,
+.gf-add::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -12px;
+    width: 12px;
+    pointer-events: none;
+    background: linear-gradient(
+        to right,
+        hsl(var(--color-text-primary) / 0.08) 0%,
+        hsl(var(--color-text-primary) / 0.03) 45%,
+        transparent 100%
+    );
+    border-left: 1px solid var(--paper-edge, hsl(var(--color-border)));
+    opacity: 0;
+    transition: opacity 0.18s ease;
+}
+.table-container[data-scrolled-x='true'] .table-header-row > .sticky-col::after,
+.table-container[data-scrolled-x='true'] .gcard .table-row > .sticky-col::after,
+.table-container[data-scrolled-x='true'] .gh-sticky::after,
+.table-container[data-scrolled-x='true'] .gf-add::after {
+    opacity: 1;
+}
+
+.gh-sticky {
+    position: sticky; left: 0; z-index: 60;
+    height: 100%;
+    display: flex; align-items: center; gap: 10px;
+    /* Room for the hover grip (.gh-drag) between the card edge and the chevron */
+    padding-left: 22px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    background: hsl(var(--paper-head, var(--color-bg-canvas)));
+    border-left: 1px solid var(--paper-edge, transparent);
+    border-top: 1px solid var(--paper-edge, transparent);
+    border-bottom: 1px solid var(--paper-row-line, transparent);
+    border-radius: 16px 0 0 0;
+}
+.gcard-top.is-collapsed .gh-sticky {
+    border-radius: 16px 0 0 16px;
+    border-bottom-color: var(--paper-edge, transparent);
+}
+.gh-chevron {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: hsl(var(--color-text-secondary));
+    transition: background-color 0.15s, transform 0.2s;
+    flex-shrink: 0;
+}
+.gh-chevron:hover { background: hsl(var(--color-text-primary) / 0.07); }
+.gh-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px hsl(var(--paper-head, var(--color-bg-canvas))), 0 0 0 4px currentColor;
+    cursor: pointer;
+}
+.gh-title {
+    font-family: var(--font-family-display);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: hsl(var(--color-text-primary));
+    white-space: nowrap;
+}
+.gh-title-input {
+    font-family: var(--font-family-display);
+    font-size: 18px; font-weight: 600;
+    background: hsl(var(--paper, var(--color-bg-surface)));
+    border: 1px solid hsl(var(--color-border-strong));
+    border-radius: 8px;
+    padding: 0 6px;
+    outline: none;
+    color: hsl(var(--color-text-primary));
+}
+.gh-count {
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.08em;
+    color: hsl(var(--color-text-secondary));
+    background: hsl(var(--color-text-primary) / 0.06);
+    white-space: nowrap;
+}
+.gh-actions { display: inline-flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+.gcard-top:hover .gh-actions { opacity: 1; }
+.gh-icon-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: hsl(var(--color-text-tertiary));
+}
+.gh-icon-btn:hover { background: hsl(var(--color-text-primary) / 0.07); color: hsl(var(--color-text-primary)); }
+.gh-drag {
+    position: absolute; left: 5px; top: 50%; transform: translateY(-50%);
+    color: hsl(var(--color-text-tertiary));
+    opacity: 0; transition: opacity 0.15s;
+    cursor: grab; display: flex; padding: 4px 0;
+}
+.gcard-top:hover .gh-drag { opacity: 1; }
+
+.gh-summary {
+    height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 10px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: hsl(var(--color-text-secondary));
+}
+
+/* Add-item row at the foot of each card */
+.gf-add {
+    position: sticky; left: 0; z-index: 55;
+    height: 100%;
+    display: flex; align-items: center; gap: 8px;
+    padding-left: 22px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    background: hsl(var(--paper, var(--color-bg-canvas)));
+    border-left: 1px solid var(--paper-edge, transparent);
+    border-bottom: 1px solid var(--paper-edge, transparent);
+    border-radius: 0 0 0 16px;
+    color: hsl(var(--color-text-tertiary));
+}
+.gf-add input {
+    border: none; outline: none; background: transparent;
+    font-size: 13px; width: 100%; height: 30px;
+    color: hsl(var(--color-text-primary));
+    padding: 0 8px; border-radius: 8px;
+}
+.gf-add input::placeholder { color: hsl(var(--color-text-tertiary)); }
+.gf-add input:focus { background: hsl(var(--color-text-primary) / 0.04); }
+
+/* Row affordances that only appear when needed */
+.row-checkbox { opacity: 0; transition: opacity 0.15s; }
+.table-row:hover .row-checkbox,
+.table-row.selected .row-checkbox { opacity: 1; }
+.row-updates { opacity: 0; transition: opacity 0.15s; }
+.table-row:hover .row-updates,
+.row-updates.has-updates { opacity: 1; }
+
+.new-group-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 38px; padding: 0 18px;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    color: hsl(var(--color-text-primary));
+    transition: background-color 0.15s;
+}
+.new-group-btn:hover { background: var(--glass-chip-hover); }
+
+/* ── Kanban on glass ──────────────────────────────────────────────────── */
+html:not([data-palette='saturday']) .kanban-column {
+    background: var(--glass-chip) !important;
+    box-shadow: inset 0 0 0 1px var(--glass-chip-edge), var(--glass-chip-shadow) !important;
+    border-radius: 20px !important;
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+}
+html:not([data-palette='saturday']) .kanban-card {
+    background: hsl(var(--paper)) !important;
+    border: 1px solid var(--paper-edge) !important;
+    border-radius: 14px !important;
+}
+html:not([data-palette='saturday']) .kanban-column-header {
+    font-family: var(--font-family-display);
+}
+
+/* ── Compact density mode ([data-density='compact']) ──────────────────── */
+html[data-density='compact'] {
+    --spacing-board-y: 14px;
+}
+html[data-density='compact'] .board-page-body {
+    padding: 0 24px var(--spacing-board-y) 24px !important;
+}
+html[data-density='compact'] .board-page-view {
+    margin-top: 6px !important;
+}
+html[data-density='compact'] .cmd-bar {
+    padding: 6px 0 2px;
+    gap: 6px;
+}
+html[data-density='compact'] .seg {
+    padding: 2px;
+}
+html[data-density='compact'] .seg-btn {
+    height: 26px;
+    padding: 0 10px;
+    font-size: 12px;
+}
+html[data-density='compact'] .cmd-search {
+    height: 30px;
+    padding: 0 10px;
+}
+html[data-density='compact'] .cmd-search input {
+    font-size: 12px;
+    width: 125px;
+}
+html[data-density='compact'] .cmd-tools {
+    padding: 2px;
+}
+html[data-density='compact'] .cmd-tool {
+    height: 26px;
+    padding: 0 9px;
+    font-size: 11.5px;
+}
+html[data-density='compact'] .cmd-add {
+    height: 30px;
+}
+html[data-density='compact'] .cmd-add button {
+    padding: 0 12px;
+    font-size: 12px;
+}
+html[data-density='compact']:not([data-palette='saturday']) .table-header-row {
+    height: 32px !important;
+}
+html[data-density='compact'] .gh-title {
+    font-size: 16.5px;
+}
+html[data-density='compact'] .table-cell {
+    font-size: 12.5px;
+}
+html[data-density='compact'] .gf-add input {
+    font-size: 12px;
+    height: 24px;
+}
+html[data-density='compact'] .new-group-btn {
+    height: 32px;
+    padding: 0 14px;
+    font-size: 12px;
+}
+html[data-density='compact'] .tree-node-parent {
+    padding: 5px 10px;
+}
+html[data-density='compact'] .tree-sidebar-item,
+html[data-density='compact'] .sidebar-item {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+}

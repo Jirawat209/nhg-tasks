@@ -159,7 +159,7 @@ export const StatusMappingSettings = () => {
     };
 
     if (loading) {
-        return <div style={{ padding: '24px', color: '#64748b' }}>Loading settings...</div>;
+        return <div style={{ padding: '24px', color: 'hsl(var(--ink-dim))' }}>Loading settings...</div>;
     }
 
     return (
@@ -167,51 +167,52 @@ export const StatusMappingSettings = () => {
             {message.text && (
                 <div style={{
                     padding: '12px 16px',
-                    borderRadius: '8px',
+                    borderRadius: '12px',
                     marginBottom: '24px',
-                    backgroundColor: message.type === 'success' ? '#def7ec' : '#fee2e2',
-                    color: message.type === 'success' ? '#03543f' : '#991b1b',
-                    fontSize: '14px',
-                    border: `1px solid ${message.type === 'success' ? '#31c48d' : '#f87171'}`
+                    backgroundColor: message.type === 'success' ? 'rgba(42, 74, 18, 0.1)' : 'rgba(200, 62, 43, 0.1)',
+                    color: message.type === 'success' ? '#2A4A12' : '#C83E2B',
+                    fontSize: '13.5px',
+                    fontWeight: 600,
+                    border: `1px solid ${message.type === 'success' ? 'rgba(42, 74, 18, 0.25)' : 'rgba(200, 62, 43, 0.25)'}`
                 }}>
                     {message.text}
                 </div>
             )}
 
             <div className="card-surface" style={{ padding: '24px', marginBottom: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <h2 style={{ fontSize: '18px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                        <Palette size={20} color="#6366f1" />
-                        Status to Color Mapping
-                    </h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="admin-tile" style={{ width: '38px', height: '38px', background: 'rgba(46, 125, 140, 0.12)', color: '#2E7D8C' }}>
+                            <Palette size={18} />
+                        </div>
+                        <h2 className="narai-heading" style={{ fontSize: '20px', fontWeight: 700, color: 'hsl(var(--ink))', margin: 0 }}>
+                            Status to Color Mapping
+                        </h2>
+                    </div>
                     <button 
                         onClick={addMapping}
+                        className="glass-chip"
                         style={{
                             display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '8px 12px',
-                            backgroundColor: '#f8fafc',
-                            border: '1px solid #cbd5e1',
-                            borderRadius: '6px',
+                            padding: '7px 14px',
                             fontSize: '13px',
-                            fontWeight: 500,
+                            fontWeight: 600,
+                            color: 'hsl(var(--ink))',
                             cursor: 'pointer'
                         }}
                     >
-                        <Plus size={16} /> Add New
+                        <Plus size={15} /> Add New
                     </button>
                 </div>
                 
-                <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '20px', lineHeight: '1.5' }}>
+                <p style={{ fontSize: '13.5px', color: 'hsl(var(--ink-dim))', marginBottom: '20px', lineHeight: '1.5' }}>
                     Define how Excel status labels map to colors in the system. 
                     Labels are case-insensitive. If a label isn't found here, the system will try to read the color from Excel or default to black.
                 </p>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {mappings.map((m, idx) => {
                         const key = m.label.trim().toLowerCase();
-                        // A blank name, or one that repeats an earlier row, can't be stored
-                        // (the mapping is keyed by label) — flag it here so it's findable
-                        // without hunting through a long list after a failed save.
                         const isDuplicate = !!key && mappings.some((other, i) => i < idx && other.label.trim().toLowerCase() === key);
                         const hasProblem = !key || isDuplicate;
                         return (
@@ -222,55 +223,55 @@ export const StatusMappingSettings = () => {
                                     value={m.label}
                                     onChange={e => updateMapping(idx, 'label', e.target.value)}
                                     placeholder="Status Label (e.g. Done)"
-                                    style={hasProblem ? { ...inputStyle, borderColor: '#f87171', backgroundColor: '#fef2f2' } : inputStyle}
+                                    style={hasProblem ? { ...inputStyle, borderColor: '#C83E2B', backgroundColor: 'rgba(200, 62, 43, 0.06)' } : inputStyle}
                                     title={isDuplicate ? 'Another row already uses this name' : (!key ? 'This status needs a name' : undefined)}
                                 />
                             </div>
-                            <div style={{ display: 'flex', gap: '6px', backgroundColor: '#f8fafc', padding: '6px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                            <div style={{ display: 'flex', gap: '6px', backgroundColor: 'hsl(var(--paper-muted))', padding: '6px 8px', borderRadius: '10px', border: '1px solid hsl(var(--paper-edge))' }}>
                                 {presetColors.map(color => (
                                     <button
                                         key={color}
                                         onClick={() => updateMapping(idx, 'color', color)}
                                         style={{
-                                            width: '24px',
-                                            height: '24px',
-                                            borderRadius: '4px',
+                                            width: '22px',
+                                            height: '22px',
+                                            borderRadius: '50%',
                                             backgroundColor: color,
-                                            border: m.color === color ? '2px solid #0f172a' : '1px solid rgba(0,0,0,0.1)',
+                                            border: m.color === color ? '2px solid hsl(var(--ink))' : '1px solid rgba(0,0,0,0.12)',
                                             padding: 0,
                                             cursor: 'pointer'
                                         }}
                                         title={color}
                                     />
                                 ))}
-                                <div style={{ width: '1px', backgroundColor: '#cbd5e1', margin: '0 4px' }} />
+                                <div style={{ width: '1px', backgroundColor: 'hsl(var(--paper-edge))', margin: '0 4px' }} />
                                 <input 
                                     type="color" 
                                     value={m.color}
                                     onChange={e => updateMapping(idx, 'color', e.target.value)}
-                                    style={{ width: '24px', height: '24px', padding: 0, border: 'none', backgroundColor: 'transparent', cursor: 'pointer' }}
+                                    style={{ width: '22px', height: '22px', padding: 0, border: 'none', backgroundColor: 'transparent', cursor: 'pointer' }}
                                 />
                             </div>
                             <button 
                                 onClick={() => removeMapping(idx)}
                                 style={{
-                                    padding: '8px',
-                                    color: '#94a3b8',
+                                    padding: '6px',
+                                    color: 'hsl(var(--ink-soft))',
                                     background: 'none',
                                     border: 'none',
                                     cursor: 'pointer'
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                                onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                                onMouseEnter={e => e.currentTarget.style.color = '#C83E2B'}
+                                onMouseLeave={e => e.currentTarget.style.color = 'hsl(var(--ink-soft))'}
                             >
-                                <Trash2 size={18} />
+                                <Trash2 size={17} />
                             </button>
                         </div>
                         );
                     })}
 
                     {mappings.length === 0 && (
-                        <div style={{ padding: '32px', textAlign: 'center', color: '#94a3b8', border: '2px dashed #e2e8f0', borderRadius: '12px' }}>
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'hsl(var(--ink-soft))', border: '1px dashed hsl(var(--paper-edge))', borderRadius: '14px' }}>
                             No mappings defined. Click "Add New" to start.
                         </div>
                     )}
@@ -281,21 +282,18 @@ export const StatusMappingSettings = () => {
                 <button
                     onClick={handleSave}
                     disabled={saving}
+                    className="btn-solid"
                     style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
                         padding: '10px 24px',
-                        backgroundColor: '#6366f1',
-                        border: 'none',
-                        borderRadius: '6px',
-                        color: 'white',
+                        borderRadius: '999px',
                         fontWeight: 600,
                         cursor: saving ? 'not-allowed' : 'pointer',
-                        fontSize: '14px',
+                        fontSize: '13.5px',
                         opacity: saving ? 0.7 : 1,
-                        transition: 'background-color 0.2s'
                     }}
                 >
-                    <Save size={18} />
+                    <Save size={16} />
                     {saving ? 'Saving...' : 'Save Mappings'}
                 </button>
             </div>
@@ -305,10 +303,12 @@ export const StatusMappingSettings = () => {
 
 const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '8px 12px',
-    borderRadius: '6px',
-    border: '1px solid #cbd5e1',
-    fontSize: '14px',
+    padding: '9px 12px',
+    borderRadius: '10px',
+    border: '1px solid hsl(var(--paper-edge))',
+    backgroundColor: 'hsl(var(--paper-muted))',
+    color: 'hsl(var(--ink))',
+    fontSize: '13.5px',
     outline: 'none',
     boxSizing: 'border-box'
 };

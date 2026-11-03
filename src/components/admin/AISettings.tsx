@@ -89,31 +89,34 @@ export const AISettings = () => {
         <div style={{ maxWidth: '640px' }}>
             <div className="card-surface" style={{ padding: '28px' }}>
                 {/* Header + toggle */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{
-                            width: '36px', height: '36px', borderRadius: '28%',
-                            background: 'linear-gradient(135deg, #6b4cc3, #a855f7)',
-                            boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 14px -6px rgba(107, 76, 195, 0.7)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                            <Sparkles size={18} color="white" />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div
+                            className="admin-tile"
+                            style={{
+                                width: '38px',
+                                height: '38px',
+                                background: 'rgba(167, 100, 0, 0.14)',
+                                color: '#A76400',
+                            }}
+                        >
+                            <Sparkles size={18} />
                         </div>
-                        <h2 style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                        <h2 className="narai-heading" style={{ fontSize: '20px', fontWeight: 700, color: 'hsl(var(--ink))', margin: 0 }}>
                             AI Summary Feature
                         </h2>
                     </div>
 
                     {/* Toggle switch */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontSize: '13px', color: enabled ? '#6366f1' : '#94a3b8', fontWeight: 500 }}>
+                        <span style={{ fontSize: '13px', color: enabled ? '#2A4A12' : 'hsl(var(--ink-soft))', fontWeight: 600 }}>
                             {enabled ? 'Enabled' : 'Disabled'}
                         </span>
                         <div
                             onClick={handleToggle}
                             style={{
-                                width: '44px', height: '24px', borderRadius: '12px',
-                                backgroundColor: enabled ? '#6366f1' : '#e2e8f0',
+                                width: '44px', height: '24px', borderRadius: '999px',
+                                backgroundColor: enabled ? '#152A00' : 'hsl(var(--paper-edge))',
                                 position: 'relative', cursor: 'pointer',
                                 transition: 'background-color 0.2s ease',
                                 flexShrink: 0,
@@ -125,25 +128,25 @@ export const AISettings = () => {
                                 left: enabled ? '23px' : '3px',
                                 width: '18px', height: '18px',
                                 borderRadius: '50%',
-                                backgroundColor: 'white',
+                                backgroundColor: '#FFEFD2',
                                 boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                                 transition: 'left 0.2s ease',
                             }} />
                         </div>
                     </div>
                 </div>
-                <p style={{ fontSize: '13.5px', color: '#64748b', margin: '0 0 24px' }}>
+                <p style={{ fontSize: '13.5px', color: 'hsl(var(--ink-dim))', margin: '0 0 24px', lineHeight: 1.5 }}>
                     When enabled, the <strong>✦ AI Summary</strong> tab appears in all board views. The API key is stored securely and never exposed to the browser.
                 </p>
 
                 {/* Status badge */}
                 <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: '6px',
-                    fontSize: '13px',
-                    padding: '6px 12px', borderRadius: '20px', marginBottom: '20px',
-                    backgroundColor: hasExistingKey ? '#f0fdf4' : '#f8fafc',
-                    border: `1px solid ${hasExistingKey ? '#bbf7d0' : '#e2e8f0'}`,
-                    color: hasExistingKey ? '#16a34a' : '#94a3b8',
+                    fontSize: '12.5px', fontWeight: 600,
+                    padding: '6px 12px', borderRadius: '999px', marginBottom: '20px',
+                    backgroundColor: hasExistingKey ? 'rgba(42, 74, 18, 0.1)' : 'hsl(var(--paper-muted))',
+                    border: `1px solid ${hasExistingKey ? 'rgba(42, 74, 18, 0.28)' : 'hsl(var(--paper-edge))'}`,
+                    color: hasExistingKey ? '#2A4A12' : 'hsl(var(--ink-soft))',
                 }}>
                     {hasExistingKey
                         ? <><CheckCircle size={13} /> API key is saved</>
@@ -152,7 +155,7 @@ export const AISettings = () => {
 
                 {/* Key input */}
                 <div style={{ marginBottom: '20px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'hsl(var(--ink))', display: 'block', marginBottom: '6px' }}>
                         {hasExistingKey ? 'Replace API Key' : 'API Key'}
                     </label>
                     <div style={{ position: 'relative' }}>
@@ -163,11 +166,12 @@ export const AISettings = () => {
                             onKeyDown={e => e.key === 'Enter' && handleSave()}
                             placeholder={hasExistingKey ? 'Enter new key to replace current...' : 'AIza...'}
                             style={{
-                                width: '100%', padding: '10px 40px 10px 12px',
-                                border: '1px solid #e2e8f0', borderRadius: '8px',
+                                width: '100%', padding: '10px 40px 10px 14px',
+                                border: '1px solid hsl(var(--paper-edge))', borderRadius: '12px',
                                 fontSize: '14px', fontFamily: 'monospace',
                                 outline: 'none', boxSizing: 'border-box',
-                                backgroundColor: '#fafafa',
+                                backgroundColor: 'hsl(var(--paper-muted))',
+                                color: 'hsl(var(--ink))',
                             }}
                         />
                         <button
@@ -176,7 +180,7 @@ export const AISettings = () => {
                                 position: 'absolute', right: '10px', top: '50%',
                                 transform: 'translateY(-50%)',
                                 background: 'none', border: 'none', cursor: 'pointer',
-                                color: '#94a3b8', display: 'flex', padding: '2px',
+                                color: 'hsl(var(--ink-soft))', display: 'flex', padding: '2px',
                             }}
                         >
                             {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -189,11 +193,13 @@ export const AISettings = () => {
                     <button
                         onClick={handleSave}
                         disabled={!apiKey.trim() || saving}
+                        className={apiKey.trim() ? 'btn-solid' : ''}
                         style={{
-                            padding: '9px 20px', borderRadius: '8px',
-                            backgroundColor: apiKey.trim() ? '#6366f1' : '#e2e8f0',
-                            color: apiKey.trim() ? 'white' : '#94a3b8',
-                            border: 'none', fontSize: '14px', fontWeight: 600,
+                            padding: '9px 20px', borderRadius: '999px',
+                            backgroundColor: apiKey.trim() ? undefined : 'hsl(var(--paper-muted))',
+                            color: apiKey.trim() ? undefined : 'hsl(var(--ink-soft))',
+                            border: apiKey.trim() ? undefined : '1px solid hsl(var(--paper-edge))',
+                            fontSize: '13.5px', fontWeight: 600,
                             cursor: apiKey.trim() && !saving ? 'pointer' : 'not-allowed',
                         }}
                     >
@@ -203,14 +209,14 @@ export const AISettings = () => {
                     <button
                         onClick={handleTest}
                         disabled={!hasExistingKey || testing}
+                        className="glass-chip"
                         style={{
-                            padding: '9px 20px', borderRadius: '8px',
-                            backgroundColor: 'white',
-                            color: hasExistingKey ? '#374151' : '#94a3b8',
-                            border: '1px solid #e2e8f0',
-                            fontSize: '14px', fontWeight: 500,
+                            padding: '9px 18px',
+                            color: hasExistingKey ? 'hsl(var(--ink))' : 'hsl(var(--ink-soft))',
+                            fontSize: '13.5px', fontWeight: 600,
                             cursor: hasExistingKey && !testing ? 'pointer' : 'not-allowed',
                             display: 'flex', alignItems: 'center', gap: '6px',
+                            opacity: hasExistingKey ? 1 : 0.6,
                         }}
                     >
                         {testing
@@ -219,12 +225,12 @@ export const AISettings = () => {
                     </button>
 
                     {saveResult === 'success' && (
-                        <span style={{ fontSize: '13px', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontSize: '13px', color: '#2A4A12', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <CheckCircle size={14} /> Saved
                         </span>
                     )}
                     {saveResult === 'error' && (
-                        <span style={{ fontSize: '13px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ fontSize: '13px', color: '#C83E2B', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <XCircle size={14} /> Failed to save
                         </span>
                     )}
@@ -233,12 +239,12 @@ export const AISettings = () => {
                 {/* Test result */}
                 {testResult && (
                     <div style={{
-                        marginTop: '16px', padding: '12px 16px', borderRadius: '8px',
-                        backgroundColor: testResult.ok ? '#f0fdf4' : '#fef2f2',
-                        border: `1px solid ${testResult.ok ? '#bbf7d0' : '#fecaca'}`,
+                        marginTop: '16px', padding: '12px 16px', borderRadius: '12px',
+                        backgroundColor: testResult.ok ? 'rgba(42, 74, 18, 0.08)' : 'rgba(200, 62, 43, 0.08)',
+                        border: `1px solid ${testResult.ok ? 'rgba(42, 74, 18, 0.25)' : 'rgba(200, 62, 43, 0.25)'}`,
                         display: 'flex', alignItems: 'flex-start', gap: '8px',
                         fontSize: '13px',
-                        color: testResult.ok ? '#15803d' : '#dc2626',
+                        color: testResult.ok ? '#2A4A12' : '#C83E2B',
                     }}>
                         {testResult.ok
                             ? <CheckCircle size={16} style={{ flexShrink: 0, marginTop: '1px' }} />
@@ -248,7 +254,7 @@ export const AISettings = () => {
                 )}
             </div>
 
-            <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '10px' }}>
+            <p style={{ fontSize: '12px', color: 'hsl(var(--ink-soft))', marginTop: '10px' }}>
                 Get your API key at <strong>aistudio.google.com</strong> → Get API Key → Create API key in new project
             </p>
 

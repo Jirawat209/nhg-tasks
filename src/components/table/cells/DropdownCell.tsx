@@ -70,10 +70,12 @@ export const DropdownCell: React.FC<DropdownCellProps> = memo(({ itemId, column,
                             <div key={idx} style={{
                                 backgroundColor: tintLabel(opt?.color || '#a0c4ff'),
                                 color: LABEL_TEXT,
-                                padding: '2px 8px',
-                                borderRadius: '12px',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
                                 fontSize: '11px',
                                 fontWeight: 500,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.08em',
                                 whiteSpace: 'nowrap'
                             }}>
                                 {label}

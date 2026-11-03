@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { itemColumns } from '../../lib/columnScope';
-import { Search, Filter, ArrowUpDown, LayoutPanelLeft, ChevronDown, LayoutGrid, Eye, EyeOff, Link2 } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, LayoutPanelLeft, ChevronDown, LayoutGrid, Eye, EyeOff, Link2, Plus, Rows3, Rows4 } from 'lucide-react';
 import { useBoardStore } from '../../store/useBoardStore';
+import { useThemeStore } from '../../store/useThemeStore';
 import { createPortal } from 'react-dom';
 import { LinkGroupModal } from './LinkGroupModal';
+import { BoardViewsTabs } from './BoardViewsTabs';
 import { tintLabel, LABEL_TEXT } from '../../lib/labelTint';
 
 export const BoardViewsToolbar = () => {
@@ -18,12 +20,11 @@ export const BoardViewsToolbar = () => {
     const [showSortDropdown, setShowSortDropdown] = useState(false);
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
     const [showGroupByDropdown, setShowGroupByDropdown] = useState(false);
-    const [isSearchFocused, setIsSearchFocused] = useState(false);
-    
+
     const dropdownBtnRef = useRef<HTMLButtonElement>(null);
-    const sortBtnRef = useRef<HTMLDivElement>(null);
-    const filterBtnRef = useRef<HTMLDivElement>(null);
-    const groupByBtnRef = useRef<HTMLDivElement>(null);
+    const sortBtnRef = useRef<HTMLButtonElement>(null);
+    const filterBtnRef = useRef<HTMLButtonElement>(null);
+    const groupByBtnRef = useRef<HTMLButtonElement>(null);
 
     const handleAddItem = () => {
         if (activeBoardId && firstGroupId) {
@@ -66,163 +67,148 @@ export const BoardViewsToolbar = () => {
         useBoardStore.getState().setBoardFilters(activeBoardId, currentFilters);
     };
 
+    const searchQuery = useBoardStore(state => state.searchQuery);
+    const showHiddenItems = useBoardStore(state => state.showHiddenItems);
+    const density = useThemeStore(state => state.density);
+    const toggleDensity = useThemeStore(state => state.toggleDensity);
+    const activeFilterCount = useBoardStore(state =>
+        (state.boards.find(b => b.id === state.activeBoardId)?.filters || []).reduce((n, f) => n + f.values.length, 0)
+    );
+    const hasSort = useBoardStore(state => !!state.boards.find(b => b.id === state.activeBoardId)?.sort);
+    const hasGroupBy = useBoardStore(state => !!state.boards.find(b => b.id === state.activeBoardId)?.groupByColumnId);
+
+    // Menus open below their trigger, right-aligned when the trigger sits in
+    // the right half of the screen so they never run off the edge.
+    const menuPosition = (el: HTMLElement, width: number): React.CSSProperties => {
+        const r = el.getBoundingClientRect();
+        const left = Math.max(12, Math.min(r.left, window.innerWidth - width - 12));
+        return { position: 'fixed', top: r.bottom + 8, left };
+    };
+
     return (
         <>
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '8px 0', // Removed horizontal padding to align with container, adjusted vertical
-            marginTop: '16px', // Gap above toolbar
-            backgroundColor: 'hsl(var(--color-bg-canvas))',
-        }}>
-            {/* Toolbar Items: Primary Action & Tools */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{ display: 'flex', height: '32px', position: 'relative' }}>
-                    <button
-                        onClick={handleAddItem}
-                        style={{
-                            backgroundColor: 'hsl(var(--color-brand-primary))',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px 0 0 4px',
-                            padding: '0 12px',
-                            fontSize: '14px',
-                            fontWeight: 500,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            boxShadow: '0 2px 4px hsl(var(--color-brand-primary) / 0.15)'
-                        }}
-                    >
-                        New Item
-                    </button>
-                    <button 
-                        ref={dropdownBtnRef}
-                        onClick={() => setShowDropdown(!showDropdown)}
-                        style={{
-                            backgroundColor: 'hsl(var(--color-brand-primary))',
-                            color: 'white',
-                            border: 'none',
-                            borderLeft: '1px solid rgba(255,255,255,0.2)',
-                            borderRadius: '0 4px 4px 0',
-                            padding: '0 6px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <ChevronDown size={16} />
-                    </button>
-                    
-                    {showDropdown && dropdownBtnRef.current && createPortal(
-                        <>
-                            <div 
-                                style={{ position: 'fixed', inset: 0, zIndex: 9998 }} 
-                                onClick={() => setShowDropdown(false)} 
-                            />
-                            <div style={{
-                                position: 'fixed',
-                                top: dropdownBtnRef.current.getBoundingClientRect().top, // Align with top of button
-                                left: dropdownBtnRef.current.getBoundingClientRect().right + 8, // Position to the RIGHT
-                                backgroundColor: 'white',
-                                border: '1px solid hsl(var(--color-border))',
-                                borderRadius: '8px',
-                                padding: '8px 0',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                boxShadow: '4px 4px 16px rgba(0,0,0,0.15)', // Adjusted shadow for right position
-                                zIndex: 9999,
-                                width: '220px'
-                            }}>
-                                <div 
-                                    onClick={handleAddGroup}
-                                    style={dropdownItemStyle}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                >
-                                    <LayoutGrid size={16} />
-                                    <span>New group of items</span>
-                                </div>
-                                <div
-                                    onClick={handleOpenLinkGroup}
-                                    style={dropdownItemStyle}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                >
-                                    <Link2 size={16} />
-                                    <span>Link to other group</span>
-                                </div>
-                            </div>
-                        </>,
-                        document.body
-                    )}
-                </div>
+        <div className="cmd-bar">
+            <BoardViewsTabs />
 
-                <div 
-                    style={{ 
-                        ...toolbarItemStyle, 
-                        padding: '0 8px', 
-                        gap: '4px',
-                        border: isSearchFocused ? '1px solid hsl(var(--color-brand-primary))' : 'none',
-                        backgroundColor: isSearchFocused ? 'white' : 'transparent',
-                        boxShadow: isSearchFocused ? '0 0 0 2px rgba(var(--color-brand-primary-rgb), 0.1)' : 'none',
-                        transition: 'all 0.2s'
-                    }}
-                >
-                    <Search size={16} />
-                    <input
-                        type="text"
-                        placeholder="Search items..."
-                        value={useBoardStore(state => state.searchQuery)}
-                        onChange={(e) => useBoardStore.getState().setSearchQuery(e.target.value)}
-                        onFocus={() => setIsSearchFocused(true)}
-                        onBlur={() => setIsSearchFocused(false)}
-                        style={{
-                            border: 'none',
-                            background: 'none',
-                            outline: 'none',
-                            fontSize: '14px',
-                            color: 'hsl(var(--color-text-primary))',
-                            width: '100px',
-                            padding: '4px 0'
-                        }}
-                    />
-                </div>
-                
+            <div className="cmd-spacer" />
 
-                <div 
+            <label className="cmd-search glass-chip">
+                <Search size={15} />
+                <input
+                    type="text"
+                    placeholder="Search this board"
+                    aria-label="Search this board"
+                    value={searchQuery}
+                    onChange={(e) => useBoardStore.getState().setSearchQuery(e.target.value)}
+                />
+            </label>
+
+            <div className="cmd-tools glass-chip">
+                <button
                     ref={filterBtnRef}
-                    style={toolbarItemStyle}
+                    className={`cmd-tool${showFilterDropdown || activeFilterCount ? ' is-on' : ''}`}
                     onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                    title="Filter items"
                 >
-                    <Filter size={16} />
-                    <span>Filter</span>
-                    <ChevronDown size={14} />
-                </div>
+                    <Filter size={15} />
+                    Filter
+                    {activeFilterCount > 0 && <span className="cmd-tool-count">{activeFilterCount}</span>}
+                </button>
+                <button
+                    ref={sortBtnRef}
+                    className={`cmd-tool${showSortDropdown || hasSort ? ' is-on' : ''}`}
+                    onClick={() => setShowSortDropdown(!showSortDropdown)}
+                    title="Sort items"
+                >
+                    <ArrowUpDown size={15} />
+                    Sort
+                </button>
+                <button
+                    ref={groupByBtnRef}
+                    className={`cmd-tool${showGroupByDropdown || hasGroupBy ? ' is-on' : ''}`}
+                    onClick={() => setShowGroupByDropdown(!showGroupByDropdown)}
+                    title="Group items by a column"
+                >
+                    <LayoutPanelLeft size={15} />
+                    Group
+                </button>
+                <button
+                    className={`cmd-tool${showHiddenItems ? ' is-on' : ''}`}
+                    onClick={() => useBoardStore.getState().toggleShowHiddenItems()}
+                    title={showHiddenItems ? 'Hidden items are shown — click to hide them' : 'Show hidden items'}
+                >
+                    {showHiddenItems ? <Eye size={15} /> : <EyeOff size={15} />}
+                    Hidden
+                </button>
+                <button
+                    className={`cmd-tool${density === 'compact' ? ' is-on' : ''}`}
+                    onClick={toggleDensity}
+                    title={density === 'compact' ? 'Compact density is active — click for Normal' : 'Switch to Compact density'}
+                >
+                    {density === 'compact' ? <Rows4 size={15} /> : <Rows3 size={15} />}
+                    {density === 'compact' ? 'Compact' : 'Normal'}
+                </button>
+            </div>
+
+            <div className="cmd-add">
+                <button onClick={handleAddItem}>
+                    <Plus size={16} strokeWidth={2.4} />
+                    Add item
+                </button>
+                <button
+                    ref={dropdownBtnRef}
+                    className="cmd-add-more"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    aria-label="More ways to add"
+                    title="More ways to add"
+                >
+                    <ChevronDown size={16} />
+                </button>
+            </div>
+
+            {showDropdown && dropdownBtnRef.current && createPortal(
+                <>
+                    <div
+                        style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+                        onClick={() => setShowDropdown(false)}
+                    />
+                    <div className="glass-pop" style={{
+                        ...menuPosition(dropdownBtnRef.current, 240),
+                        padding: '6px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        zIndex: 9999,
+                        width: '240px'
+                    }}>
+                        <button className="menu-item" onClick={handleAddGroup}>
+                            <LayoutGrid size={15} />
+                            New group
+                        </button>
+                        <button className="menu-item" onClick={handleOpenLinkGroup}>
+                            <Link2 size={15} />
+                            Link to a group on another board
+                        </button>
+                    </div>
+                </>,
+                document.body
+            )}
 
                 {showFilterDropdown && filterBtnRef.current && activeBoardId && createPortal(
                     <>
-                        <div 
-                            style={{ position: 'fixed', inset: 0, zIndex: 9998 }} 
-                            onClick={() => setShowFilterDropdown(false)} 
+                        <div
+                            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+                            onClick={() => setShowFilterDropdown(false)}
                         />
-                        <div style={{
-                            position: 'fixed',
-                            top: filterBtnRef.current.getBoundingClientRect().bottom + 8,
-                            left: filterBtnRef.current.getBoundingClientRect().left,
-                            backgroundColor: 'white',
-                            border: '1px solid hsl(var(--color-border))',
-                            borderRadius: '8px',
-                            padding: '12px',
+                        <div className="glass-pop" style={{
+                            ...menuPosition(filterBtnRef.current, 300),
+                            padding: '14px',
                             display: 'flex',
                             flexDirection: 'column',
-                            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                             zIndex: 9999,
-                            width: '280px',
+                            width: '300px',
                             gap: '12px'
                         }}>
-                            <div style={{ fontSize: '12px', fontWeight: 600, color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase' }}>Filter by</div>
+                            <div style={{ fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.12em', color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase' }}>Filter by</div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto' }}>
                                 {/* Group Filters */}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -238,8 +224,8 @@ export const BoardViewsToolbar = () => {
                                                     key={group.id}
                                                     onClick={() => toggleFilter('__group__', group.id)}
                                                     style={{
-                                                        padding: '2px 8px',
-                                                        borderRadius: '12px',
+                                                        padding: '4px 10px',
+                                                        borderRadius: '999px',
                                                         fontSize: '11px',
                                                         border: 'none',
                                                         backgroundColor: isActive ? group.color : 'hsl(var(--color-bg-subtle))',
@@ -274,8 +260,8 @@ export const BoardViewsToolbar = () => {
                                                             key={val}
                                                             onClick={() => toggleFilter(col.id, val)}
                                                             style={{
-                                                                padding: '2px 8px',
-                                                                borderRadius: '12px',
+                                                                padding: '4px 10px',
+                                                                borderRadius: '999px',
                                                                 fontSize: '11px',
                                                                 border: 'none',
                                                                 backgroundColor: isActive ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-bg-subtle))',
@@ -299,8 +285,8 @@ export const BoardViewsToolbar = () => {
                                                         key={opt.id}
                                                         onClick={() => toggleFilter(col.id, val)}
                                                         style={{
-                                                            padding: '2px 8px',
-                                                            borderRadius: '12px',
+                                                            padding: '4px 10px',
+                                                            borderRadius: '999px',
                                                             fontSize: '11px',
                                                             border: 'none',
                                                             backgroundColor: isActive ? tintLabel(opt.color) : 'hsl(var(--color-bg-subtle))',
@@ -317,18 +303,10 @@ export const BoardViewsToolbar = () => {
                                     </div>
                                 ))}
                             </div>
-                            <button 
+                            <button
+                                className="menu-item"
                                 onClick={() => activeBoardId && useBoardStore.getState().setBoardFilters(activeBoardId, [])}
-                                style={{
-                                    marginTop: '8px',
-                                    padding: '6px',
-                                    fontSize: '12px',
-                                    color: 'hsl(var(--color-brand-primary))',
-                                    border: 'none',
-                                    background: 'none',
-                                    cursor: 'pointer',
-                                    textAlign: 'left'
-                                }}
+                                style={{ color: 'hsl(var(--color-text-secondary))', padding: '6px 4px', fontSize: '12.5px' }}
                             >
                                 Clear all filters
                             </button>
@@ -337,175 +315,103 @@ export const BoardViewsToolbar = () => {
                     document.body
                 )}
 
-                <div 
-                    ref={sortBtnRef}
-                    style={toolbarItemStyle}
-                    onClick={() => setShowSortDropdown(!showSortDropdown)}
-                >
-                    <ArrowUpDown size={16} />
-                    <span>Sort</span>
-                </div>
-
                 {showSortDropdown && sortBtnRef.current && activeBoardId && createPortal(
                     <>
-                        <div 
-                            style={{ position: 'fixed', inset: 0, zIndex: 9998 }} 
-                            onClick={() => setShowSortDropdown(false)} 
+                        <div
+                            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+                            onClick={() => setShowSortDropdown(false)}
                         />
-                        <div style={{
-                            position: 'fixed',
-                            top: sortBtnRef.current.getBoundingClientRect().bottom + 8,
-                            left: sortBtnRef.current.getBoundingClientRect().left,
-                            backgroundColor: 'white',
-                            border: '1px solid hsl(var(--color-border))',
-                            borderRadius: '8px',
-                            padding: '8px 0',
+                        <div className="glass-pop" style={{
+                            ...menuPosition(sortBtnRef.current, 220),
+                            padding: '6px',
                             display: 'flex',
                             flexDirection: 'column',
-                            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                             zIndex: 9999,
-                            width: '200px'
+                            width: '220px'
                         }}>
-                            <div style={{ padding: '8px 16px', fontSize: '11px', fontWeight: 600, color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase' }}>Sort by</div>
-                            <div 
+                            <div className="menu-label">Sort by</div>
+                            <button
+                                className="menu-item"
                                 onClick={() => {
                                     useBoardStore.getState().setSort(activeBoardId, null);
                                     setShowSortDropdown(false);
                                 }}
-                                style={dropdownItemStyle}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                             >
-                                <span style={{ fontSize: '13px' }}>None</span>
-                            </div>
-                            {itemColumns(useBoardStore.getState().boards.find(b => b.id === activeBoardId)?.columns || []).map(col => (
-                                <div 
-                                    key={col.id}
-                                    onClick={() => {
-                                        const board = useBoardStore.getState().boards.find(b => b.id === activeBoardId);
-                                        const currentSort = board?.sort;
-                                        const nextDirection = (currentSort?.columnId === col.id && currentSort.direction === 'asc') ? 'desc' : 'asc';
-                                        useBoardStore.getState().setSort(activeBoardId, { columnId: col.id, direction: nextDirection });
-                                        setShowSortDropdown(false);
-                                    }}
-                                    style={dropdownItemStyle}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                >
-                                    <span style={{ fontSize: '13px' }}>{col.title}</span>
-                                    {useBoardStore.getState().boards.find(b => b.id === activeBoardId)?.sort?.columnId === col.id && (
-                                        <span style={{ fontSize: '10px', marginLeft: 'auto', opacity: 0.6 }}>
-                                            {useBoardStore.getState().boards.find(b => b.id === activeBoardId)?.sort?.direction === 'asc' ? 'ASC' : 'DESC'}
-                                        </span>
-                                    )}
-                                </div>
-                            ))}
+                                No sorting
+                            </button>
+                            {itemColumns(useBoardStore.getState().boards.find(b => b.id === activeBoardId)?.columns || []).map(col => {
+                                const currentSort = useBoardStore.getState().boards.find(b => b.id === activeBoardId)?.sort;
+                                return (
+                                    <button
+                                        key={col.id}
+                                        className="menu-item"
+                                        onClick={() => {
+                                            const nextDirection = (currentSort?.columnId === col.id && currentSort.direction === 'asc') ? 'desc' : 'asc';
+                                            useBoardStore.getState().setSort(activeBoardId, { columnId: col.id, direction: nextDirection });
+                                            setShowSortDropdown(false);
+                                        }}
+                                    >
+                                        {col.title}
+                                        {currentSort?.columnId === col.id && (
+                                            <span style={{ fontSize: '10px', marginLeft: 'auto', letterSpacing: '0.1em', color: 'hsl(var(--color-text-tertiary))' }}>
+                                                {currentSort.direction === 'asc' ? 'A → Z' : 'Z → A'}
+                                            </span>
+                                        )}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </>,
                     document.body
                 )}
 
-                <div 
-                    ref={groupByBtnRef}
-                    style={toolbarItemStyle}
-                    onClick={() => setShowGroupByDropdown(!showGroupByDropdown)}
-                >
-                    <LayoutPanelLeft size={16} />
-                    <span>Group by</span>
-                </div>
-
                 {showGroupByDropdown && groupByBtnRef.current && activeBoardId && createPortal(
                     <>
-                        <div 
-                            style={{ position: 'fixed', inset: 0, zIndex: 9998 }} 
-                            onClick={() => setShowGroupByDropdown(false)} 
+                        <div
+                            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+                            onClick={() => setShowGroupByDropdown(false)}
                         />
-                        <div style={{
-                            position: 'fixed',
-                            top: groupByBtnRef.current.getBoundingClientRect().bottom + 8,
-                            left: groupByBtnRef.current.getBoundingClientRect().left,
-                            backgroundColor: 'white',
-                            border: '1px solid hsl(var(--color-border))',
-                            borderRadius: '8px',
-                            padding: '8px 0',
+                        <div className="glass-pop" style={{
+                            ...menuPosition(groupByBtnRef.current, 220),
+                            padding: '6px',
                             display: 'flex',
                             flexDirection: 'column',
-                            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                             zIndex: 9999,
-                            width: '200px'
+                            width: '220px'
                         }}>
-                            <div style={{ padding: '8px 16px', fontSize: '11px', fontWeight: 600, color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase' }}>Group by</div>
-                            <div 
+                            <div className="menu-label">Group by</div>
+                            <button
+                                className="menu-item"
                                 onClick={() => {
                                     useBoardStore.getState().setBoardGroupBy(activeBoardId, null);
                                     setShowGroupByDropdown(false);
                                 }}
-                                style={dropdownItemStyle}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                             >
-                                <span style={{ fontSize: '13px' }}>Default (Groups)</span>
-                            </div>
+                                Board groups (default)
+                            </button>
                             {itemColumns(useBoardStore.getState().boards.find(b => b.id === activeBoardId)?.columns || []).filter(c => ['status', 'dropdown', 'people'].includes(c.type)).map(col => (
-                                <div 
+                                <button
                                     key={col.id}
+                                    className="menu-item"
                                     onClick={() => {
                                         useBoardStore.getState().setBoardGroupBy(activeBoardId, col.id);
                                         setShowGroupByDropdown(false);
                                     }}
-                                    style={dropdownItemStyle}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                 >
-                                    <span style={{ fontSize: '13px' }}>{col.title}</span>
+                                    {col.title}
                                     {useBoardStore.getState().boards.find(b => b.id === activeBoardId)?.groupByColumnId === col.id && (
-                                        <span style={{ fontSize: '10px', marginLeft: 'auto', color: 'hsl(var(--color-brand-primary))' }}>●</span>
+                                        <span style={{ width: 7, height: 7, borderRadius: '50%', marginLeft: 'auto', background: 'hsl(var(--color-brand-primary))' }} />
                                     )}
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </>,
                     document.body
                 )}
-
-                <div 
-                    style={toolbarItemStyle}
-                    onClick={() => useBoardStore.getState().toggleShowHiddenItems()}
-                >
-                    {useBoardStore(state => state.showHiddenItems) ? <Eye size={16} /> : <EyeOff size={16} />}
-                    <span>Hide</span>
-                </div>
-            </div>
-
-            {/* Right Side: Empty */}
-            <div />
         </div>
         {showLinkGroupModal && (
             <LinkGroupModal onClose={() => setShowLinkGroupModal(false)} />
         )}
         </>
     );
-};
-
-const toolbarItemStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    fontSize: '14px',
-    color: 'hsl(var(--color-text-secondary))',
-    cursor: 'pointer',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    transition: 'background-color 0.2s',
-};
-
-const dropdownItemStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '10px 16px',
-    fontSize: '14px',
-    color: 'hsl(var(--color-text-primary))',
-    cursor: 'pointer',
-    transition: 'background-color 0.1s',
 };

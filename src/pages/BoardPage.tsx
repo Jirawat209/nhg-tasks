@@ -89,24 +89,24 @@ export const BoardPage = () => {
     const activeViewId = shownViewId(activeBoard.activeViewId, aiEnabled);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', backgroundColor: 'hsl(var(--color-bg-canvas))' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
             <BoardHeader boardId={activeBoardId} />
-            
-            <div style={{ 
-                flex: 1, 
-                display: 'flex', 
-                flexDirection: 'column', 
+
+            <div className="board-page-body" style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
                 overflow: 'hidden',
-                padding: '0 var(--spacing-board-x) var(--spacing-board-y) var(--spacing-board-x)'
+                padding: '0 24px var(--spacing-board-y) 24px'
             }}>
                 <BoardViewsToolbar />
                 
                 {/* Room round the view for its sheet's shadow (styles/cards.css .board-sheet):
                     padded out by as much as the negative margin takes back, so the view
                     keeps the size and place it had. */}
-                <div style={{
+                <div className="board-page-view" style={{
                     flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column',
-                    margin: '16px -12px calc(-1 * var(--spacing-board-y))',
+                    margin: '10px -12px calc(-1 * var(--spacing-board-y))',
                     padding: '0 12px var(--spacing-board-y)'
                 }}>
                     {activeViewId === 'main_table' ? (

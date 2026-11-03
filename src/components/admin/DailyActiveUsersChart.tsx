@@ -41,7 +41,6 @@ export const DailyActiveUsersChart = () => {
             days.push(d);
         }
 
-        // Who was active each day, already worked out in the database.
         const { daily } = await fetchDashboardStats();
         const usersByDay = new Map(daily.map(entry => [entry.day, entry.users]));
 
@@ -71,32 +70,37 @@ export const DailyActiveUsersChart = () => {
     }, [buckets]);
 
     return (
-        <div className="card-surface" style={{ padding: '24px', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div className="admin-tile" style={{ width: '36px', height: '36px', '--tile-color': '#6366f1' } as React.CSSProperties}>
-                        <Activity size={18} color="#6366f1" />
+        <div className="card-surface" style={{ padding: '22px 24px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div className="admin-tile" style={{ width: '38px', height: '38px', '--tile-color': '#2A4A12' } as React.CSSProperties}>
+                        <Activity size={18} />
                     </div>
                     <div>
-                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>
+                        <h3 className="narai-heading" style={{
+                            margin: 0,
+                            fontFamily: 'var(--font-family-display)',
+                            fontSize: '18px',
+                            fontWeight: 600,
+                            color: 'hsl(var(--color-text-primary))'
+                        }}>
                             Daily Active Users (Last 30 Days)
                         </h3>
-                        <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
-                            Based on recorded activity, including logins · {totalActive30d} unique users in this period
+                        <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: 'hsl(var(--color-text-secondary))' }}>
+                            Based on recorded activity, including logins · <strong>{totalActive30d}</strong> unique users in this period
                         </p>
                     </div>
                 </div>
             </div>
 
             {loading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', fontSize: '13.5px' }}>Loading chart…</div>
             ) : (
-                <div style={{ position: 'relative', marginTop: '12px' }}>
+                <div style={{ position: 'relative', marginTop: '14px' }}>
                     <svg
                         viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
                         style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}
                     >
-                        {/* Gridlines + y-axis labels */}
                         {yTicks.map(tick => {
                             const y = PADDING_TOP + plotHeight - (tick / yTicks[yTicks.length - 1]) * plotHeight;
                             return (
@@ -104,16 +108,15 @@ export const DailyActiveUsersChart = () => {
                                     <line
                                         x1={PADDING_LEFT} x2={CHART_WIDTH}
                                         y1={y} y2={y}
-                                        stroke="#e2e8f0" strokeWidth={1}
+                                        stroke="rgba(21, 42, 0, 0.08)" strokeWidth={1}
                                     />
-                                    <text x={PADDING_LEFT - 8} y={y + 4} textAnchor="end" fontSize="11" fill="#94a3b8">
+                                    <text x={PADDING_LEFT - 8} y={y + 4} textAnchor="end" fontSize="11" fill="hsl(var(--color-text-tertiary))">
                                         {tick}
                                     </text>
                                 </g>
                             );
                         })}
 
-                        {/* Bars */}
                         {buckets.map((bucket, i) => {
                             const x = PADDING_LEFT + i * colWidth + (colWidth - barWidth) / 2;
                             const scaledHeight = (bucket.count / yTicks[yTicks.length - 1]) * plotHeight;
@@ -124,7 +127,6 @@ export const DailyActiveUsersChart = () => {
 
                             return (
                                 <g key={bucket.key}>
-                                    {/* Wider transparent hit target covering the full column */}
                                     <rect
                                         x={PADDING_LEFT + i * colWidth}
                                         y={PADDING_TOP}
@@ -141,9 +143,9 @@ export const DailyActiveUsersChart = () => {
                                     <rect
                                         x={x} y={y}
                                         width={barWidth} height={barHeight}
-                                        rx={4} ry={4}
-                                        fill={bucket.count > 0 ? '#6366f1' : '#e2e8f0'}
-                                        opacity={isHovered ? 1 : bucket.count > 0 ? 0.9 : 1}
+                                        rx={5} ry={5}
+                                        fill={bucket.count > 0 ? '#2A4A12' : 'rgba(21, 42, 0, 0.08)'}
+                                        opacity={isHovered ? 1 : bucket.count > 0 ? 0.88 : 1}
                                         style={{ transition: 'opacity 0.15s', pointerEvents: 'none' }}
                                     />
                                     {showLabel && (
@@ -152,7 +154,7 @@ export const DailyActiveUsersChart = () => {
                                             y={CHART_HEIGHT - 6}
                                             textAnchor="middle"
                                             fontSize="10"
-                                            fill="#94a3b8"
+                                            fill="hsl(var(--color-text-tertiary))"
                                         >
                                             {bucket.label}
                                         </text>
@@ -162,12 +164,9 @@ export const DailyActiveUsersChart = () => {
                         })}
                     </svg>
 
-                    {/* Tooltip */}
                     {hoverIndex !== null && buckets[hoverIndex] && (() => {
                         const bucket = buckets[hoverIndex];
                         const posRatio = hoverIndex / (buckets.length - 1);
-                        // Clamp near the edges so the tooltip never overflows the card:
-                        // anchor to the bar's left/right edge instead of centering on it.
                         let leftPct: number;
                         let translateX: string;
                         if (posRatio < 0.12) {
@@ -186,30 +185,30 @@ export const DailyActiveUsersChart = () => {
                                 left: `${leftPct}%`,
                                 top: '0px',
                                 transform: `translate(${translateX}, -100%)`,
-                                backgroundColor: '#0f172a',
-                                color: 'white',
-                                borderRadius: '8px',
-                                padding: '10px 12px',
+                                backgroundColor: '#152A00',
+                                color: '#FFEFD2',
+                                borderRadius: '12px',
+                                padding: '10px 14px',
                                 fontSize: '12px',
                                 minWidth: '160px',
                                 maxWidth: '220px',
-                                boxShadow: '0 8px 20px rgba(0,0,0,0.25)',
+                                boxShadow: '0 12px 24px -8px rgba(21, 42, 0, 0.45)',
                                 zIndex: 10,
                                 pointerEvents: 'none'
                             }}>
                                 <div style={{ fontWeight: 600, marginBottom: '2px' }}>{bucket.fullLabel}</div>
-                                <div style={{ fontSize: '13px', fontWeight: 700, color: '#a5b4fc', marginBottom: bucket.users.length ? '6px' : 0 }}>
+                                <div style={{ fontSize: '13px', fontWeight: 700, color: '#E1FFB3', marginBottom: bucket.users.length ? '6px' : 0 }}>
                                     {bucket.count} active {bucket.count === 1 ? 'user' : 'users'}
                                 </div>
                                 {bucket.users.length > 0 && (
                                     <div style={{ maxHeight: '140px', overflowY: 'auto' }}>
                                         {bucket.users.slice(0, 10).map((u, idx) => (
-                                            <div key={idx} style={{ color: '#e2e8f0', fontSize: '11px', lineHeight: '1.6' }}>
+                                            <div key={idx} style={{ color: 'rgba(255, 239, 210, 0.86)', fontSize: '11px', lineHeight: '1.6' }}>
                                                 {u.name}
                                             </div>
                                         ))}
                                         {bucket.users.length > 10 && (
-                                            <div style={{ color: '#94a3b8', fontSize: '11px', marginTop: '2px' }}>
+                                            <div style={{ color: 'rgba(255, 239, 210, 0.6)', fontSize: '11px', marginTop: '2px' }}>
                                                 +{bucket.users.length - 10} more
                                             </div>
                                         )}

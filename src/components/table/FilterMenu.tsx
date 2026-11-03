@@ -51,7 +51,7 @@ export const FilterMenu = ({
     // So effective checked state for all options is TRUE.
 
     const toggleOption = (id: string) => {
-        let newValues = [];
+        let newValues: string[] = [];
         if (!isFiltered) {
             // Currently "All" are effectively selected.
             // If we click one, we are deselecting it?
@@ -122,26 +122,24 @@ export const FilterMenu = ({
     return createPortal(
         <div
             ref={menuRef}
+            className="glass-pop"
             style={{
                 position: 'fixed',
                 top: position.top,
                 left: position.left,
-                backgroundColor: 'hsl(var(--color-bg-surface))',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                border: '1px solid hsl(var(--color-border))',
+                borderRadius: '16px',
                 zIndex: 9999,
                 width: '260px',
                 maxHeight: '400px',
                 display: 'flex',
                 flexDirection: 'column',
                 color: 'hsl(var(--color-text-primary))',
-                fontSize: '14px',
+                fontSize: '13.5px',
                 overflow: 'hidden'
             }}
         >
-            <div style={{ padding: '8px 12px', borderBottom: '1px solid hsl(var(--color-border))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'hsl(var(--color-bg-subtle))' }}>
-                <span style={{ fontWeight: 500 }}>Filter {title}</span>
+            <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: 'var(--font-family-display)', fontSize: '15px', fontWeight: 600 }}>Filter {title}</span>
                 <button onClick={onClose} className="icon-btn" style={{ padding: 4 }}><X size={14} /></button>
             </div>
 
@@ -149,13 +147,13 @@ export const FilterMenu = ({
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    padding: '4px 8px',
-                    background: 'hsl(var(--color-bg-canvas))',
-                    borderRadius: '4px',
+                    padding: '5px 10px',
+                    background: 'hsl(var(--paper, var(--color-bg-canvas)))',
+                    borderRadius: '999px',
                     marginBottom: '8px',
-                    border: '1px solid hsl(var(--color-border))'
+                    border: '1px solid var(--paper-edge, hsl(var(--color-border)))'
                 }}>
-                    <Search size={14} style={{ color: 'hsl(var(--color-text-secondary))', marginRight: '6px' }} />
+                    <Search size={13} style={{ color: 'hsl(var(--color-text-tertiary))', marginRight: '6px' }} />
                     <input
                         type="text"
                         placeholder="Search..."
@@ -166,7 +164,7 @@ export const FilterMenu = ({
                             background: 'transparent',
                             outline: 'none',
                             width: '100%',
-                            fontSize: '13px',
+                            fontSize: '12.5px',
                             color: 'hsl(var(--color-text-primary))'
                         }}
                     />
@@ -175,16 +173,16 @@ export const FilterMenu = ({
                 <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
                     <div
                         onClick={toggleSelectAll}
-                        style={{ display: 'flex', alignItems: 'center', padding: '6px 4px', cursor: 'pointer', borderRadius: '4px' }}
+                        style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', cursor: 'pointer', borderRadius: '8px' }}
                         className="hover-bg"
                     >
                         <input
                             type="checkbox"
                             checked={!isFiltered}
                             readOnly
-                            style={{ marginRight: '8px' }}
+                            style={{ marginRight: '8px', accentColor: 'hsl(var(--color-brand-primary))' }}
                         />
-                        <span style={{ fontWeight: 500 }}>Select All</span>
+                        <span style={{ fontWeight: 600 }}>Select All</span>
                     </div>
 
                     {filteredOptions.map(opt => {
@@ -193,17 +191,17 @@ export const FilterMenu = ({
                             <div
                                 key={opt.id}
                                 onClick={() => toggleOption(opt.id)}
-                                style={{ display: 'flex', alignItems: 'center', padding: '6px 4px', cursor: 'pointer', borderRadius: '4px' }}
+                                style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', cursor: 'pointer', borderRadius: '8px' }}
                                 className="hover-bg"
                             >
                                 <input
                                     type="checkbox"
                                     checked={isChecked}
                                     onChange={() => { }} // handled by div click
-                                    style={{ marginRight: '8px', cursor: 'pointer' }}
+                                    style={{ marginRight: '8px', cursor: 'pointer', accentColor: 'hsl(var(--color-brand-primary))' }}
                                 />
                                 {opt.color && (
-                                    <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: tintLabel(opt.color), marginRight: 8 }} />
+                                    <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: tintLabel(opt.color), marginRight: 8 }} />
                                 )}
                                 <span>{opt.label}</span>
                             </div>
@@ -217,7 +215,7 @@ export const FilterMenu = ({
                     )}
                 </div>
                 <style>{`
-                    .hover-bg:hover { background-color: hsl(var(--color-bg-surface-hover)) !important; }
+                    .hover-bg:hover { background-color: hsl(var(--color-text-primary) / 0.06) !important; }
                 `}</style>
             </div>
         </div>,

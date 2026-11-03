@@ -1,0 +1,108 @@
+/*
+ * Narai core chrome — Phase 1 of the brand rework (see CLAUDE.md / project
+ * notes for the full plan). Narai is now the app's default palette (bare
+ * :root in variables.css), so these rules are unscoped by palette attribute
+ * — they ARE the default look. The legacy "Saturday" violet palette
+ * (:root[data-palette='saturday']) is untouched by anything in this file.
+ *
+ * Most of the app styles itself inline rather than through classes, so (as
+ * the retired narai_crystal.css did before it) some rules here reach inline
+ * styles by their literal attribute value. This is deliberately scoped to
+ * global chrome only — primary/secondary buttons, form fields, the app
+ * shell, workspace badges. Board/table/kanban/admin internals are a later
+ * phase.
+ */
+
+/* ── Primary buttons: Narai Green background pairs with Galangal text, not
+   white — the live brand's own buttons do exactly this. Catches both the
+   named .confirm-btn-primary class and the many inline-styled "primary
+   button" instances across the app (background-color: hsl(var(--color-
+   brand-primary)) + color: white), without touching each call site. ── */
+.confirm-btn-primary {
+    color: #FFEFD2 !important;
+    box-shadow: none !important;
+    border-radius: var(--radius-sm) !important;
+}
+.confirm-btn-primary:hover {
+    box-shadow: 0 2px 6px rgba(21, 42, 0, 0.18) !important;
+}
+
+button[style*="background-color: hsl(var(--color-brand-primary))"][style*="color: white"],
+button[style*="background-color: hsl(var(--color-brand-primary))"][style*="color: #fff"],
+button[style*="background-color: hsl(var(--color-brand-primary))"][style*="color: #ffffff"],
+button[style*="background-color: var(--color-action"][style*="color: white"] {
+    color: #FFEFD2 !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+/* ── Secondary buttons: transparent + 1px solid Narai Green, per brand ── */
+button[style*="border: 1px solid hsl(var(--color-brand-primary))"],
+button[style*="border: 1px solid var(--color-action"] {
+    border-radius: var(--radius-sm) !important;
+}
+
+/* ── Form fields: hairline border, sharp-ish corners (brand is flat, not
+   the heavily-rounded 8-12px pills elsewhere in the app) ── */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea {
+    border-radius: var(--radius-sm) !important;
+}
+
+/* ── App shell: a hairline edge on the floating main panel instead of
+   relying on shadow alone (App.tsx sets the shadow inline; this adds the
+   brand's hairline without touching that inline style) ── */
+.app-main {
+    border: 1px solid hsl(var(--color-border));
+}
+
+.sidebar {
+    border-right: 1px solid hsl(var(--color-border));
+}
+
+/* ── Workspace badge tiles: Galangal text on the active (Narai Green) tile,
+   matching the brand's button pairing ── */
+[data-ws-badge][data-ws-active='true'] {
+    color: #FFEFD2 !important;
+}
+
+/* ── Icon weight consistency (HIG-style, brand-neutral — kept from the
+   retired crystal stylesheet since it's independent of glass vs. flat) ── */
+:is(svg.lucide, svg[stroke='currentColor'])[width='10'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='11'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='12'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='13'] {
+    stroke-width: 2.25;
+}
+:is(svg.lucide, svg[stroke='currentColor'])[width='14'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='15'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='16'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='17'] {
+    stroke-width: 2.1;
+}
+:is(svg.lucide, svg[stroke='currentColor'])[width='18'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='19'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='20'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='21'],
+:is(svg.lucide, svg[stroke='currentColor'])[width='22'] {
+    stroke-width: 1.95;
+}
+
+/* A rounded-square badge/avatar/logo tile reads as a squircle where the
+   browser can draw one; elsewhere it keeps its plain rounded corner. */
+@supports (corner-shape: squircle) {
+    :is([style*="border-radius: 28%"], [data-ws-badge]) {
+        corner-shape: squircle;
+    }
+}
+
+/* ── Display type on page/section headings only — see src/styles/fonts.css
+   for the @font-face rules and src/pages/*.tsx for where this class is
+   applied. Never on table/kanban cell text, nav items, buttons or inputs. ── */
+.narai-heading {
+    font-family: var(--font-family-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}

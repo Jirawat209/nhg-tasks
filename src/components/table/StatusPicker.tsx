@@ -113,38 +113,20 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
         return createPortal(
             <div
                 ref={menuRef}
+                className="glass-pop"
                 style={{
                     position: 'fixed',
                     top: topPos,
                     left: position.left - (280 - position.width) / 2, // Wider for edit mode
                     width: '280px',
-                    backgroundColor: 'white',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    borderRadius: '16px',
                     zIndex: 9999,
                     padding: '16px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '12px',
-                    border: '1px solid hsl(var(--color-border))'
+                    gap: '12px'
                 }}
             >
-                {/* Pointer triangle */}
-                <div style={{
-                    position: 'absolute',
-                    top: shouldShowAbove ? 'auto' : '-6px',
-                    bottom: shouldShowAbove ? '-6px' : 'auto',
-                    left: '50%',
-                    transform: 'translateX(-50%) rotate(45deg)',
-                    width: '12px',
-                    height: '12px',
-                    backgroundColor: 'white',
-                    borderLeft: shouldShowAbove ? 'none' : '1px solid hsl(var(--color-border))',
-                    borderTop: shouldShowAbove ? 'none' : '1px solid hsl(var(--color-border))',
-                    borderRight: shouldShowAbove ? '1px solid hsl(var(--color-border))' : 'none',
-                    borderBottom: shouldShowAbove ? '1px solid hsl(var(--color-border))' : 'none',
-                }} />
-
                 {/* Scrolls rather than overflowing: with `overflow: visible` a long
                     label list spilled past this 300px box and painted straight over
                     the "New label" button below, so the button was both invisible
@@ -156,7 +138,7 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                                 width: '24px',
                                 height: '24px',
                                 backgroundColor: tintLabel(opt.color),
-                                borderRadius: '4px',
+                                borderRadius: '6px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -187,19 +169,19 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                                 }}
                                 style={{
                                     flex: 1,
-                                    border: '1px solid hsl(var(--color-border))',
-                                    borderRadius: '4px',
-                                    padding: '4px 8px',
+                                    border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                    borderRadius: '8px',
+                                    padding: '5px 8px',
                                     outline: 'none',
                                     fontSize: '13px',
-                                    backgroundColor: 'white',
-                                    color: '#323338'
+                                    backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                                    color: 'hsl(var(--color-text-primary))'
                                 }}
                             />
 
                             <button
                                 onClick={() => deleteColumnOption(columnId, opt.id)}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#676879', padding: '4px' }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--color-text-tertiary))', padding: '4px' }}
                                 title="Delete Label"
                             >
                                 <Trash2 size={14} />
@@ -215,11 +197,12 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '6px',
-                        backgroundColor: 'white',
-                        border: '1px solid hsl(var(--color-border))',
-                        borderRadius: '4px',
+                        backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                        border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                        borderRadius: '8px',
                         padding: '6px',
                         fontSize: '13px',
+                        fontWeight: 500,
                         cursor: 'pointer',
                         color: 'hsl(var(--color-text-primary))'
                     }}
@@ -234,16 +217,16 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                         style={{
                             backgroundColor: 'hsl(var(--color-brand-primary))',
                             border: 'none',
-                            borderRadius: '4px',
-                            fontSize: '14px',
-                            fontWeight: 500,
-                            padding: '8px 24px',
+                            borderRadius: '999px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            padding: '7px 24px',
                             cursor: 'pointer',
-                            color: 'white',
-                            transition: 'background-color 0.2s',
+                            color: '#FFEFD2',
+                            transition: 'opacity 0.15s',
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-brand-hover))'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-brand-primary))'}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                     >
                         Apply
                     </button>
@@ -252,18 +235,16 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                 {colorPicker && createPortal(
                     <div
                         ref={colorPaletteRef}
+                        className="glass-pop"
                         style={{
                             position: 'fixed',
                             top: colorPicker.top,
                             left: colorPicker.left,
-                            backgroundColor: 'white',
-                            border: '1px solid hsl(var(--color-border))',
-                            borderRadius: '6px',
-                            padding: '8px',
+                            borderRadius: '12px',
+                            padding: '10px',
                             display: 'grid',
                             gridTemplateColumns: 'repeat(10, 1fr)',
-                            gap: '4px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            gap: '5px',
                             zIndex: 10000,
                             width: '252px'
                         }}
@@ -281,9 +262,9 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                                         width: '18px',
                                         height: '18px',
                                         backgroundColor: tintLabel(c),
-                                        borderRadius: '3px',
+                                        borderRadius: '4px',
                                         cursor: 'pointer',
-                                        border: opt?.color === c ? '2px solid #333' : '1px solid rgba(0,0,0,0.1)'
+                                        border: opt?.color === c ? '2px solid hsl(var(--color-text-primary))' : '1px solid rgba(21, 42, 0, 0.12)'
                                     }}
                                 />
                             ));
@@ -300,38 +281,20 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
     return createPortal(
         <div
             ref={menuRef}
+            className="glass-pop"
             style={{
                 position: 'fixed',
                 top: topPos,
                 left: position.left - (340 - position.width) / 2,
                 width: '340px',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
+                borderRadius: '16px',
                 zIndex: 9999,
                 display: 'flex',
                 flexDirection: 'column',
-                border: '1px solid #e1e1e1',
                 overflow: 'hidden'
             }}
         >
-            {/* Pointer triangle */}
-            <div style={{
-                position: 'absolute',
-                top: shouldShowAbove ? 'auto' : '-6px',
-                bottom: shouldShowAbove ? '-6px' : 'auto',
-                left: '50%',
-                transform: 'translateX(-50%) rotate(45deg)',
-                width: '12px',
-                height: '12px',
-                backgroundColor: 'white',
-                borderLeft: shouldShowAbove ? 'none' : '1px solid #e1e1e1',
-                borderTop: shouldShowAbove ? 'none' : '1px solid #e1e1e1',
-                borderRight: shouldShowAbove ? '1px solid #e1e1e1' : 'none',
-                borderBottom: shouldShowAbove ? '1px solid #e1e1e1' : 'none',
-            }} />
-
-            <div style={{ padding: '16px 16px 8px 16px' }}>
+            <div style={{ padding: '14px 14px 8px 14px' }}>
                 {/* Scrolls rather than overflowing: with no cap, a board with enough
                     options pushed this grid — and the "Edit Labels" button below it —
                     straight off the bottom of the screen with no way to reach either. */}
@@ -352,10 +315,12 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                                 backgroundColor: tintLabel(opt.color),
                                 color: LABEL_TEXT,
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '6px',
                                 padding: '6px 10px',
-                                fontSize: '13px',
+                                fontSize: '11.5px',
                                 fontWeight: 500,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.08em',
                                 cursor: 'pointer',
                                 transition: 'opacity 0.15s, transform 0.1s',
                                 height: '32px',
@@ -380,7 +345,7 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                     ))}
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))', paddingTop: '6px' }}>
                     <button
                         className="status-picker-edit-btn"
                         style={{
@@ -390,15 +355,16 @@ export const StatusPicker = ({ columnId, options = [], onSelect, onClose, positi
                             gap: '6px',
                             background: 'transparent',
                             border: 'none',
-                            color: '#676879',
+                            color: 'hsl(var(--color-text-secondary))',
                             cursor: 'pointer',
-                            padding: '6px 12px',
-                            fontSize: '13px',
-                            fontWeight: 400
+                            padding: '5px 12px',
+                            fontSize: '12.5px',
+                            fontWeight: 500,
+                            borderRadius: '999px'
                         }}
                         onClick={() => setIsEditingLabels(true)}
                     >
-                        <Pencil size={14} strokeWidth={1.5} />
+                        <Pencil size={13} strokeWidth={1.7} />
                         Edit Labels
                     </button>
                 </div>

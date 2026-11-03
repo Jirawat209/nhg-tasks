@@ -3,10 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 import type { ColumnOption } from '../types';
 
 const FALLBACK_STATUS_OPTIONS: Omit<ColumnOption, 'id'>[] = [
-    { label: 'Default', color: '#c4c4c4' },
-    { label: 'Done', color: '#00c875' },
-    { label: 'Stuck', color: '#e2445c' },
-    { label: 'Working on it', color: '#fdab3d' }
+    { label: 'Default', color: '#6E6655' },
+    { label: 'Done', color: '#152A00' },
+    { label: 'Stuck', color: '#250719' },
+    { label: 'Working on it', color: '#A76400' }
 ];
 
 // Builds a new board's default Status options from the admin-configured

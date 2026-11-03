@@ -11,7 +11,7 @@ interface PriorityCellProps {
 }
 
 const MAX_STARS = 5;
-const STAR_COLOR = '#fdab3d';
+const STAR_COLOR = '#A76400'; // Ginger (Narai brand accent) — not Monday's #fdab3d
 
 // Stored as a plain number 1-5. Anything else — never rated, cleared, or a
 // value left behind by a column that used to be another type — reads as 0.

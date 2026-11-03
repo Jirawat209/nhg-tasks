@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand';
+import { APP_URL } from '../../lib/appUrl';
 import { supabase } from '../../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import type { Workspace, Board, ColumnType, Column, Item } from '../../types';
@@ -85,7 +86,7 @@ export const createWorkspaceSlice: StateCreator<
             ];
 
             const defaultGroups = [
-                { id: groupId, title: 'Getting Started', color: '#579bfc', order: 0 }
+                { id: groupId, title: 'Getting Started', color: '#2E7D8C', order: 0 }
             ];
 
             const statusCol = defaultColumns[0];
@@ -214,7 +215,7 @@ export const createWorkspaceSlice: StateCreator<
             ];
 
             const defaultGroups = [
-                { id: groupId, title: 'Getting Started', color: '#579bfc', order: 0 }
+                { id: groupId, title: 'Getting Started', color: '#2E7D8C', order: 0 }
             ];
 
             const statusCol = defaultColumns[0];
@@ -389,7 +390,7 @@ export const createWorkspaceSlice: StateCreator<
 
                 const { workspaces } = get();
                 const ws = workspaces.find(w => w.id === workspaceId);
-                const workspaceName = ws?.title || 'NHG Saturday';
+                const workspaceName = ws?.title || 'NHG Tasks';
 
                 // Same as the board path: the user is already a member by this
                 // point, so send the access-granted notice rather than the default
@@ -407,8 +408,8 @@ export const createWorkspaceSlice: StateCreator<
                         targetName: workspaceName,
                         role,
                         inviterName,
-                        accessLink: `https://saturdaycom.vercel.app/?workspaceId=${workspaceId}`,
-                        redirectTo: 'https://saturdaycom.vercel.app/'
+                        accessLink: `${APP_URL}/?workspaceId=${workspaceId}`,
+                        redirectTo: `${APP_URL}/`
                     }
                 });
 
@@ -427,7 +428,7 @@ export const createWorkspaceSlice: StateCreator<
             } else {
                 const { workspaces } = get();
                 const ws = workspaces.find(w => w.id === workspaceId);
-                const workspaceName = ws?.title || 'NHG Saturday';
+                const workspaceName = ws?.title || 'NHG Tasks';
 
                 // Call Edge Function to send email invite and record pending
                 const { data: responseData, error: fnError } = await supabase.functions.invoke('invite-user', {
@@ -435,7 +436,7 @@ export const createWorkspaceSlice: StateCreator<
                         email, 
                         workspaceId,
                         workspaceName,
-                        redirectTo: 'https://saturdaycom.vercel.app/'
+                        redirectTo: `${APP_URL}/`
                     }
                 });
 

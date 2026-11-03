@@ -40,7 +40,7 @@ export const EditorToolbar = ({ onFormat }: EditorToolbarProps) => {
             gap: '4px',
             padding: '8px 12px',
             borderBottom: '1px solid hsl(var(--color-border))',
-            backgroundColor: '#f9f9f9',
+            backgroundColor: 'hsl(var(--color-bg-subtle))',
             flexWrap: 'wrap'
         }}>
             {tools.map((tool, index) => {

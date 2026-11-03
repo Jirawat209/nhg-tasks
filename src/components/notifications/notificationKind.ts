@@ -21,10 +21,10 @@ export const notificationKind = (type: string): NotificationKind => {
         case 'workspace_invite': return { Icon: UserPlus, tone: BRAND, label: 'Workspace invitation' };
         case 'board_invite': return { Icon: UserPlus, tone: BRAND, label: 'Board invitation' };
         case 'assignment': return { Icon: FileText, tone: 'hsl(var(--color-status-green-bg))', label: 'Assigned to you' };
-        case 'mention': return { Icon: MessageSquare, tone: '#f97316', label: 'Mention' };
+        case 'mention': return { Icon: MessageSquare, tone: '#A76400', label: 'Mention' };
         case 'comment': return { Icon: MessageSquare, tone: NEUTRAL, label: 'Update' };
-        case 'like': return { Icon: ThumbsUp, tone: '#D4A000', label: 'Like' };
-        case 'due_date_reminder': return { Icon: CalendarClock, tone: '#e2445c', label: 'Due date' };
+        case 'like': return { Icon: ThumbsUp, tone: '#A76400', label: 'Like' };
+        case 'due_date_reminder': return { Icon: CalendarClock, tone: '#9E2A2B', label: 'Due date' };
         case 'status_update': return { Icon: RefreshCw, tone: BRAND, label: 'Status change' };
         case 'item_change': return { Icon: RefreshCw, tone: BRAND, label: 'Item change' };
         case 'access_granted': return { Icon: Bell, tone: NEUTRAL, label: 'Access granted' };

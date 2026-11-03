@@ -98,20 +98,22 @@ export const DependenciesSection = ({ itemId, boardId, compact = false, trailing
         display: 'inline-flex',
         alignItems: 'center',
         gap: '6px',
-        padding: '3px 8px',
-        borderRadius: '12px',
-        backgroundColor: 'hsl(var(--color-bg-subtle))',
-        border: '1px solid hsl(var(--color-border))',
+        padding: '3px 10px',
+        borderRadius: '999px',
+        background: 'var(--glass-chip, hsl(var(--color-bg-subtle)))',
+        border: '1px solid var(--glass-chip-edge, hsl(var(--color-border)))',
+        boxShadow: 'var(--glass-chip-shadow, none)',
         fontSize: '12px',
+        fontWeight: 500,
         color: 'hsl(var(--color-text-primary))',
         maxWidth: '220px'
     };
 
     const labelStyle: React.CSSProperties = {
-        fontSize: '11px',
+        fontSize: '10.5px',
         fontWeight: 600,
         textTransform: 'uppercase',
-        letterSpacing: '0.4px',
+        letterSpacing: '0.1em',
         color: 'hsl(var(--color-text-tertiary))',
         flexShrink: 0
     };
@@ -124,12 +126,12 @@ export const DependenciesSection = ({ itemId, boardId, compact = false, trailing
 
     return (
         <div style={{
-            padding: compact ? '10px 12px' : '10px 32px',
-            borderBottom: compact ? 'none' : '1px solid hsl(var(--color-border))',
+            padding: compact ? '0' : '10px 28px',
+            borderBottom: compact ? 'none' : '1px solid var(--paper-row-line, hsl(var(--color-border)))',
             display: 'flex',
             flexWrap: 'wrap',
             alignItems: 'center',
-            gap: '10px'
+            gap: '8px'
         }}>
             <span style={labelStyle}>Waiting on</span>
 
@@ -158,17 +160,28 @@ export const DependenciesSection = ({ itemId, boardId, compact = false, trailing
                 <div style={{ position: 'relative' }} ref={pickerRef}>
                     <button
                         onClick={() => setIsPickerOpen(open => !open)}
+                        className="glass-chip"
                         style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '4px',
-                            padding: '3px 8px',
-                            borderRadius: '12px',
-                            border: '1px dashed hsl(var(--color-border))',
-                            background: 'transparent',
+                            gap: '5px',
+                            padding: '4px 10px',
+                            borderRadius: '999px',
+                            border: '1px dashed hsl(var(--color-border-strong, var(--color-border)))',
+                            background: 'var(--glass-chip, transparent)',
                             cursor: 'pointer',
                             fontSize: '12px',
-                            color: 'hsl(var(--color-text-secondary))'
+                            fontWeight: 500,
+                            color: 'hsl(var(--color-text-secondary))',
+                            transition: 'background-color 0.15s, color 0.15s'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'var(--glass-chip-hover, hsl(var(--color-bg-hover)))';
+                            e.currentTarget.style.color = 'hsl(var(--color-text-primary))';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'var(--glass-chip, transparent)';
+                            e.currentTarget.style.color = 'hsl(var(--color-text-secondary))';
                         }}
                     >
                         <Plus size={12} />
@@ -176,14 +189,14 @@ export const DependenciesSection = ({ itemId, boardId, compact = false, trailing
                     </button>
 
                     {isPickerOpen && (
-                        <div style={{
+                        <div className="glass-pop" style={{
                             position: 'absolute',
                             top: 'calc(100% + 6px)',
                             left: 0,
                             width: '280px',
-                            backgroundColor: 'white',
+                            backgroundColor: 'hsl(var(--color-bg-surface))',
                             border: '1px solid hsl(var(--color-border))',
-                            borderRadius: '8px',
+                            borderRadius: '14px',
                             boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
                             zIndex: 50,
                             overflow: 'hidden'
@@ -195,9 +208,11 @@ export const DependenciesSection = ({ itemId, boardId, compact = false, trailing
                                 placeholder="Search items on this board…"
                                 style={{
                                     width: '100%',
-                                    padding: '8px 10px',
+                                    padding: '9px 12px',
                                     border: 'none',
-                                    borderBottom: '1px solid hsl(var(--color-border))',
+                                    borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
+                                    background: 'transparent',
+                                    color: 'hsl(var(--color-text-primary))',
                                     outline: 'none',
                                     fontSize: '13px',
                                     boxSizing: 'border-box'
@@ -205,7 +220,7 @@ export const DependenciesSection = ({ itemId, boardId, compact = false, trailing
                             />
 
                             {error && (
-                                <div style={{ padding: '8px 10px', fontSize: '12px', color: '#b91c1c', backgroundColor: '#fef2f2' }}>
+                                <div style={{ padding: '8px 10px', fontSize: '12px', color: 'hsl(var(--color-danger))', backgroundColor: 'hsl(var(--color-danger-bg))' }}>
                                     {error}
                                 </div>
                             )}

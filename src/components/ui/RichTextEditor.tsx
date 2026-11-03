@@ -695,12 +695,14 @@ export const RichTextEditor = ({ value, onChange, footer, id, placeholder, minHe
         <div style={{
             display: 'flex',
             flexDirection: 'column',
-            border: '1px solid hsl(var(--color-border))',
-            borderRadius: '8px',
+            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+            borderRadius: '16px',
             overflow: 'visible', // Changed to visible for popup
-            backgroundColor: 'hsl(var(--color-bg-surface))', // Dark mode fix
-            boxShadow: isFocused ? '0 0 0 2px hsl(var(--color-brand-light))' : 'none',
-            transition: 'box-shadow 0.2s',
+            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+            boxShadow: isFocused
+                ? '0 0 0 3px hsl(var(--color-brand-primary) / 0.12), var(--paper-shadow, 0 8px 24px -12px rgba(21, 42, 0, 0.25))'
+                : 'var(--paper-shadow, 0 8px 24px -12px rgba(21, 42, 0, 0.22))',
+            transition: 'box-shadow 0.2s, border-color 0.2s',
             position: 'relative'
         }}>
             {/* Toolbar */}
@@ -708,20 +710,20 @@ export const RichTextEditor = ({ value, onChange, footer, id, placeholder, minHe
                 display: 'flex',
                 alignItems: 'center',
                 gap: '2px',
-                padding: '8px 12px',
-                borderBottom: '1px solid hsl(var(--color-border))',
-                backgroundColor: 'hsl(var(--color-bg-subtle))', // Dark mode fix
+                padding: '7px 12px',
+                borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
+                backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)) / 0.65)',
                 flexWrap: 'wrap',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px'
+                borderTopLeftRadius: '16px',
+                borderTopRightRadius: '16px'
             }}>
                 {tools.map((tool, index) => {
                     if (tool.type === 'separator') {
                         return (
                             <div key={index} style={{
                                 width: '1px',
-                                height: '20px',
-                                backgroundColor: 'hsl(var(--color-border))',
+                                height: '18px',
+                                backgroundColor: 'var(--paper-row-line, hsl(var(--color-border)))',
                                 margin: '0 4px'
                             }} />
                         );
@@ -1147,10 +1149,10 @@ export const RichTextEditor = ({ value, onChange, footer, id, placeholder, minHe
             {/* Footer slot */}
             {footer && (
                 <div style={{
-                    borderTop: '1px solid hsl(var(--color-border))',
-                    backgroundColor: 'hsl(var(--color-bg-subtle))',
-                    borderBottomLeftRadius: '8px',
-                    borderBottomRightRadius: '8px',
+                    borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
+                    backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)) / 0.5)',
+                    borderBottomLeftRadius: '16px',
+                    borderBottomRightRadius: '16px',
                     overflow: 'visible'
                 }}>
                     {footer}

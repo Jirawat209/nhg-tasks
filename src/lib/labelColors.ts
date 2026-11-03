@@ -10,6 +10,9 @@
  * Ordered by hue family (10 steps each) so the grid reads as a spectrum.
  */
 export const LABEL_COLORS = [
+    // Narai Brand Primary Palette
+    '#152A00', '#1F3A08', '#2A4A12', '#3F7D32', '#AAA024',
+    '#250719', '#6B3B52', '#A76400', '#C98A1F', '#6E6655',
     // Reds
     '#FF1744', '#E53935', '#C62828', '#B71C1C', '#FF5252',
     '#FF6B6B', '#FF8A80', '#FFCDD2', '#D32F2F', '#FC3F82',
@@ -48,15 +51,15 @@ export const LABEL_COLORS = [
  * arriving as neighbouring shades of the same red.
  */
 const NEW_LABEL_CYCLE = [
-    '#00C875', // green
-    '#FDB122', // amber
-    '#E2445C', // red
-    '#579BFC', // blue
-    '#A25DDC', // purple
-    '#FF5AC4', // pink
-    '#00BCD4', // cyan
-    '#7CB342', // olive
-    '#FF7043', // orange
+    '#152A00', // Narai green
+    '#250719', // Narai deep plum
+    '#A76400', // Narai amber/ochre
+    '#3F7D32', // forest green
+    '#2E7D8C', // teal
+    '#6B3B52', // plum
+    '#AAA024', // olive gold
+    '#B33F2E', // terracotta
+    '#6E6655', // warm stone
     '#607D8B', // slate
 ];
 

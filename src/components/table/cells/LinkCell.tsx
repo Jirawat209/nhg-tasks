@@ -139,17 +139,15 @@ export const LinkCell: React.FC<LinkCellProps> = memo(({ itemId, column, value }
             {editorPos && createPortal(
                 <div
                     ref={popoverRef}
+                    className="glass-pop"
                     style={{
                         position: 'fixed',
                         top: editorPos.top,
                         left: editorPos.left,
                         width: `${POPOVER_WIDTH}px`,
-                        backgroundColor: 'hsl(var(--color-bg-surface))',
-                        border: '1px solid hsl(var(--color-border))',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                        borderRadius: '14px',
                         zIndex: 9999,
-                        padding: '12px',
+                        padding: '14px',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '10px'
@@ -182,7 +180,7 @@ export const LinkCell: React.FC<LinkCellProps> = memo(({ itemId, column, value }
                         />
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginTop: '2px' }}>
                         {url || label ? (
                             <button
                                 onClick={clear}
@@ -190,12 +188,13 @@ export const LinkCell: React.FC<LinkCellProps> = memo(({ itemId, column, value }
                                 style={{
                                     background: 'transparent',
                                     border: 'none',
-                                    color: '#dc2626',
+                                    color: 'hsl(var(--color-danger))',
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '4px',
                                     fontSize: '12px',
+                                    fontWeight: 500,
                                     padding: '4px'
                                 }}
                             >
@@ -208,11 +207,11 @@ export const LinkCell: React.FC<LinkCellProps> = memo(({ itemId, column, value }
                             style={{
                                 backgroundColor: 'hsl(var(--color-brand-primary))',
                                 border: 'none',
-                                borderRadius: '4px',
-                                color: 'white',
-                                fontSize: '13px',
-                                fontWeight: 500,
-                                padding: '7px 18px',
+                                borderRadius: '999px',
+                                color: '#FFEFD2',
+                                fontSize: '12.5px',
+                                fontWeight: 600,
+                                padding: '6px 18px',
                                 cursor: 'pointer'
                             }}
                         >
@@ -228,20 +227,20 @@ export const LinkCell: React.FC<LinkCellProps> = memo(({ itemId, column, value }
 
 const fieldLabelStyle: React.CSSProperties = {
     display: 'block',
-    fontSize: '11px',
+    fontSize: '10px',
     fontWeight: 600,
-    color: 'hsl(var(--color-text-secondary))',
+    color: 'hsl(var(--color-text-tertiary))',
     textTransform: 'uppercase',
-    letterSpacing: '0.04em',
+    letterSpacing: '0.12em',
     marginBottom: '4px'
 };
 
 const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '7px 9px',
-    borderRadius: '4px',
-    border: '1px solid hsl(var(--color-border))',
-    backgroundColor: 'hsl(var(--color-bg-canvas))',
+    padding: '7px 10px',
+    borderRadius: '8px',
+    border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+    backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
     color: 'hsl(var(--color-text-primary))',
     fontSize: '13px',
     outline: 'none',

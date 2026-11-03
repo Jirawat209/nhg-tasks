@@ -6,6 +6,7 @@ import { usePermission } from '../../../hooks/usePermission';
 import { FileText, Plus } from 'lucide-react';
 import { FilesPicker } from '../FilesPicker';
 import { ONEDRIVE_ICON } from '../../../lib/fileLinks';
+import { LOCAL_ICONS } from '../../../lib/localIcons';
 
 interface FilesCellProps {
     itemId: string;
@@ -14,12 +15,12 @@ interface FilesCellProps {
 }
 
 const FILE_ICONS = {
-    sheets: "https://www.gstatic.com/images/branding/product/1x/sheets_2020q4_48dp.png",
-    docs: "https://www.gstatic.com/images/branding/product/1x/docs_2020q4_48dp.png",
-    slides: "https://www.gstatic.com/images/branding/product/1x/slides_2020q4_48dp.png",
-    forms: "https://www.gstatic.com/images/branding/product/1x/forms_2020q4_48dp.png",
-    drive: "https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png",
-    pdf: "https://drive-thirdparty.googleusercontent.com/32/type/application/pdf"
+    sheets: LOCAL_ICONS.sheets,
+    docs: LOCAL_ICONS.docs,
+    slides: LOCAL_ICONS.slides,
+    forms: LOCAL_ICONS.forms,
+    drive: LOCAL_ICONS.drive,
+    pdf: LOCAL_ICONS.pdf
 };
 
 export const FilesCell: React.FC<FilesCellProps> = memo(({ itemId, column, files: propFiles }) => {
@@ -109,10 +110,10 @@ export const FilesCell: React.FC<FilesCellProps> = memo(({ itemId, column, files
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            backgroundColor: '#fff',
+                                            backgroundColor: 'hsl(var(--paper-head, var(--color-bg-surface)))',
                                             borderRadius: '50%',
-                                            border: '2px solid white',
-                                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                            border: '2px solid hsl(var(--paper, var(--color-bg-surface)))',
+                                            boxShadow: '0 1px 2px rgba(21, 42, 0, 0.12)',
                                             overflow: 'hidden'
                                         }}>
                                             {iconUrl ? (
@@ -120,10 +121,10 @@ export const FilesCell: React.FC<FilesCellProps> = memo(({ itemId, column, files
                                                     src={iconUrl}
                                                     alt=""
                                                     referrerPolicy="no-referrer"
-                                                    style={{ width: '18px', height: '18px', objectFit: 'contain' }}
+                                                    style={{ width: '16px', height: '16px', objectFit: 'contain' }}
                                                 />
                                             ) : (
-                                                <FileText size={18} color="#666" />
+                                                <FileText size={15} color="hsl(var(--color-text-secondary))" />
                                             )}
                                         </div>
                                     );
@@ -135,17 +136,16 @@ export const FilesCell: React.FC<FilesCellProps> = memo(({ itemId, column, files
                                 width: '26px',
                                 height: '26px',
                                 borderRadius: '50%',
-                                backgroundColor: '#e5e7eb',
-                                color: '#6b7280',
-                                fontSize: '11px',
+                                backgroundColor: 'hsl(var(--color-text-primary) / 0.1)',
+                                color: 'hsl(var(--color-text-secondary))',
+                                fontSize: '10.5px',
                                 fontWeight: 600,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                border: '2px solid white',
-                                marginLeft: '-10px',
-                                zIndex: 10,
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                border: '2px solid hsl(var(--paper, var(--color-bg-surface)))',
+                                marginLeft: '-8px',
+                                zIndex: 10
                             }}>
                                 +{files.length - 3}
                             </div>

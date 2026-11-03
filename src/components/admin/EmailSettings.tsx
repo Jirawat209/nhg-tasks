@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Save, Mail, Server, ChevronRight, Info, Eye, EyeOff, Lock, CalendarClock, MessageSquare, ThumbsUp, KeyRound, UserPlus } from 'lucide-react';
+import { LOGO_DATA_URI } from '../../lib/localIcons';
 
-const DEFAULT_MENTION_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{mentionedBy}}</strong> mentioned you in <strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong>.</p><div style="background-color: #f8fafc; border-left: 3px solid #a86315; padding: 12px 16px; margin: 0 0 20px; text-align: left; border-radius: 0 4px 4px 0;"><p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.6; font-style: italic;">"{{updatePreview}}"</p></div><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Update</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_MENTION_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{mentionedBy}}</strong> mentioned you in <strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong>.</p><div style="background-color: #f8fafc; border-left: 3px solid #a86315; padding: 12px 16px; margin: 0 0 20px; text-align: left; border-radius: 0 4px 4px 0;"><p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.6; font-style: italic;">"{{updatePreview}}"</p></div><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Update</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
-const DEFAULT_ASSIGN_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;"><strong>{{inviterName}}</strong> assigned you to item <strong>{{itemName}}</strong> under <strong>{{groupName}}</strong> in <strong>{{boardName}}</strong>.</p><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Item</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_ASSIGN_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;"><strong>{{inviterName}}</strong> assigned you to item <strong>{{itemName}}</strong> under <strong>{{groupName}}</strong> in <strong>{{boardName}}</strong>.</p><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Item</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
-const DEFAULT_PIN_RESET_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 20px;">You requested to reset the PIN for the private board <strong>{{boardName}}</strong>.</p><div style="font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #1e293b; background-color: #f8fafc; padding: 16px; border-radius: 6px; margin-bottom: 20px;">{{otpCode}}</div><p style="font-size: 13px; color: #94a3b8;">This code expires in {{expiryMinutes}} minutes. If you didn't request this, you can ignore this email.</p></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_PIN_RESET_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 20px;">You requested to reset the PIN for the private board <strong>{{boardName}}</strong>.</p><div style="font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #1e293b; background-color: #f8fafc; padding: 16px; border-radius: 6px; margin-bottom: 20px;">{{otpCode}}</div><p style="font-size: 13px; color: #94a3b8;">This code expires in {{expiryMinutes}} minutes. If you didn't request this, you can ignore this email.</p></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
-const DEFAULT_STATUS_UPDATE_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{inviterName}}</strong> changed the status of <strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong>.</p><div style="background-color: #f8fafc; padding: 12px 16px; margin: 0 0 20px; text-align: center; border-radius: 4px;"><span style="font-size: 13px; color: #94a3b8; text-decoration: line-through;">{{oldStatus}}</span><span style="font-size: 15px; color: #1e293b; font-weight: bold; margin-left: 8px;">→ {{newStatus}}</span></div><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Item</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_STATUS_UPDATE_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{inviterName}}</strong> changed the status of <strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong>.</p><div style="background-color: #f8fafc; padding: 12px 16px; margin: 0 0 20px; text-align: center; border-radius: 4px;"><span style="font-size: 13px; color: #94a3b8; text-decoration: line-through;">{{oldStatus}}</span><span style="font-size: 15px; color: #1e293b; font-weight: bold; margin-left: 8px;">→ {{newStatus}}</span></div><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Item</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
-const DEFAULT_COMMENT_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{commenterName}}</strong> commented on <strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong>.</p><div style="background-color: #f8fafc; border-left: 3px solid #a86315; padding: 12px 16px; margin: 0 0 20px; text-align: left; border-radius: 0 4px 4px 0;"><p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.6; font-style: italic;">"{{updatePreview}}"</p></div><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Update</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_COMMENT_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{commenterName}}</strong> commented on <strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong>.</p><div style="background-color: #f8fafc; border-left: 3px solid #a86315; padding: 12px 16px; margin: 0 0 20px; text-align: left; border-radius: 0 4px 4px 0;"><p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.6; font-style: italic;">"{{updatePreview}}"</p></div><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Update</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
-const DEFAULT_LIKE_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;"><strong>{{likerName}}</strong> liked your update on <strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong>.</p><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Update</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_LIKE_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;"><strong>{{likerName}}</strong> liked your update on <strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong>.</p><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Update</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
-const DEFAULT_DUE_DATE_REMINDER_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong> is <strong>{{dueLabel}}</strong>.</p><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Item</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_DUE_DATE_REMINDER_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{itemName}}</strong> on board <strong>{{boardName}}</strong> is <strong>{{dueLabel}}</strong>.</p><a href="{{itemLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">View Item</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
-const DEFAULT_ACCESS_GRANTED_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{inviterName}}</strong> gave you access to the {{targetType}} <strong>{{targetName}}</strong> in <strong>{{workspaceName}}</strong>.</p><div style="background-color: #f8fafc; padding: 12px 16px; margin: 0 0 20px; text-align: center; border-radius: 4px;"><span style="font-size: 13px; color: #94a3b8;">Your role</span><span style="font-size: 15px; color: #1e293b; font-weight: bold; margin-left: 8px;">{{role}}</span></div><a href="{{accessLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">Open {{targetType}}</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_ACCESS_GRANTED_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 16px;"><strong>{{inviterName}}</strong> gave you access to the {{targetType}} <strong>{{targetName}}</strong> in <strong>{{workspaceName}}</strong>.</p><div style="background-color: #f8fafc; padding: 12px 16px; margin: 0 0 20px; text-align: center; border-radius: 4px;"><span style="font-size: 13px; color: #94a3b8;">Your role</span><span style="font-size: 15px; color: #1e293b; font-weight: bold; margin-left: 8px;">{{role}}</span></div><a href="{{accessLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">Open {{targetType}}</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
-const DEFAULT_RESET_PASSWORD_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;">We received a request to reset the password for your Saturday.com account. Click below to choose a new password. If you didn't request this, you can safely ignore this email.</p><a href="{{resetLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">Reset Password</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+const DEFAULT_RESET_PASSWORD_TEMPLATE = `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="${LOGO_DATA_URI}" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;"><p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;">We received a request to reset the password for your NHG Tasks account. Click below to choose a new password. If you didn't request this, you can safely ignore this email.</p><a href="{{resetLink}}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">Reset Password</a></div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 
 export const EmailSettings = () => {
     const [loading, setLoading] = useState(true);
@@ -79,7 +80,7 @@ export const EmailSettings = () => {
     });
 
     const [resetPasswordTemplate, setResetPasswordTemplate] = useState({
-        subject: 'Reset your Saturday.com password',
+        subject: 'Reset your NHG Tasks password',
         bodyHtml: DEFAULT_RESET_PASSWORD_TEMPLATE
     });
 
@@ -171,7 +172,7 @@ export const EmailSettings = () => {
                 if (resetPasswordTmpl?.value) {
                     setResetPasswordTemplate(resetPasswordTmpl.value);
                 } else {
-                    const defaultVal = { subject: 'Reset your Saturday.com password', bodyHtml: DEFAULT_RESET_PASSWORD_TEMPLATE };
+                    const defaultVal = { subject: 'Reset your NHG Tasks password', bodyHtml: DEFAULT_RESET_PASSWORD_TEMPLATE };
                     await supabase.from('system_settings').upsert({ key: 'reset_password_email_template', value: defaultVal, description: 'Template for forgot-password reset emails (Internal accounts only)' }, { onConflict: 'key' });
                 }
                 if (accessGrantedTmpl?.value) {
@@ -322,7 +323,7 @@ export const EmailSettings = () => {
     };
 
     if (loading) {
-        return <div style={{ padding: '24px', color: '#64748b' }}>Loading settings...</div>;
+        return <div style={{ padding: '24px', color: 'hsl(var(--ink-dim))' }}>Loading settings...</div>;
     }
 
     return (
@@ -330,22 +331,27 @@ export const EmailSettings = () => {
             {message.text && (
                 <div style={{
                     padding: '12px 16px',
-                    borderRadius: '8px',
+                    borderRadius: '12px',
                     marginBottom: '24px',
-                    backgroundColor: message.type === 'success' ? '#def7ec' : '#fee2e2',
-                    color: message.type === 'success' ? '#03543f' : '#991b1b',
-                    fontSize: '14px',
-                    border: `1px solid ${message.type === 'success' ? '#31c48d' : '#f87171'}`
+                    backgroundColor: message.type === 'success' ? 'rgba(42, 74, 18, 0.1)' : 'rgba(200, 62, 43, 0.1)',
+                    color: message.type === 'success' ? '#2A4A12' : '#C83E2B',
+                    fontSize: '13.5px',
+                    fontWeight: 600,
+                    border: `1px solid ${message.type === 'success' ? 'rgba(42, 74, 18, 0.25)' : 'rgba(200, 62, 43, 0.25)'}`
                 }}>
                     {message.text}
                 </div>
             )}
 
             <div className="card-surface" style={{ padding: '24px', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Server size={20} color="#6366f1" />
-                    SMTP Configuration
-                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                    <div className="admin-tile" style={{ width: '38px', height: '38px', background: 'rgba(42, 74, 18, 0.1)', color: '#2A4A12' }}>
+                        <Server size={18} />
+                    </div>
+                    <h2 className="narai-heading" style={{ fontSize: '20px', fontWeight: 700, color: 'hsl(var(--ink))', margin: 0 }}>
+                        SMTP Configuration
+                    </h2>
+                </div>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                     <div>
@@ -369,11 +375,12 @@ export const EmailSettings = () => {
                             />
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '24px' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', color: 'hsl(var(--ink))', cursor: 'pointer' }}>
                                 <input 
                                     type="checkbox" 
                                     checked={smtpConfig.secure}
                                     onChange={e => setSmtpConfig({...smtpConfig, secure: e.target.checked})}
+                                    style={{ accentColor: '#2A4A12' }}
                                 />
                                 Secure (SSL/TLS)
                             </label>
@@ -415,7 +422,7 @@ export const EmailSettings = () => {
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    color: '#64748b',
+                                    color: 'hsl(var(--ink-soft))',
                                     padding: '0'
                                 }}
                             >
@@ -448,13 +455,17 @@ export const EmailSettings = () => {
             </div>
 
             <div className="card-surface" style={{ padding: '24px', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Mail size={20} color="#6366f1" />
-                    Test SMTP Configuration
-                </h2>
-                <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div className="admin-tile" style={{ width: '38px', height: '38px', background: 'rgba(167, 100, 0, 0.12)', color: '#A76400' }}>
+                        <Mail size={18} />
+                    </div>
+                    <h2 className="narai-heading" style={{ fontSize: '20px', fontWeight: 700, color: 'hsl(var(--ink))', margin: 0 }}>
+                        Test SMTP Configuration
+                    </h2>
+                </div>
+                <p style={{ fontSize: '13.5px', color: 'hsl(var(--ink-dim))', marginBottom: '20px' }}>
                     Enter an email address below to send a test message using the current SMTP settings. 
-                    <span style={{ color: '#f59e0b', marginLeft: '4px', fontWeight: 500 }}>
+                    <span style={{ color: '#A76400', marginLeft: '6px', fontWeight: 600 }}>
                         (You don't need to save settings before testing)
                     </span>
                 </p>
@@ -473,22 +484,18 @@ export const EmailSettings = () => {
                     <button
                         onClick={handleTestEmail}
                         disabled={testingSmtp || !testEmail}
+                        className="btn-solid"
                         style={{
                             display: 'flex', alignItems: 'center', gap: '8px',
                             padding: '10px 20px',
-                            backgroundColor: '#4f46e5',
-                            border: 'none',
-                            borderRadius: '6px',
-                            color: 'white',
+                            borderRadius: '999px',
                             fontWeight: 600,
                             cursor: (testingSmtp || !testEmail) ? 'not-allowed' : 'pointer',
-                            fontSize: '14px',
-                            opacity: (testingSmtp || !testEmail) ? 0.7 : 1,
-                            transition: 'all 0.2s',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            fontSize: '13.5px',
+                            opacity: (testingSmtp || !testEmail) ? 0.6 : 1,
                         }}
                     >
-                        <Mail size={18} />
+                        <Mail size={16} />
                         {testingSmtp ? 'Sending...' : 'Test Send Email'}
                     </button>
                 </div>
@@ -497,11 +504,12 @@ export const EmailSettings = () => {
                     <div style={{
                         marginTop: '16px',
                         padding: '12px',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        backgroundColor: testResult.type === 'success' ? '#f0fdf4' : '#fef2f2',
-                        color: testResult.type === 'success' ? '#166534' : '#991b1b',
-                        border: `1px solid ${testResult.type === 'success' ? '#bbf7d0' : '#fecaca'}`
+                        borderRadius: '10px',
+                        fontSize: '13.5px',
+                        fontWeight: 600,
+                        backgroundColor: testResult.type === 'success' ? 'rgba(42, 74, 18, 0.1)' : 'rgba(200, 62, 43, 0.1)',
+                        color: testResult.type === 'success' ? '#2A4A12' : '#C83E2B',
+                        border: `1px solid ${testResult.type === 'success' ? 'rgba(42, 74, 18, 0.25)' : 'rgba(200, 62, 43, 0.25)'}`
                     }}>
                         {testResult.text}
                     </div>
@@ -724,7 +732,7 @@ export const EmailSettings = () => {
                             <strong>
                                 {mentionTemplate.subject
                                     .replace(/\{\{mentionedBy\}\}/g, 'Alex Johnson')
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')}
                             </strong>
                         </div>
@@ -733,7 +741,7 @@ export const EmailSettings = () => {
                             dangerouslySetInnerHTML={{
                                 __html: mentionTemplate.bodyHtml
                                     .replace(/\{\{mentionedBy\}\}/g, 'Alex Johnson')
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')
                                     .replace(/\{\{updatePreview\}\}/g, 'Hey, can you take a look at the latest design mockups and share your feedback by Friday?')
                                     .replace(/\{\{itemLink\}\}/g, '#')
@@ -789,7 +797,7 @@ export const EmailSettings = () => {
                             <strong>
                                 {statusUpdateTemplate.subject
                                     .replace(/\{\{inviterName\}\}/g, 'Alex Johnson')
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')}
                             </strong>
                         </div>
@@ -798,7 +806,7 @@ export const EmailSettings = () => {
                             dangerouslySetInnerHTML={{
                                 __html: statusUpdateTemplate.bodyHtml
                                     .replace(/\{\{inviterName\}\}/g, 'Alex Johnson')
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')
                                     .replace(/\{\{oldStatus\}\}/g, 'Working on it')
                                     .replace(/\{\{newStatus\}\}/g, 'Done')
@@ -854,7 +862,7 @@ export const EmailSettings = () => {
                             <strong>
                                 {commentTemplate.subject
                                     .replace(/\{\{commenterName\}\}/g, 'Alex Johnson')
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')}
                             </strong>
                         </div>
@@ -863,7 +871,7 @@ export const EmailSettings = () => {
                             dangerouslySetInnerHTML={{
                                 __html: commentTemplate.bodyHtml
                                     .replace(/\{\{commenterName\}\}/g, 'Alex Johnson')
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')
                                     .replace(/\{\{updatePreview\}\}/g, 'Just pushed the latest changes — can you review before Friday?')
                                     .replace(/\{\{itemLink\}\}/g, '#')
@@ -917,7 +925,7 @@ export const EmailSettings = () => {
                             <strong>
                                 {likeTemplate.subject
                                     .replace(/\{\{likerName\}\}/g, 'Alex Johnson')
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')}
                             </strong>
                         </div>
@@ -926,7 +934,7 @@ export const EmailSettings = () => {
                             dangerouslySetInnerHTML={{
                                 __html: likeTemplate.bodyHtml
                                     .replace(/\{\{likerName\}\}/g, 'Alex Johnson')
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')
                                     .replace(/\{\{itemLink\}\}/g, '#')
                             }}
@@ -978,7 +986,7 @@ export const EmailSettings = () => {
                             <span style={{ color: '#64748b' }}>Subject:</span>{' '}
                             <strong>
                                 {dueDateReminderTemplate.subject
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{dueLabel\}\}/g, 'due today')}
                             </strong>
                         </div>
@@ -986,7 +994,7 @@ export const EmailSettings = () => {
                             style={{ padding: '0', backgroundColor: 'white' }}
                             dangerouslySetInnerHTML={{
                                 __html: dueDateReminderTemplate.bodyHtml
-                                    .replace(/\{\{itemName\}\}/g, 'Saturday.com Launch')
+                                    .replace(/\{\{itemName\}\}/g, 'NHG Tasks Launch')
                                     .replace(/\{\{boardName\}\}/g, 'Business Tech')
                                     .replace(/\{\{dueLabel\}\}/g, 'due today')
                                     .replace(/\{\{itemLink\}\}/g, '#')
@@ -1177,21 +1185,18 @@ export const EmailSettings = () => {
                 <button
                     onClick={handleSave}
                     disabled={saving}
+                    className="btn-solid"
                     style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
                         padding: '10px 24px',
-                        backgroundColor: '#6366f1',
-                        border: 'none',
-                        borderRadius: '6px',
-                        color: 'white',
+                        borderRadius: '999px',
                         fontWeight: 600,
                         cursor: saving ? 'not-allowed' : 'pointer',
-                        fontSize: '14px',
+                        fontSize: '13.5px',
                         opacity: saving ? 0.7 : 1,
-                        transition: 'background-color 0.2s'
                     }}
                 >
-                    <Save size={18} />
+                    <Save size={16} />
                     {saving ? 'Saving...' : 'Save Settings'}
                 </button>
             </div>
@@ -1201,59 +1206,63 @@ export const EmailSettings = () => {
 
 const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontSize: '13px',
-    fontWeight: 500,
-    color: '#475569',
+    fontSize: '12.5px',
+    fontWeight: 600,
+    color: 'hsl(var(--ink))',
     marginBottom: '6px'
 };
 
 const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '10px 12px',
-    borderRadius: '6px',
-    border: '1px solid #cbd5e1',
-    fontSize: '14px',
+    padding: '9px 12px',
+    borderRadius: '10px',
+    border: '1px solid hsl(var(--paper-edge))',
+    backgroundColor: 'hsl(var(--paper-muted))',
+    color: 'hsl(var(--ink))',
+    fontSize: '13.5px',
     outline: 'none',
     boxSizing: 'border-box'
 };
 
 const codeStyle: React.CSSProperties = {
-    backgroundColor: '#e2e8f0',
-    padding: '2px 4px',
-    borderRadius: '4px',
-    color: '#0f172a'
+    backgroundColor: 'hsl(var(--paper-muted))',
+    border: '1px solid hsl(var(--paper-edge))',
+    padding: '2px 6px',
+    borderRadius: '6px',
+    color: 'hsl(var(--ink))',
+    fontSize: '12px'
 };
 
 const CollapsibleHtmlBody = ({ label, value, onChange }: { label: string, value: string, onChange: (val: string) => void }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
-        <div style={{ marginBottom: '24px', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+        <div style={{ marginBottom: '24px', border: '1px solid hsl(var(--paper-edge))', borderRadius: '12px', overflow: 'hidden' }}>
             <div 
                 onClick={() => setIsOpen(!isOpen)}
                 style={{ 
                     padding: '12px 16px', 
-                    backgroundColor: '#f8fafc', 
+                    backgroundColor: 'hsl(var(--paper-head))', 
                     cursor: 'pointer', 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: '8px',
-                    borderBottom: isOpen ? '1px solid #e2e8f0' : 'none'
+                    borderBottom: isOpen ? '1px solid hsl(var(--paper-edge))' : 'none'
                 }}
             >
                 <div style={{ 
                     transition: 'transform 0.2s', 
                     transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                    color: '#64748b',
+                    color: 'hsl(var(--ink-soft))',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}>
                     <ChevronRight size={18} />
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 600, color: '#475569' }}>{label}</span>
+                <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'hsl(var(--ink))' }}>{label}</span>
             </div>
             {isOpen && (
-                <div style={{ padding: '16px', backgroundColor: 'white' }}>
+                <div style={{ padding: '16px', backgroundColor: 'hsl(var(--paper))' }}>
                     <textarea 
                         value={value}
                         onChange={e => onChange(e.target.value)}

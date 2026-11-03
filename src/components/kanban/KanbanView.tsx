@@ -45,20 +45,20 @@ const KanbanAvatars = ({ userIds, activeBoardMembers, size = 22 }: { userIds: st
                     <div key={userId} title={name} style={{
                         width: size,
                         height: size,
-                        borderRadius: '28%',
-                        backgroundColor: profile.avatar_url ? 'transparent' : '#0073ea',
-                        color: 'white',
+                        borderRadius: '50%',
+                        backgroundColor: profile.avatar_url ? 'transparent' : 'hsl(var(--color-brand-primary))',
+                        color: '#FFEFD2',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '10px',
                         fontWeight: 600,
-                        border: '2px solid white',
+                        border: '2px solid hsl(var(--color-bg-surface))',
                         marginLeft: idx > 0 ? '-8px' : '0',
                         zIndex: idx + 1,
                         overflow: 'hidden',
                         position: 'relative',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                        boxShadow: '0 1px 3px rgba(21, 42, 0, 0.12)'
                     }}>
                         {profile.avatar_url ? (
                             <img src={profile.avatar_url} alt="" referrerPolicy="no-referrer" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -70,15 +70,15 @@ const KanbanAvatars = ({ userIds, activeBoardMembers, size = 22 }: { userIds: st
                 <div style={{
                     width: size,
                     height: size,
-                    borderRadius: '28%',
-                    backgroundColor: '#e5e7eb',
-                    color: '#6b7280',
+                    borderRadius: '50%',
+                    backgroundColor: 'hsl(var(--color-bg-subtle))',
+                    color: 'hsl(var(--color-text-secondary))',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '10px',
                     fontWeight: 600,
-                    border: '2px solid white',
+                    border: '2px solid hsl(var(--color-bg-surface))',
                     marginLeft: '-8px',
                     zIndex: 10,
                     position: 'relative'
@@ -220,20 +220,21 @@ const KanbanCard = ({ item, subItems, peopleColumn, statusColumn, activeBoardMem
             )}
 
             <style>{`
-                /* The card material is .card-surface (styles/cards.css); this sizes it
-                   for a column and lifts it on hover like the Home board cards. */
                 .kanban-card {
-                    border-radius: var(--radius-md);
-                    padding: 12px;
+                    border-radius: 12px !important;
+                    padding: 12px 14px;
                     cursor: pointer;
                     margin-bottom: 10px;
                     overflow: hidden;
-                    transition: transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.24s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.24s;
+                    background: hsl(var(--paper, var(--color-bg-surface))) !important;
+                    border: 1px solid var(--paper-edge, var(--card-border)) !important;
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88), 0 6px 16px -12px rgba(21, 42, 0, 0.28) !important;
+                    transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.2s;
                 }
                 .kanban-card:hover {
                     transform: translateY(-2px);
-                    border-color: var(--card-border-hover);
-                    box-shadow: inset 0 1px 0 var(--card-edge), var(--card-shadow-hover);
+                    border-color: rgba(21, 42, 0, 0.20) !important;
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92), 0 14px 28px -16px rgba(21, 42, 0, 0.40) !important;
                 }
                 @media (prefers-reduced-motion: reduce) {
                     .kanban-card { transition: none; }
@@ -247,35 +248,52 @@ const KanbanCard = ({ item, subItems, peopleColumn, statusColumn, activeBoardMem
                     border: none;
                     color: hsl(var(--color-text-tertiary));
                     cursor: pointer;
-                    padding: 2px;
-                    border-radius: 4px;
+                    padding: 3px;
+                    border-radius: 6px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
                 }
                 .icon-btn-small:hover {
-                    background-color: var(--card-row-hover);
+                    background-color: rgba(21, 42, 0, 0.06);
                     color: hsl(var(--color-text-primary));
                 }
                 .kanban-status-bar {
                     margin-top: 10px;
-                    padding: 4px 10px;
-                    border-radius: 4px;
-                    color: var(--label-text, white);
-                    font-size: 12px;
-                    font-weight: 500;
+                    padding: 3px 9px;
+                    border-radius: 6px;
+                    color: var(--label-text, #FFEFD2);
+                    font-size: 10px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.09em;
                     text-align: center;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    align-self: flex-start;
+                    max-width: 100%;
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 1px 2px rgba(21, 42, 0, 0.14);
                 }
                 .kanban-field-row {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     gap: 8px;
-                    margin-top: 8px;
+                    margin-top: 10px;
+                    padding-top: 8px;
+                    border-top: 1px solid var(--paper-row-line, var(--card-border));
                     font-size: 12px;
                     color: hsl(var(--color-text-secondary));
                 }
                 .kanban-field-label {
+                    font-size: 10px;
+                    font-weight: 600;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
                     color: hsl(var(--color-text-tertiary));
                     white-space: nowrap;
                     overflow: hidden;
@@ -290,51 +308,51 @@ const KanbanCard = ({ item, subItems, peopleColumn, statusColumn, activeBoardMem
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 14px;
+                    font-size: 13px;
                     flex-shrink: 0;
                 }
                 .kanban-subitem-count-badge {
                     min-width: 20px;
                     padding: 1px 6px;
-                    border-radius: 10px;
-                    background-color: var(--card-tray);
+                    border-radius: 999px;
+                    background-color: rgba(21, 42, 0, 0.07);
                     color: hsl(var(--color-text-secondary));
-                    font-size: 11px;
+                    font-size: 10.5px;
                     font-weight: 600;
                     text-align: center;
                 }
                 .kanban-field-row-clickable {
                     pointer-events: auto;
-                    margin: 8px -12px -12px -12px;
-                    padding: 8px 12px;
-                    border-top: 1px solid var(--card-border);
+                    margin: 10px -14px -12px -14px;
+                    padding: 8px 14px;
+                    border-top: 1px solid var(--paper-row-line, var(--card-border));
                     cursor: pointer;
                     transition: color 0.2s, background-color 0.2s;
                 }
                 .kanban-field-row-clickable:hover {
                     color: hsl(var(--color-brand-primary));
-                    background-color: var(--card-row-hover);
+                    background-color: rgba(21, 42, 0, 0.035);
                 }
                 .kanban-field-row-clickable:hover .kanban-field-label {
                     color: hsl(var(--color-brand-primary));
                 }
                 .kanban-card-subitems-list {
                     pointer-events: auto;
-                    margin: 0 -12px -12px -12px;
+                    margin: 0 -14px -12px -14px;
                     padding: 4px 0;
-                    border-top: 1px solid var(--card-border);
-                    background-color: var(--card-tray);
+                    border-top: 1px solid var(--paper-row-line, var(--card-border));
+                    background-color: hsl(var(--paper-head, var(--card-tray)));
                 }
                 .kanban-subitem-row {
                     display: flex;
                     align-items: center;
                     gap: 6px;
-                    padding: 6px 12px 6px 28px;
+                    padding: 6px 14px 6px 26px;
                     cursor: pointer;
                     transition: background-color 0.2s;
                 }
                 .kanban-subitem-row:hover {
-                    background-color: var(--card-row-hover);
+                    background-color: rgba(21, 42, 0, 0.04);
                 }
                 .kanban-subitem-row:hover .kanban-subitem-icon {
                     color: hsl(var(--color-brand-primary));
@@ -384,16 +402,44 @@ const KanbanColumn = ({ id, label, color, items, subItemsByParent, peopleColumn,
     return (
         <div className="kanban-column" ref={setNodeRef}>
             <div className="kanban-column-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ 
-                        width: '12px', 
-                        height: '12px', 
-                        borderRadius: '3px', 
-                        backgroundColor: tintLabel(color) 
-                    }} />
-                    <h3 style={{ fontSize: '14px', fontWeight: 600, margin: 0 }}>
-                        {label} <span style={{ fontWeight: 400, color: 'hsl(var(--color-text-tertiary))', marginLeft: '4px' }}>{items.length}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
+                    <span
+                        className="gh-dot"
+                        style={{
+                            '--c': tintLabel(color),
+                            width: '12px',
+                            height: '12px',
+                            borderRadius: '50%',
+                            backgroundColor: tintLabel(color),
+                            boxShadow: `0 0 0 3px color-mix(in srgb, ${tintLabel(color)} 22%, transparent)`,
+                            flexShrink: 0
+                        } as React.CSSProperties}
+                    />
+                    <h3 className="narai-heading" style={{
+                        fontFamily: 'var(--font-family-display)',
+                        fontSize: '18px',
+                        fontWeight: 500,
+                        letterSpacing: '-0.015em',
+                        lineHeight: 1.2,
+                        color: 'hsl(var(--color-text-primary))',
+                        margin: 0,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                    }}>
+                        {label}
                     </h3>
+                    <span className="gh-count" style={{
+                        padding: '1px 7px',
+                        borderRadius: '999px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        backgroundColor: 'rgba(21, 42, 0, 0.08)',
+                        color: 'hsl(var(--color-text-secondary))',
+                        flexShrink: 0
+                    }}>
+                        {items.length}
+                    </span>
                 </div>
                 <button className="icon-btn-small">
                     <MoreHorizontal size={14} />
@@ -422,54 +468,61 @@ const KanbanColumn = ({ id, label, color, items, subItemsByParent, peopleColumn,
                     onClick={onAddItem}
                     className="kanban-add-btn"
                 >
-                    <Plus size={16} />
-                    <span>Add Item</span>
+                    <Plus size={15} />
+                    <span>Add item</span>
                 </button>
             </div>
 
             <style>{`
                 .kanban-column {
-                    width: 260px;
-                    min-width: 260px;
+                    width: 280px;
+                    min-width: 280px;
                     display: flex;
                     flex-direction: column;
-                    /* A tray the cards sit in */
-                    background: var(--card-tray);
-                    border-radius: var(--radius-lg);
-                    box-shadow: inset 0 0 0 1px var(--card-border);
+                    background: var(--glass-chip, rgba(255, 255, 255, 0.46));
+                    border: 1px solid var(--paper-edge, var(--card-border));
+                    border-radius: 16px;
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78), 0 14px 32px -22px rgba(21, 42, 0, 0.35);
+                    -webkit-backdrop-filter: blur(16px) saturate(140%);
+                    backdrop-filter: blur(16px) saturate(140%);
                     height: 100%;
                     max-height: 100%;
+                    overflow: hidden;
                 }
                 .kanban-column-header {
-                    padding: 12px 16px;
+                    padding: 12px 14px 10px 16px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                    gap: 8px;
+                    background: hsl(var(--paper-head, var(--color-bg-subtle)));
+                    border-bottom: 1px solid var(--paper-row-line, var(--card-border));
                 }
                 .kanban-column-content {
                     flex: 1;
-                    padding: 14px 8px 16px 8px;
+                    padding: 12px 10px 14px 10px;
                     overflow-y: auto;
                 }
                 .kanban-add-btn {
                     width: 100%;
-                    padding: 8px;
+                    padding: 8px 10px;
                     display: flex;
                     align-items: center;
-                    gap: 8px;
+                    gap: 6px;
                     background: none;
-                    border: 1px dashed transparent;
-                    border-radius: 6px;
-                    color: hsl(var(--color-text-tertiary));
-                    font-size: 14px;
+                    border: 1px dashed rgba(21, 42, 0, 0.14);
+                    border-radius: 10px;
+                    color: hsl(var(--color-text-secondary));
+                    font-size: 12.5px;
+                    font-weight: 500;
                     cursor: pointer;
-                    transition: all 0.2s;
-                    margin-top: 4px;
+                    transition: all 0.18s;
+                    margin-top: 2px;
                 }
                 .kanban-add-btn:hover {
-                    background-color: var(--card-row-hover);
-                    border-color: var(--card-border);
-                    color: hsl(var(--color-text-secondary));
+                    background-color: hsl(var(--paper, var(--color-bg-surface)));
+                    border-color: rgba(21, 42, 0, 0.28);
+                    color: hsl(var(--color-text-primary));
                 }
             `}</style>
         </div>
@@ -795,15 +848,15 @@ export const KanbanView = () => {
                     overflow: hidden;
                     display: flex;
                     flex-direction: column;
-                    padding: 24px 32px;
+                    padding: 2px 0 8px;
                 }
                 .kanban-board {
                     flex: 1;
                     display: flex;
-                    gap: 16px;
+                    gap: 14px;
                     overflow-x: auto;
                     align-items: flex-start;
-                    padding-bottom: 32px;
+                    padding-bottom: 20px;
                 }
             `}</style>
         </div>

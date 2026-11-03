@@ -87,9 +87,10 @@ export const DateCell: React.FC<DateCellProps> = memo(({ itemId, column, value, 
                     alignItems: 'center',
                     justifyContent: columnJustify(column.numberAlign, defaultColumnAlign(column.type)),
                     cursor: 'pointer',
-                    color: overdue ? '#e2445c' : (value ? 'inherit' : 'hsl(var(--color-text-tertiary))'),
+                    color: overdue ? 'hsl(var(--color-danger))' : (value ? 'inherit' : 'hsl(var(--color-text-tertiary))'),
                     backgroundColor: isEditing ? 'hsl(var(--color-brand-light))' : 'transparent',
-                    position: 'relative'
+                    position: 'relative',
+                    fontVariantNumeric: 'tabular-nums'
                 }}
             >
                 {value ? (
@@ -109,10 +110,10 @@ export const DateCell: React.FC<DateCellProps> = memo(({ itemId, column, value, 
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    width: '14px',
-                                    height: '14px',
+                                    width: '15px',
+                                    height: '15px',
                                     borderRadius: '50%',
-                                    backgroundColor: 'rgba(0,0,0,0.1)',
+                                    backgroundColor: 'hsl(var(--color-text-primary) / 0.08)',
                                     color: 'hsl(var(--color-text-secondary))',
                                     cursor: 'pointer'
                                 }}

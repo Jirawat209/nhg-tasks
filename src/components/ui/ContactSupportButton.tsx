@@ -3,9 +3,10 @@ import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeStore } from '../../store/useThemeStore';
 
-// The support cat: the original is purple (hosted by the guideline site); under
-// Narai it is the same picture recoloured white with brown patches.
-const SUPPORT_CAT = 'https://guideline.lubd.com/wp-content/uploads/2026/05/Momaru.png';
+// The support cat: the original (purple) is normally hosted by the guideline
+// site, but this local demo build must never fetch anything remote, so both
+// palettes use the bundled Narai asset instead.
+const SUPPORT_CAT = '/support-cat-narai.png';
 const SUPPORT_CAT_NARAI = '/support-cat-narai.png';
 
 export const ContactSupportButton = () => {

@@ -104,20 +104,18 @@ export const TimelinePicker = ({ itemId, dateRange, onSelect, onClose, position 
     return createPortal(
         <div
             ref={pickerRef}
+            className="glass-pop"
             style={{
                 position: 'fixed',
                 top: style.top,
                 left: style.left,
-                backgroundColor: 'hsl(var(--color-bg-surface))',
-                borderRadius: '8px',
-                boxShadow: '0 6px 24px rgba(0,0,0,0.12)',
-                border: '1px solid hsl(var(--color-border))',
+                borderRadius: '16px',
                 zIndex: 9999,
                 width: '320px',
                 padding: '16px',
                 display: 'flex',
                 flexDirection: 'column',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--font-family-sans)',
                 color: 'hsl(var(--color-text-primary))'
             }}
             onClick={(e) => e.stopPropagation()}
@@ -125,7 +123,7 @@ export const TimelinePicker = ({ itemId, dateRange, onSelect, onClose, position 
             {/* Manual Date Inputs */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                 <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '11px', color: 'hsl(var(--color-text-secondary))', fontWeight: 500, display: 'block', marginBottom: '4px' }}>From</label>
+                    <label style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'hsl(var(--color-text-tertiary))', fontWeight: 600, display: 'block', marginBottom: '4px' }}>From</label>
                     <input
                         type="date"
                         value={selectedRange?.from ? format(selectedRange.from, 'yyyy-MM-dd') : ''}
@@ -143,17 +141,18 @@ export const TimelinePicker = ({ itemId, dateRange, onSelect, onClose, position 
                         style={{
                             width: '100%',
                             padding: '6px 8px',
-                            borderRadius: '4px',
-                            border: '1px solid #c3c6d4',
-                            fontSize: '13px',
-                            color: '#323338',
+                            borderRadius: '8px',
+                            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                            fontSize: '12.5px',
+                            color: 'hsl(var(--color-text-primary))',
                             outline: 'none',
                             fontFamily: 'inherit'
                         }}
                     />
                 </div>
                 <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '11px', color: 'hsl(var(--color-text-secondary))', fontWeight: 500, display: 'block', marginBottom: '4px' }}>To</label>
+                    <label style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'hsl(var(--color-text-tertiary))', fontWeight: 600, display: 'block', marginBottom: '4px' }}>To</label>
                     <input
                         type="date"
                         min={selectedRange?.from ? format(selectedRange.from, 'yyyy-MM-dd') : undefined}
@@ -171,10 +170,11 @@ export const TimelinePicker = ({ itemId, dateRange, onSelect, onClose, position 
                         style={{
                             width: '100%',
                             padding: '6px 8px',
-                            borderRadius: '4px',
-                            border: '1px solid #c3c6d4',
-                            fontSize: '13px',
-                            color: '#323338',
+                            borderRadius: '8px',
+                            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                            fontSize: '12.5px',
+                            color: 'hsl(var(--color-text-primary))',
                             outline: 'none',
                             fontFamily: 'inherit'
                         }}
@@ -183,29 +183,29 @@ export const TimelinePicker = ({ itemId, dateRange, onSelect, onClose, position 
             </div>
 
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                <button onClick={handlePrevMonth} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px', color: 'hsl(var(--color-text-secondary))' }} className="hover-bg"><ChevronLeft size={20} /></button>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <button onClick={handlePrevMonth} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '999px', color: 'hsl(var(--color-text-secondary))' }} className="hover-bg"><ChevronLeft size={18} /></button>
                 <div style={{ display: 'flex', gap: '4px' }}>
-                    <button onClick={() => setView('months')} style={{ background: 'transparent', border: 'none', fontWeight: 600, cursor: 'pointer', color: 'hsl(var(--color-text-primary))' }}>{format(month, 'MMMM')}</button>
-                    <button onClick={() => setView('years')} style={{ background: 'transparent', border: 'none', fontWeight: 600, cursor: 'pointer', color: 'hsl(var(--color-text-primary))' }}>{format(month, 'yyyy')}</button>
+                    <button onClick={() => setView('months')} style={{ fontFamily: 'var(--font-family-display)', fontSize: '15px', background: 'transparent', border: 'none', fontWeight: 600, cursor: 'pointer', color: 'hsl(var(--color-text-primary))' }}>{format(month, 'MMMM')}</button>
+                    <button onClick={() => setView('years')} style={{ fontFamily: 'var(--font-family-display)', fontSize: '15px', background: 'transparent', border: 'none', fontWeight: 600, cursor: 'pointer', color: 'hsl(var(--color-text-primary))' }}>{format(month, 'yyyy')}</button>
                 </div>
-                <button onClick={handleNextMonth} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px', color: 'hsl(var(--color-text-secondary))' }} className="hover-bg"><ChevronRight size={20} /></button>
+                <button onClick={handleNextMonth} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '999px', color: 'hsl(var(--color-text-secondary))' }} className="hover-bg"><ChevronRight size={18} /></button>
             </div>
 
             <style>{`
-                .hover-bg:hover { background-color: hsl(var(--color-bg-surface-hover)) !important; }
+                .hover-bg:hover { background-color: hsl(var(--color-text-primary) / 0.06) !important; }
                 .rdp-nav { display: none; }
                 .rdp-caption { display: none; } 
                 .rdp-day_selected:not([disabled]) { 
                     background-color: hsl(var(--color-brand-primary)) !important; 
-                    color: white;
+                    color: #FFEFD2 !important;
                 }
                 .rdp-day_range_middle {
-                    background-color: hsl(var(--color-brand-light)) !important;
+                    background-color: hsl(var(--color-brand-primary) / 0.14) !important;
                     color: hsl(var(--color-brand-primary)) !important;
                 }
-                .rdp-day:hover:not(.rdp-day_selected) { background-color: hsl(var(--color-bg-surface-hover)); }
-                .rdp { margin: 0; --rdp-cell-size: 36px; } 
+                .rdp-day:hover:not(.rdp-day_selected) { background-color: hsl(var(--color-text-primary) / 0.06); }
+                .rdp { margin: 0; --rdp-cell-size: 36px; --rdp-accent-color: hsl(var(--color-brand-primary)); } 
             `}</style>
 
             {view === 'calendar' && (
@@ -301,9 +301,9 @@ export const TimelinePicker = ({ itemId, dateRange, onSelect, onClose, position 
 
             {/* Footer */}
             <div style={{ 
-                marginTop: '16px', 
+                marginTop: '14px', 
                 paddingTop: '12px', 
-                borderTop: '1px solid hsl(var(--color-border))', 
+                borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))', 
                 display: 'flex', 
                 justifyContent: 'space-between',
                 alignItems: 'center'
@@ -317,11 +317,11 @@ export const TimelinePicker = ({ itemId, dateRange, onSelect, onClose, position 
                         background: 'transparent',
                         border: 'none',
                         color: 'hsl(var(--color-text-secondary))',
-                        fontSize: '13px',
+                        fontSize: '12.5px',
                         fontWeight: 500,
                         cursor: 'pointer',
-                        padding: '4px 8px',
-                        borderRadius: '4px'
+                        padding: '5px 10px',
+                        borderRadius: '999px'
                     }}
                     className="hover-bg"
                 >
@@ -332,13 +332,12 @@ export const TimelinePicker = ({ itemId, dateRange, onSelect, onClose, position 
                     style={{
                         backgroundColor: 'hsl(var(--color-brand-primary))',
                         border: 'none',
-                        color: 'white',
-                        fontSize: '13px',
+                        color: '#FFEFD2',
+                        fontSize: '12.5px',
                         fontWeight: 600,
                         cursor: 'pointer',
-                        padding: '6px 16px',
-                        borderRadius: '4px',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                        padding: '6px 18px',
+                        borderRadius: '999px'
                     }}
                 >
                     Save

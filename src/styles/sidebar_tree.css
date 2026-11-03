@@ -27,7 +27,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-sm);
+    border-radius: 10px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -119,11 +119,11 @@
 }
 
 .tree-node-parent.expanded .chevron {
-    transform: rotate(0deg);
+    transform: rotate(90deg);
 }
 
 .tree-node-parent:not(.expanded) .chevron {
-    transform: rotate(-90deg);
+    transform: rotate(0deg);
 }
 
 /* Children Container */

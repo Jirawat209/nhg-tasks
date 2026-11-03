@@ -62,26 +62,24 @@ export const NumberFormatMenu = ({
     return createPortal(
         <div
             ref={menuRef}
+            className="glass-pop"
             style={{
                 position: 'fixed',
                 top: position.top,
                 left: position.left,
-                backgroundColor: 'hsl(var(--color-bg-surface))',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                border: '1px solid hsl(var(--color-border))',
+                borderRadius: '16px',
                 zIndex: 9999,
                 width: '220px',
                 maxHeight: '400px',
                 display: 'flex',
                 flexDirection: 'column',
                 color: 'hsl(var(--color-text-primary))',
-                fontSize: '14px',
+                fontSize: '13.5px',
                 overflow: 'hidden'
             }}
         >
-            <div style={{ padding: '8px 12px', borderBottom: '1px solid hsl(var(--color-border))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'hsl(var(--color-bg-subtle))' }}>
-                <span style={{ fontWeight: 500 }}>{COLUMN_FORMAT_TITLES[column.type] || 'Column Format'}</span>
+            <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: 'var(--font-family-display)', fontSize: '15px', fontWeight: 600 }}>{COLUMN_FORMAT_TITLES[column.type] || 'Column Format'}</span>
                 <button onClick={onClose} className="icon-btn" style={{ padding: 4 }}><X size={14} /></button>
             </div>
 
@@ -90,25 +88,25 @@ export const NumberFormatMenu = ({
                     <>
                         <div
                             onClick={() => { onSetFormat('number'); onClose(); }}
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', cursor: 'pointer', borderRadius: '4px' }}
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', cursor: 'pointer', borderRadius: '8px' }}
                             className="hover-bg"
                         >
                             <span>Number</span>
-                            {currentFormat === 'number' && <Check size={14} />}
+                            {currentFormat === 'number' && <Check size={14} style={{ color: 'hsl(var(--color-brand-primary))' }} />}
                         </div>
                         <div
                             onClick={() => { onSetFormat('percent'); onClose(); }}
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', cursor: 'pointer', borderRadius: '4px' }}
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', cursor: 'pointer', borderRadius: '8px' }}
                             className="hover-bg"
                         >
                             <span>Percent (%)</span>
-                            {currentFormat === 'percent' && <Check size={14} />}
+                            {currentFormat === 'percent' && <Check size={14} style={{ color: 'hsl(var(--color-brand-primary))' }} />}
                         </div>
 
-                        <div style={{ borderTop: '1px solid hsl(var(--color-border))', margin: '6px 0' }} />
+                        <div style={{ borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))', margin: '6px 0' }} />
                     </>
                 )}
-                <div style={{ padding: '4px 8px', fontSize: '11px', color: 'hsl(var(--color-text-secondary))', textTransform: 'uppercase' }}>
+                <div style={{ padding: '4px 8px', fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em', color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase' }}>
                     Alignment
                 </div>
                 <div style={{ display: 'flex', gap: '4px', padding: '2px 8px 6px' }}>
@@ -128,39 +126,39 @@ export const NumberFormatMenu = ({
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 padding: '6px',
-                                borderRadius: '4px',
+                                borderRadius: '8px',
                                 cursor: 'pointer',
                                 border: currentAlign === value ? '1px solid hsl(var(--color-brand-primary))' : '1px solid transparent',
                                 backgroundColor: currentAlign === value ? 'hsl(var(--color-brand-primary) / 0.1)' : 'transparent',
                                 color: currentAlign === value ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-secondary))'
                             }}
                         >
-                            <Icon size={16} />
+                            <Icon size={15} />
                         </button>
                     ))}
                 </div>
 
                 {isNumber && (
                     <>
-                        <div style={{ borderTop: '1px solid hsl(var(--color-border))', margin: '6px 0' }} />
-                        <div style={{ padding: '4px 8px', fontSize: '11px', color: 'hsl(var(--color-text-secondary))', textTransform: 'uppercase' }}>
+                        <div style={{ borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))', margin: '6px 0' }} />
+                        <div style={{ padding: '4px 8px', fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em', color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase' }}>
                             Currency
                         </div>
                         {CURRENCY_OPTIONS.map(opt => (
                             <div
                                 key={opt.code}
                                 onClick={() => { onSetFormat('currency', opt.code); onClose(); }}
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', cursor: 'pointer', borderRadius: '4px' }}
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', cursor: 'pointer', borderRadius: '8px' }}
                                 className="hover-bg"
                             >
                                 <span>{opt.symbol} {opt.code} - {opt.label}</span>
-                                {currentFormat === 'currency' && column.currencyCode === opt.code && <Check size={14} />}
+                                {currentFormat === 'currency' && column.currencyCode === opt.code && <Check size={14} style={{ color: 'hsl(var(--color-brand-primary))' }} />}
                             </div>
                         ))}
                     </>
                 )}
                 <style>{`
-                    .hover-bg:hover { background-color: hsl(var(--color-bg-surface-hover)) !important; }
+                    .hover-bg:hover { background-color: hsl(var(--color-text-primary) / 0.06) !important; }
                 `}</style>
             </div>
         </div>,

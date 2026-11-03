@@ -746,7 +746,7 @@ export const createBoardSlice: StateCreator<
 
         const boardId = uuidv4();
         const defaultGroups = [
-            { id: uuidv4(), title: 'Group Title', color: '#579bfc', order: 0 }
+            { id: uuidv4(), title: 'Group Title', color: '#2E7D8C', order: 0 }
         ];
         const statusOptions = await getDefaultStatusOptions();
         const defaultColumns: Column[] = [
@@ -772,7 +772,7 @@ export const createBoardSlice: StateCreator<
             isDataLoaded: true
         };
 
-        set({ boards: [...boards, newBoard], activeBoardId: boardId });
+        set({ boards: [...boards, newBoard], activeBoardId: boardId, activePage: 'board' });
 
         await supabase.from('boards').insert({ id: boardId, workspace_id: activeWorkspaceId, title, order: boards.length });
         await supabase.from('groups').insert(defaultGroups.map(g => ({ id: g.id, board_id: boardId, title: g.title, color: g.color, order: g.order })));
@@ -802,8 +802,9 @@ export const createBoardSlice: StateCreator<
         // haven't resolved the insert yet, which would momentarily wipe the optimistic columns.
         // Realtime channels and optimistic state will handle the rest.
 
-        get().logActivity('board_created', 'workspace', activeWorkspaceId, {
+        get().logActivity('board_created', 'board', boardId, {
             workspace_id: activeWorkspaceId,
+            board_id: boardId,
             board_title: title
         });
     },

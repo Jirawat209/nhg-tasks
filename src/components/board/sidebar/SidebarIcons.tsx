@@ -37,8 +37,9 @@ export const WorkspaceIcon = ({ title, isActive, size = 20 }: { title: string, i
             height: `${size}px`,
             // A rounded square in every palette; a palette may override --ws-badge-radius
             borderRadius: 'var(--ws-badge-radius, 6px)',
-            backgroundColor: isActive ? 'hsl(var(--color-brand-primary))' : '#e6e9ef',
-            color: isActive ? 'white' : '#676879',
+            backgroundColor: isActive ? 'hsl(var(--color-brand-primary))' : 'var(--card-tile, rgba(21, 42, 0, 0.09))',
+            color: isActive ? 'hsl(var(--color-bg-canvas))' : 'var(--card-tile-ink, hsl(var(--color-text-primary)))',
+            boxShadow: isActive ? undefined : 'inset 0 0 0 1px var(--card-tile-ring, rgba(21, 42, 0, 0.15))',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

@@ -1,14 +1,16 @@
+import { Rows3, GanttChart, Columns3, CalendarDays, Sparkles } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useBoardStore } from '../../store/useBoardStore';
 import { shownViewId, useAiSummaryEnabled } from '../../hooks/useAiSummaryEnabled';
 
-const BASE_VIEWS = [
-    { id: 'main_table', label: 'Main table' },
-    { id: 'timeline', label: 'Timeline' },
-    { id: 'kanban', label: 'Kanban' },
-    { id: 'calendar', label: 'Calendar' },
+const BASE_VIEWS: { id: string; label: string; icon: LucideIcon }[] = [
+    { id: 'main_table', label: 'Table', icon: Rows3 },
+    { id: 'timeline', label: 'Timeline', icon: GanttChart },
+    { id: 'kanban', label: 'Kanban', icon: Columns3 },
+    { id: 'calendar', label: 'Calendar', icon: CalendarDays },
 ];
 
-const AI_SUMMARY_VIEW = { id: 'ai_summary', label: '✦ AI Summary' };
+const AI_SUMMARY_VIEW = { id: 'ai_summary', label: 'AI Summary', icon: Sparkles };
 
 export const BoardViewsTabs = () => {
     const activeBoardId = useBoardStore(state => state.activeBoardId);
@@ -23,43 +25,19 @@ export const BoardViewsTabs = () => {
     if (!activeBoardId) return null;
 
     return (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0 24px',
-            gap: '16px',
-            borderBottom: '1px solid hsl(var(--color-border))',
-            // -canvas, matching BoardHeader's own wrapper and <main> — this tab strip
-            // sits between two white regions (title above, table below) and used to
-            // be a leftover -subtle band sandwiched between them.
-            backgroundColor: 'hsl(var(--color-bg-canvas))',
-            height: '32px',
-            minHeight: '32px'
-        }}>
+        <div className="seg glass-chip" role="tablist" aria-label="Board views">
             {views.map(view => {
                 const isActive = activeViewId === view.id;
+                const Icon = view.icon;
                 return (
                     <button
                         key={view.id}
+                        role="tab"
+                        aria-selected={isActive}
+                        className={`seg-btn${isActive ? ' is-active' : ''}`}
                         onClick={() => setActiveView(activeBoardId, view.id)}
-                        style={{
-                            height: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            fontSize: '14px',
-                            color: isActive ? '#6b4cc3' : 'hsl(var(--color-text-secondary))',
-                            borderBottom: isActive ? '2px solid #6b4cc3' : '2px solid transparent',
-                            cursor: 'pointer',
-                            background: 'none',
-                            borderTop: 'none',
-                            borderLeft: 'none',
-                            borderRight: 'none',
-                            padding: '0 4px',
-                            fontWeight: isActive ? 500 : 400,
-                            transition: 'all 0.2s ease',
-                            marginTop: '2px' // Offset for border bottom
-                        }}
                     >
+                        <Icon size={15} />
                         {view.label}
                     </button>
                 );

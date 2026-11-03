@@ -108,7 +108,7 @@ const SortableHeaderCell = ({
             )}
 
             {activeSort?.columnId === col.id && (
-                <div style={{ marginRight: '4px', color: '#0073ea', fontSize: '10px' }}>
+                <div style={{ marginRight: '4px', color: 'hsl(var(--color-brand-primary))', fontSize: '10px' }}>
                     {activeSort.direction === 'asc' ? '▲' : '▼'}
                 </div>
             )}
@@ -176,7 +176,7 @@ const SortableHeaderCell = ({
  * this set alone: items and sub-items never share a column, and neither do the
  * sub-items of different groups.
  */
-export const Header = ({ columns, groupColor, groupId, scope = 'item' }: { columns: Column[], groupColor?: string, groupId?: string, scope?: 'item' | 'subitem' }) => {
+export const Header = ({ columns, groupId, scope = 'item' }: { columns: Column[], groupColor?: string, groupId?: string, scope?: 'item' | 'subitem' }) => {
     const addColumn = useBoardStore(state => state.addColumn);
     const deleteColumn = useBoardStore(state => state.deleteColumn);
     const updateColumnTitle = useBoardStore(state => state.updateColumnTitle);
@@ -401,7 +401,7 @@ export const Header = ({ columns, groupColor, groupId, scope = 'item' }: { colum
             return (activeFilterColumn.options || []).map((opt: any) => ({ ...opt, id: opt.label }));
         }
         if (activeFilterColumn.type === 'checkbox') {
-            return [{ id: 'true', label: 'Checked', color: '#00c875' }, { id: 'false', label: 'Unchecked', color: '#e2445c' }];
+            return [{ id: 'true', label: 'Checked', color: '#3F7D32' }, { id: 'false', label: 'Unchecked', color: '#B33F2E' }];
         }
         const values = new Set<string>();
         items.forEach(i => {
@@ -431,19 +431,12 @@ export const Header = ({ columns, groupColor, groupId, scope = 'item' }: { colum
             height: '34px',
             alignItems: 'center'
         }}>
-            {groupColor && (
-                <div style={{
-                    position: 'absolute', left: '0px', top: '0px', bottom: '0px', width: '6px',
-                    backgroundColor: groupColor, zIndex: 80, borderRadius: '0px'
-                }} />
-            )}
-
             <div className="table-cell table-header-cell sticky-col" data-item-col="true" style={{
                 width: `${itemColumnWidth}px`,
                 position: 'sticky', left: 0, zIndex: 60,
                 backgroundColor: 'hsl(var(--color-table-header-bg))',
                 borderRight: 'none',
-                paddingLeft: groupColor ? '24px' : '8px',
+                paddingLeft: isSubitemHeader ? '80px' : '14px',
                 display: 'flex', alignItems: 'center', gap: '8px',
                 boxShadow: 'none',
                 fontSize: '13px'

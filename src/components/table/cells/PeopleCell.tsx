@@ -98,24 +98,26 @@ export const PeopleCell: React.FC<PeopleCellProps> = memo(({ itemId, boardId, co
                             const name = profile.full_name || profile.email || 'Unknown';
                             const initial = name[0].toUpperCase();
 
+                            const avatarBg = idx % 2 === 0 ? 'hsl(var(--color-brand-primary))' : '#A76400';
+
                             return (
                                 <div key={idx} style={{
                                     width: '26px',
                                     height: '26px',
-                                    borderRadius: '28%',
-                                    backgroundColor: profile?.avatar_url ? 'transparent' : '#0073ea',
-                                    color: 'white',
+                                    borderRadius: '50%',
+                                    backgroundColor: profile?.avatar_url ? 'transparent' : avatarBg,
+                                    color: '#FFEFD2',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontSize: '11px',
+                                    fontSize: '10.5px',
                                     fontWeight: 600,
-                                    border: '2px solid white',
-                                    marginLeft: idx > 0 ? '-10px' : '0',
+                                    border: '2px solid hsl(var(--paper, var(--color-bg-surface)))',
+                                    marginLeft: idx > 0 ? '-8px' : '0',
                                     zIndex: idx + 1,
                                     overflow: 'hidden',
                                     position: 'relative',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                    boxShadow: '0 1px 2px rgba(21, 42, 0, 0.14)'
                                 }} title={name}>
                                     {profile?.avatar_url ? (
                                         <img 
@@ -134,16 +136,16 @@ export const PeopleCell: React.FC<PeopleCellProps> = memo(({ itemId, boardId, co
                             <div style={{
                                 width: '26px',
                                 height: '26px',
-                                borderRadius: '28%',
-                                backgroundColor: '#e5e7eb',
-                                color: '#6b7280',
+                                borderRadius: '50%',
+                                backgroundColor: 'hsl(var(--color-text-primary) / 0.1)',
+                                color: 'hsl(var(--color-text-secondary))',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '11px',
+                                fontSize: '10.5px',
                                 fontWeight: 600,
-                                border: '2px solid white',
-                                marginLeft: '-10px',
+                                border: '2px solid hsl(var(--paper, var(--color-bg-surface)))',
+                                marginLeft: '-8px',
                                 zIndex: 10,
                                 position: 'relative'
                             }}>

@@ -6,6 +6,7 @@ import { GifStickerPicker } from '../ui/GifStickerPicker';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { RichTextEditor } from '../ui/RichTextEditor';
 import { fileLinkFromUrl, ONEDRIVE_ICON } from '../../lib/fileLinks';
+import { LOCAL_ICONS } from '../../lib/localIcons';
 import { useCloudDrives } from '../../hooks/useCloudDrives';
 import { v4 as uuidv4 } from 'uuid';
 import type { FileLink } from '../../types';
@@ -207,12 +208,12 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
     // FIX: Keep component mounted when reloading data to preserve typed text
     if (!activeItem) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '32px', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '32px', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--color-text-tertiary))' }}>
                 <div style={{
                     width: '24px',
                     height: '24px',
-                    border: '3px solid #f3f3f3',
-                    borderTop: '3px solid #3498db',
+                    border: '3px solid hsl(var(--color-border))',
+                    borderTop: '3px solid hsl(var(--color-brand-primary))',
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite'
                 }}></div>
@@ -453,30 +454,44 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
         { id: 'files', label: 'Files', icon: FileText }
     ] as const;
 
+    const itemGroup = board?.groups.find(g => g.id === activeItem.groupId);
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {/* ... Header and Tabs ... */}
+            {/* Glass Header with Narai Eyebrow & Display Title */}
             <div style={{
-                padding: '24px 32px',
-                borderBottom: '1px solid hsl(var(--color-border))',
+                padding: '20px 28px 16px',
+                borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
                 display: 'flex',
                 alignItems: 'flex-start',
                 justifyContent: 'space-between',
-                backgroundColor: 'hsl(var(--color-bg-surface))'
+                gap: '16px',
+                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 250, 240, 0.12) 100%)'
             }}>
-                <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                        <h2 style={{
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="bh-eyebrow" style={{ marginBottom: '6px' }}>
+                        <span>{board?.title || 'Board'}</span>
+                        {itemGroup && (
+                            <>
+                                <span className="bh-eyebrow-dot" style={{ background: itemGroup.color || 'hsl(var(--color-text-tertiary))', width: '6px', height: '6px' }} />
+                                <span style={{ color: 'hsl(var(--color-text-secondary))' }}>{itemGroup.title}</span>
+                            </>
+                        )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <h2 className="narai-heading" style={{
                             margin: 0,
-                            fontSize: '24px',
+                            fontSize: '26px',
                             fontWeight: 600,
+                            letterSpacing: '-0.015em',
+                            fontFamily: 'var(--font-family-display)',
+                            color: 'hsl(var(--color-text-primary))',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
                             flex: 1,
                             minWidth: 0
                         }}>
-
                             <textarea
                                 ref={titleTextareaRef}
                                 value={activeItem.title}
@@ -493,10 +508,11 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                 style={{
                                     border: 'none',
                                     background: 'transparent',
-                                    fontFamily: 'inherit',
+                                    fontFamily: 'var(--font-family-display)',
                                     fontSize: 'inherit',
                                     fontWeight: 'inherit',
-                                    lineHeight: '1.3',
+                                    letterSpacing: 'inherit',
+                                    lineHeight: '1.22',
                                     width: '100%',
                                     outline: 'none',
                                     color: 'inherit',
@@ -511,68 +527,90 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                 </div>
                 <button
                     onClick={onClose}
+                    className="glass-chip"
+                    title="Close (Esc)"
                     style={{
-                        background: 'transparent',
-                        border: 'none',
+                        width: '34px',
+                        height: '34px',
+                        borderRadius: '50%',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         cursor: 'pointer',
-                        padding: '8px',
-                        borderRadius: '4px',
-                        color: 'hsl(var(--color-text-tertiary))'
+                        color: 'hsl(var(--color-text-secondary))',
+                        flexShrink: 0,
+                        transition: 'background-color 0.15s, color 0.15s'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'var(--glass-chip-hover)';
+                        e.currentTarget.style.color = 'hsl(var(--color-text-primary))';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'var(--glass-chip)';
+                        e.currentTarget.style.color = 'hsl(var(--color-text-secondary))';
                     }}
                 >
-                    <X size={24} />
+                    <X size={18} />
                 </button>
             </div>
 
-            <DependenciesSection itemId={activeItem.id} boardId={activeItem.boardId} trailing={<ItemNotifySwitch itemId={activeItem.id} />} />
-
-            {/* New Tab List (Removed Activity) */}
+            {/* Unified Glass Control Bar: Segmented View Pills + Waiting On + Notification */}
             <div style={{
-                padding: '0 32px',
-                borderBottom: '1px solid hsl(var(--color-border))',
-                backgroundColor: 'hsl(var(--color-bg-surface))', // Use surface color
+                padding: '10px 28px',
+                borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
+                background: 'rgba(255, 255, 255, 0.22)',
                 display: 'flex',
-                gap: '24px'
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '16px',
+                flexWrap: 'wrap'
             }}>
-                {tabs.map(tab => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id as any)}
-                        style={{
-                            padding: '12px 0',
-                            background: 'none',
-                            border: 'none',
-                            borderBottom: activeTab === tab.id ? '2px solid hsl(var(--color-brand-primary))' : '2px solid transparent',
-                            color: activeTab === tab.id ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-secondary))',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '14px',
-                            fontWeight: 500
-                        }}
-                    >
-                        <tab.icon size={16} />
-                        {tab.label}
-                        {tab.id === 'updates' && updatesTabCount > 0 && (
-                            <span style={{
-                                background: 'hsl(var(--color-brand-primary))',
-                                color: 'white',
-                                padding: '2px 6px',
-                                borderRadius: '10px',
-                                fontSize: '11px'
-                            }}>{updatesTabCount}</span>
-                        )}
-                    </button>
-                ))}
+                <div className="seg glass-chip">
+                    {tabs.map(tab => {
+                        const isActive = activeTab === tab.id;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`seg-btn ${isActive ? 'is-active' : ''}`}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <tab.icon size={14} />
+                                {tab.label}
+                                {tab.id === 'updates' && updatesTabCount > 0 && (
+                                    <span style={{
+                                        background: isActive ? 'rgba(255, 239, 210, 0.22)' : 'hsl(var(--color-brand-primary))',
+                                        color: '#FFEFD2',
+                                        padding: '1px 6px',
+                                        borderRadius: '999px',
+                                        fontSize: '10.5px',
+                                        fontWeight: 700,
+                                        lineHeight: 1.3
+                                    }}>{updatesTabCount}</span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', minWidth: '260px' }}>
+                    <div style={{ width: '100%' }}>
+                        <DependenciesSection
+                            itemId={activeItem.id}
+                            boardId={activeItem.boardId}
+                            compact
+                            trailing={<ItemNotifySwitch itemId={activeItem.id} />}
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Content */}
-            <div style={{ flex: 1, overflow: 'auto', padding: '32px', backgroundColor: 'hsl(var(--color-bg-canvas))' }}>
+            <div style={{ flex: 1, overflow: 'auto', padding: '24px 28px 32px', backgroundColor: 'transparent' }}>
                 {activeTab === 'updates' && (
-                    <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+                    <div style={{ maxWidth: '720px', margin: '0 auto' }}>
                         {/* Input Area (New WYSIWYG) */}
-                        <div style={{ marginBottom: '32px' }}>
+                        <div style={{ marginBottom: '24px' }}>
                             <RichTextEditor
                                 id={`update-input-${itemId}`}
                                 value={draftText}
@@ -590,12 +628,12 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                         onKeyDown={(e) => e.key === 'Enter' && handleAddAttachUrl()}
                                                         placeholder="Paste link to attach..."
                                                         autoFocus
-                                                        style={{ flex: 1, padding: '6px 10px', borderRadius: '4px', border: attachError ? '1px solid #e11d48' : '1px solid hsl(var(--color-border))', fontSize: '13px', outline: 'none', backgroundColor: 'hsl(var(--color-bg-canvas))', color: 'hsl(var(--color-text-primary))' }}
+                                                        style={{ flex: 1, padding: '6px 10px', borderRadius: '4px', border: attachError ? '1px solid hsl(var(--color-danger))' : '1px solid hsl(var(--color-border))', fontSize: '13px', outline: 'none', backgroundColor: 'hsl(var(--color-bg-canvas))', color: 'hsl(var(--color-text-primary))' }}
                                                     />
-                                                    <button onClick={handleAddAttachUrl} disabled={!attachUrl.trim()} style={{ padding: '6px 12px', borderRadius: '4px', border: 'none', backgroundColor: attachUrl.trim() ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-brand-primary) / 0.3)', color: 'white', fontSize: '13px', fontWeight: 500, cursor: attachUrl.trim() ? 'pointer' : 'not-allowed' }}>Attach</button>
+                                                    <button onClick={handleAddAttachUrl} disabled={!attachUrl.trim()} style={{ padding: '6px 12px', borderRadius: '4px', border: 'none', backgroundColor: attachUrl.trim() ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-brand-primary) / 0.3)', color: '#FFEFD2', fontSize: '13px', fontWeight: 500, cursor: attachUrl.trim() ? 'pointer' : 'not-allowed' }}>Attach</button>
                                                     <button onClick={() => { setShowUrlPanel(false); setAttachUrl(''); setAttachError(null); }} style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid hsl(var(--color-border))', background: 'transparent', cursor: 'pointer', color: 'hsl(var(--color-text-secondary))', fontSize: '13px' }}>✕</button>
                                                 </div>
-                                                {attachError && <div style={{ fontSize: '12px', color: '#e11d48' }}>{attachError}</div>}
+                                                {attachError && <div style={{ fontSize: '12px', color: 'hsl(var(--color-danger))' }}>{attachError}</div>}
                                             </div>
                                         )}
 
@@ -617,12 +655,12 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                         {file.type === 'onedrive' ? (
                                                             <img src={ONEDRIVE_ICON} alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
                                                         ) : file.type === 'google-drive' ? (
-                                                            <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
+                                                            <img src={LOCAL_ICONS.drive} alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
                                                         ) : (
                                                             <Link2 size={11} style={{ flexShrink: 0, color: 'hsl(var(--color-brand-primary))' }} />
                                                         )}
                                                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</span>
-                                                        <button onClick={() => setDraftFiles(prev => prev.filter(f => f.id !== file.id))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', padding: 0, lineHeight: 1, fontSize: '11px', flexShrink: 0 }}>✕</button>
+                                                        <button onClick={() => setDraftFiles(prev => prev.filter(f => f.id !== file.id))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--color-text-tertiary))', padding: 0, lineHeight: 1, fontSize: '11px', flexShrink: 0 }}>✕</button>
                                                     </div>
                                                 ))}
                                             </div>
@@ -682,7 +720,7 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                 >
-                                                    <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="Google Drive" style={{ width: '18px', height: '18px' }} />
+                                                    <img src={LOCAL_ICONS.drive} alt="Google Drive" style={{ width: '18px', height: '18px' }} />
                                                 </button>
 
                                                 )}
@@ -694,17 +732,18 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                     {sendError}
                                                 </div>
                                             )}
-                                            <div style={{ display: 'flex' }}>
+                                            <div className="cmd-add" style={{ height: '32px' }}>
                                                 <button
                                                     onClick={handleSendUpdate}
-                                                    style={{ backgroundColor: 'hsl(var(--color-brand-primary))', color: 'white', border: 'none', padding: '7px 16px', borderRadius: '6px 0 0 6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, fontSize: '13px' }}
+                                                    style={{ padding: '0 16px', fontSize: '12.5px', fontWeight: 600, color: '#FFEFD2', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                                                 >
                                                     Save
                                                 </button>
                                                 <button
-                                                    style={{ backgroundColor: 'hsl(var(--color-brand-primary))', color: 'white', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.25)', padding: '7px 8px', borderRadius: '0 6px 6px 0', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                                    className="cmd-add-more"
+                                                    style={{ padding: '0 9px', color: '#FFEFD2', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
                                                 >
-                                                    <ChevronDown size={14} />
+                                                    <ChevronDown size={13} />
                                                 </button>
                                             </div>
                                         </div>
@@ -718,22 +757,49 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                             opened in that window has a count but no content yet. Saying
                             "no updates yet" there would be wrong, not just early. */}
                         {(activeItem.updatesLoaded === false && (activeItem.updatesCount ?? 0) > 0) ? (
-                            <div style={{ textAlign: 'center', color: '#888', padding: '40px', fontSize: '14px' }}>
+                            <div className="glass-chip" style={{ textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', padding: '40px', fontSize: '14px', borderRadius: '18px' }}>
                                 Loading updates…
                             </div>
                         ) : (getDedupedUpdates(activeItem.updates).length === 0) ? (
-                            <div style={{ textAlign: 'center', color: '#888', padding: '40px' }}>
-                                <div style={{ marginBottom: '16px' }}>
-                                    {/* text-align:center on the wrapper doesn't center this — img is
-                                        display:block under the app's CSS reset, so block-level centering
-                                        needs its own margin:auto rather than relying on the parent. */}
-                                    <img src="https://cdn.monday.com/images/pulse-page-empty-state.svg" alt="No updates" style={{ width: '200px', opacity: 0.6, display: 'block', margin: '0 auto' }} />
+                            <div className="glass-chip" style={{
+                                textAlign: 'center',
+                                color: 'hsl(var(--color-text-secondary))',
+                                padding: '44px 32px',
+                                borderRadius: '20px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center'
+                            }}>
+                                <div style={{
+                                    width: '56px',
+                                    height: '56px',
+                                    borderRadius: '50%',
+                                    background: 'linear-gradient(145deg, rgba(21, 42, 0, 0.08) 0%, rgba(167, 100, 0, 0.12) 100%)',
+                                    border: '1px solid var(--glass-chip-edge, hsl(var(--color-border)))',
+                                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.75)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'hsl(var(--color-brand-primary))',
+                                    marginBottom: '16px'
+                                }}>
+                                    <MessageSquare size={24} />
                                 </div>
-                                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 500 }}>No updates yet for this item</h3>
-                                <p style={{ margin: 0, fontSize: '14px' }}>Be the first one to update about progress, mention someone or upload files.</p>
+                                <h3 className="narai-heading" style={{
+                                    margin: '0 0 6px 0',
+                                    fontSize: '20px',
+                                    fontWeight: 600,
+                                    fontFamily: 'var(--font-family-display)',
+                                    color: 'hsl(var(--color-text-primary))'
+                                }}>
+                                    No updates yet for this item
+                                </h3>
+                                <p style={{ margin: 0, fontSize: '13.5px', color: 'hsl(var(--color-text-tertiary))', maxWidth: '420px' }}>
+                                    Be the first one to update about progress, mention someone or upload files.
+                                </p>
                             </div>
                         ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 {(() => {
                                     const validUpdates = getDedupedUpdates(activeItem.updates);
 
@@ -742,14 +808,14 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
 
                                     const renderUpdate = (update: any, depth = 0) => (
                                         <div key={update.id} data-update-id={update.id} style={{
-                                            backgroundColor: depth === 0 ? 'white' : 'transparent',
-                                            borderRadius: '0px', // Sharp architectural corners
-                                            border: depth === 0 ? '1px solid hsl(var(--color-border))' : 'none',
-                                            padding: depth === 0 ? '24px' : '16px 0 0 52px',
+                                            backgroundColor: depth === 0 ? 'hsl(var(--paper, var(--color-bg-surface)))' : 'transparent',
+                                            borderRadius: depth === 0 ? '16px' : '0px',
+                                            border: depth === 0 ? '1px solid var(--paper-edge, hsl(var(--color-border)))' : 'none',
+                                            padding: depth === 0 ? '22px 24px' : '16px 0 0 52px',
                                             position: 'relative',
-                                            marginBottom: depth === 0 ? '16px' : '0',
-                                            borderLeft: depth === 0 && deleteConfirmId === update.id ? '4px solid hsl(var(--color-dangerous))' : (depth === 0 ? '1px solid hsl(var(--color-border))' : 'none'),
-                                            boxShadow: depth === 0 ? '0 1px 3px rgba(0,0,0,0.05)' : 'none'
+                                            marginBottom: depth === 0 ? '12px' : '0',
+                                            borderLeft: depth === 0 && deleteConfirmId === update.id ? '4px solid hsl(var(--color-danger))' : (depth === 0 ? '1px solid var(--paper-edge, hsl(var(--color-border)))' : 'none'),
+                                            boxShadow: depth === 0 ? 'var(--paper-shadow, 0 8px 24px -16px rgba(21, 42, 0, 0.25))' : 'none'
                                         }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -762,7 +828,7 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                                     src={avatarUrl}
                                                                     alt=""
                                                                     referrerPolicy="no-referrer"
-                                                                    style={{ width: size, height: size, borderRadius: '28%', objectFit: 'cover', flexShrink: 0 }}
+                                                                    style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
                                                                 />
                                                             );
                                                         }
@@ -770,9 +836,9 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                             <div style={{
                                                                 width: size,
                                                                 height: size,
-                                                                borderRadius: '28%',
-                                                                backgroundColor: update.author.toLowerCase().includes('lubd') ? '#1a1728' : (update.contentType === 'Reply' ? '#2563eb' : '#00c875'),
-                                                                color: 'white',
+                                                                borderRadius: '50%',
+                                                                backgroundColor: update.author.toLowerCase().includes('lubd') ? '#250719' : (update.contentType === 'Reply' ? '#2E7D8C' : '#3F7D32'),
+                                                                color: '#FFEFD2',
                                                                 display: 'flex',
                                                                 alignItems: 'center',
                                                                 justifyContent: 'center',
@@ -786,13 +852,13 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                         );
                                                     })()}
                                                     <div>
-                                                        <div style={{ fontWeight: 700, fontSize: depth === 0 ? '15px' : '14px', display: 'flex', alignItems: 'center', gap: '8px', color: '#1a1728' }}>
+                                                        <div style={{ fontWeight: 700, fontSize: depth === 0 ? '15px' : '14px', display: 'flex', alignItems: 'center', gap: '8px', color: 'hsl(var(--color-text-primary))' }}>
                                                             {update.author}
                                                             {update.contentType === 'Reply' && (
-                                                                <span style={{ fontSize: '10px', color: '#2563eb', fontWeight: 700, backgroundColor: '#eff6ff', padding: '2px 6px', letterSpacing: '0.05em' }}>REPLY</span>
+                                                                <span style={{ fontSize: '10px', color: '#2E7D8C', fontWeight: 700, backgroundColor: 'rgba(46, 125, 140, 0.12)', padding: '2px 6px', letterSpacing: '0.05em' }}>REPLY</span>
                                                             )}
                                                         </div>
-                                                        <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
+                                                        <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', marginTop: '2px' }}>
                                                             {(() => {
                                                                 const d = new Date(update.createdAt);
                                                                 if (isNaN(d.getTime())) return update.createdAt;
@@ -810,14 +876,14 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                                 setEditDraftFiles(update.files || []);
                                                                 setShowEditUrlPanel(false);
                                                             }}
-                                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: '4px' }}
+                                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--color-text-tertiary))', padding: '4px' }}
                                                             title="Edit"
                                                         >
                                                             <Edit2 size={14} />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDeleteClick(update.id)}
-                                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: '4px' }}
+                                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--color-text-tertiary))', padding: '4px' }}
                                                             title="Delete"
                                                         >
                                                             <Trash2 size={14} />
@@ -868,12 +934,12 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                                                 {file.type === 'onedrive' ? (
                                                                                     <img src={ONEDRIVE_ICON} alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
                                                                                 ) : file.type === 'google-drive' ? (
-                                                                                    <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
+                                                                                    <img src={LOCAL_ICONS.drive} alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
                                                                                 ) : (
                                                                                     <Link2 size={11} style={{ flexShrink: 0, color: 'hsl(var(--color-brand-primary))' }} />
                                                                                 )}
                                                                                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</span>
-                                                                                <button onClick={() => setEditDraftFiles(prev => prev.filter(f => f.id !== file.id))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', padding: 0, lineHeight: 1, fontSize: '11px', flexShrink: 0 }}>✕</button>
+                                                                                <button onClick={() => setEditDraftFiles(prev => prev.filter(f => f.id !== file.id))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--color-text-tertiary))', padding: 0, lineHeight: 1, fontSize: '11px', flexShrink: 0 }}>✕</button>
                                                                             </div>
                                                                         ))}
                                                                     </div>
@@ -932,7 +998,7 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
                                                                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                         >
-                                                                            <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="Google Drive" style={{ width: '18px', height: '18px' }} />
+                                                                            <img src={LOCAL_ICONS.drive} alt="Google Drive" style={{ width: '18px', height: '18px' }} />
                                                                         </button>
 
                                                                         )}
@@ -958,7 +1024,7 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                 <>
                                                     <div
                                                         className="prose prose-sm max-w-none narai-update-content"
-                                                        style={{ color: '#1a1728', lineHeight: 1.6, fontSize: '14px' }}
+                                                        style={{ color: 'hsl(var(--color-text-primary))', lineHeight: 1.6, fontSize: '14px' }}
                                                         dangerouslySetInnerHTML={{ __html: displayUpdateHtml(update.content) }}
                                                     />
                                                     {update.files && update.files.length > 0 && (
@@ -991,7 +1057,7 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                                         {file.type === 'onedrive' ? (
                                                                             <img src={ONEDRIVE_ICON} alt="" style={{ width: '14px', height: '14px', flexShrink: 0 }} />
                                                                         ) : file.type === 'google-drive' ? (
-                                                                            <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="" style={{ width: '14px', height: '14px', flexShrink: 0 }} />
+                                                                            <img src={LOCAL_ICONS.drive} alt="" style={{ width: '14px', height: '14px', flexShrink: 0 }} />
                                                                         ) : (
                                                                             <Link2 size={13} style={{ flexShrink: 0, color: 'hsl(var(--color-brand-primary))' }} />
                                                                         )}
@@ -1013,12 +1079,12 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                         <div style={{ marginTop: '10px' }}>
                                                             <span style={{
                                                                 display: 'inline-flex', alignItems: 'center', gap: '4px',
-                                                                backgroundColor: '#FFF8DC',
-                                                                border: '1px solid #F0C040',
+                                                                backgroundColor: 'hsl(var(--color-brand-light))',
+                                                                border: '1px solid #A76400',
                                                                 borderRadius: '20px',
                                                                 padding: '2px 10px',
                                                                 fontSize: '13px', fontWeight: 600,
-                                                                color: '#5A4A00',
+                                                                color: '#A76400',
                                                                 cursor: 'pointer', userSelect: 'none'
                                                             }}
                                                                 onClick={() => toggleUpdateLike(itemId, update.id, { id: currentUser.id, name: currentUser.name })}
@@ -1042,14 +1108,14 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                             style={{
                                                                 display: 'flex', alignItems: 'center', gap: '6px',
                                                                 background: 'none', border: 'none', cursor: 'pointer',
-                                                                color: update.likedBy?.includes(currentUser.id) ? '#D4A000' : 'hsl(var(--color-text-secondary))',
+                                                                color: update.likedBy?.includes(currentUser.id) ? '#A76400' : 'hsl(var(--color-text-secondary))',
                                                                 fontSize: '13px', padding: '4px 10px', borderRadius: '4px', fontWeight: 500,
                                                                 lineHeight: 1
                                                             }}
                                                             onMouseEnter={(e) => { if (!update.likedBy?.includes(currentUser.id)) e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'; }}
                                                             onMouseLeave={(e) => { if (!update.likedBy?.includes(currentUser.id)) e.currentTarget.style.backgroundColor = 'transparent'; }}
                                                         >
-                                                            <ThumbsUp size={15} fill={update.likedBy?.includes(currentUser.id) ? '#D4A000' : 'none'} />
+                                                            <ThumbsUp size={15} fill={update.likedBy?.includes(currentUser.id) ? '#A76400' : 'none'} />
                                                             <span>Like</span>
                                                         </button>
 
@@ -1076,9 +1142,9 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                     {(openReplyBoxId === update.id || hasHtmlContent(getReplyDraft(update.id)) || (replyFiles[update.id] || []).length > 0) && (
                                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '10px' }}>
                                                         <div style={{
-                                                            width: '32px', height: '32px', borderRadius: '28%',
-                                                            backgroundColor: currentUser.name?.toLowerCase().includes('lubd') ? '#1a1728' : '#00c875',
-                                                            color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                            width: '32px', height: '32px', borderRadius: '50%',
+                                                            backgroundColor: currentUser.name?.toLowerCase().includes('lubd') ? '#250719' : '#3F7D32',
+                                                            color: '#FFEFD2', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                             fontSize: '13px', fontWeight: 700, flexShrink: 0, fontFamily: 'serif'
                                                         }}>
                                                             {currentUser.name?.charAt(0) || '?'}
@@ -1107,12 +1173,12 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                                                     onKeyDown={(e) => e.key === 'Enter' && handleAddReplyAttachUrl(update.id)}
                                                                                     placeholder="Paste link to attach..."
                                                                                     autoFocus
-                                                                                    style={{ flex: 1, padding: '6px 10px', borderRadius: '4px', border: replyAttachError ? '1px solid #e11d48' : '1px solid hsl(var(--color-border))', fontSize: '13px', outline: 'none', backgroundColor: 'hsl(var(--color-bg-surface))', color: 'hsl(var(--color-text-primary))' }}
+                                                                                    style={{ flex: 1, padding: '6px 10px', borderRadius: '4px', border: replyAttachError ? '1px solid hsl(var(--color-danger))' : '1px solid hsl(var(--color-border))', fontSize: '13px', outline: 'none', backgroundColor: 'hsl(var(--color-bg-surface))', color: 'hsl(var(--color-text-primary))' }}
                                                                                 />
-                                                                                <button onClick={() => handleAddReplyAttachUrl(update.id)} disabled={!replyAttachUrl.trim()} style={{ padding: '6px 12px', borderRadius: '4px', border: 'none', backgroundColor: replyAttachUrl.trim() ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-brand-primary) / 0.3)', color: 'white', fontSize: '13px', fontWeight: 500, cursor: replyAttachUrl.trim() ? 'pointer' : 'not-allowed' }}>Attach</button>
+                                                                                <button onClick={() => handleAddReplyAttachUrl(update.id)} disabled={!replyAttachUrl.trim()} style={{ padding: '6px 12px', borderRadius: '4px', border: 'none', backgroundColor: replyAttachUrl.trim() ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-brand-primary) / 0.3)', color: '#FFEFD2', fontSize: '13px', fontWeight: 500, cursor: replyAttachUrl.trim() ? 'pointer' : 'not-allowed' }}>Attach</button>
                                                                                 <button onClick={() => { setReplyActiveUrlId(null); setReplyAttachUrl(''); setReplyAttachError(null); }} style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid hsl(var(--color-border))', background: 'transparent', cursor: 'pointer', color: 'hsl(var(--color-text-secondary))', fontSize: '13px' }}>✕</button>
                                                                             </div>
-                                                                            {replyAttachError && <div style={{ fontSize: '12px', color: '#e11d48' }}>{replyAttachError}</div>}
+                                                                            {replyAttachError && <div style={{ fontSize: '12px', color: 'hsl(var(--color-danger))' }}>{replyAttachError}</div>}
                                                                         </div>
                                                                     )}
                                                                     {/* Pending reply file/GIF chips */}
@@ -1123,12 +1189,12 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                                                     {file.type === 'onedrive' ? (
                                                                                         <img src={ONEDRIVE_ICON} alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
                                                                                     ) : file.type === 'google-drive' ? (
-                                                                                        <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
+                                                                                        <img src={LOCAL_ICONS.drive} alt="" style={{ width: '12px', height: '12px', flexShrink: 0 }} />
                                                                                     ) : (
                                                                                         <Link2 size={11} style={{ flexShrink: 0, color: 'hsl(var(--color-brand-primary))' }} />
                                                                                     )}
                                                                                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</span>
-                                                                                    <button onClick={() => removeReplyFile(update.id, file.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', padding: 0, lineHeight: 1, fontSize: '11px', flexShrink: 0 }}>✕</button>
+                                                                                    <button onClick={() => removeReplyFile(update.id, file.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--color-text-tertiary))', padding: 0, lineHeight: 1, fontSize: '11px', flexShrink: 0 }}>✕</button>
                                                                                 </div>
                                                                             ))}
                                                                         </div>
@@ -1188,7 +1254,7 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
                                                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                             >
-                                                                                <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="Google Drive" style={{ width: '17px', height: '17px' }} />
+                                                                                <img src={LOCAL_ICONS.drive} alt="Google Drive" style={{ width: '17px', height: '17px' }} />
                                                                             </button>
 
                                                                             )}
@@ -1251,22 +1317,21 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                 />
 
                 {activeTab === 'files' && (
-                    <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+                    <div style={{ maxWidth: '720px', margin: '0 auto' }}>
                         <div style={{ marginBottom: '24px' }}>
-                            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600 }}>Files</h3>
-
                             {/* Inline Add File Form */}
                             <div style={{
-                                backgroundColor: 'hsl(var(--color-bg-surface))',
-                                padding: '20px',
-                                borderRadius: '8px',
-                                border: '1px solid #e1e4e8',
+                                backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                                padding: '20px 22px',
+                                borderRadius: '16px',
+                                border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                boxShadow: 'var(--paper-shadow, 0 8px 24px -16px rgba(21, 42, 0, 0.22))',
                                 marginBottom: '24px'
                             }}>
-                                <div style={{ marginBottom: '16px', fontWeight: 500, fontSize: '14px' }}>{drives.google && drives.onedrive ? 'Add Google Drive or OneDrive Link' : drives.onedrive ? 'Add OneDrive Link' : 'Add Google Drive Link'}</div>
+                                <div style={{ marginBottom: '12px', fontWeight: 600, fontSize: '13.5px', color: 'hsl(var(--color-text-primary))' }}>{drives.google && drives.onedrive ? 'Add Google Drive or OneDrive Link' : drives.onedrive ? 'Add OneDrive Link' : 'Add Google Drive Link'}</div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    <div style={{ display: 'flex', gap: '12px' }}>
-                                        <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                        <div style={{ flex: 1, minWidth: '220px' }}>
                                             <input
                                                 type="text"
                                                 placeholder={drives.google && drives.onedrive ? 'Paste a Google Drive or OneDrive / SharePoint link here...' : drives.onedrive ? 'Paste a OneDrive / SharePoint link here...' : 'Paste Google Drive Link here...'}
@@ -1278,15 +1343,15 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                 style={{
                                                     width: '100%',
                                                     padding: '8px 12px',
-                                                    borderRadius: '4px',
-                                                    border: fileError ? '1px solid #e11d48' : '1px solid hsl(var(--color-border))',
-                                                    fontSize: '14px',
+                                                    borderRadius: '8px',
+                                                    border: fileError ? '1px solid hsl(var(--color-danger))' : '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                                    fontSize: '13.5px',
                                                     outline: 'none',
-                                                    backgroundColor: 'hsl(var(--color-bg-canvas))',
+                                                    backgroundColor: 'hsl(var(--color-bg-subtle))',
                                                     color: 'hsl(var(--color-text-primary))'
                                                 }}
                                             />
-                                            {fileError && <div style={{ color: '#e11d48', fontSize: '12px', marginTop: '4px' }}>{fileError}</div>}
+                                            {fileError && <div style={{ color: 'hsl(var(--color-danger))', fontSize: '12px', marginTop: '4px' }}>{fileError}</div>}
                                         </div>
                                         <div style={{ width: '200px' }}>
                                             <input
@@ -1297,11 +1362,11 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                 style={{
                                                     width: '100%',
                                                     padding: '8px 12px',
-                                                    borderRadius: '4px',
-                                                    border: '1px solid hsl(var(--color-border))',
-                                                    fontSize: '14px',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                                    fontSize: '13.5px',
                                                     outline: 'none',
-                                                    backgroundColor: 'hsl(var(--color-bg-canvas))',
+                                                    backgroundColor: 'hsl(var(--color-bg-subtle))',
                                                     color: 'hsl(var(--color-text-primary))'
                                                 }}
                                             />
@@ -1313,19 +1378,19 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                             disabled={!fileUrl.trim()}
                                             style={{
                                                 backgroundColor: fileUrl.trim() ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-brand-primary) / 0.3)',
-                                                color: 'white',
+                                                color: '#FFEFD2',
                                                 border: 'none',
-                                                borderRadius: '4px',
-                                                padding: '8px 16px',
-                                                fontSize: '14px',
-                                                fontWeight: 500,
+                                                borderRadius: '999px',
+                                                padding: '7px 16px',
+                                                fontSize: '13px',
+                                                fontWeight: 600,
                                                 cursor: fileUrl.trim() ? 'pointer' : 'not-allowed',
-                                                display: 'flex',
+                                                display: 'inline-flex',
                                                 alignItems: 'center',
                                                 gap: '6px'
                                             }}
                                         >
-                                            <Plus size={16} /> Add Link
+                                            <Plus size={15} /> Add Link
                                         </button>
                                         {drives.google && (
                                         <button
@@ -1343,22 +1408,20 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                     updateItemFiles(itemId, [...currentFiles, newFile]);
                                                 });
                                             }}
+                                            className="glass-chip"
                                             style={{
-                                                backgroundColor: 'white',
-                                                color: '#3c4043',
-                                                border: '1px solid #dadce0',
-                                                borderRadius: '4px',
-                                                padding: '8px 16px',
-                                                fontSize: '14px',
+                                                color: 'hsl(var(--color-text-primary))',
+                                                borderRadius: '999px',
+                                                padding: '7px 16px',
+                                                fontSize: '13px',
                                                 fontWeight: 500,
                                                 cursor: 'pointer',
-                                                display: 'flex',
+                                                display: 'inline-flex',
                                                 alignItems: 'center',
-                                                gap: '8px',
-                                                boxShadow: '0 1px 2px 0 rgba(60,64,67,0.3)'
+                                                gap: '8px'
                                             }}
                                         >
-                                            <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="" style={{ width: '18px', height: '18px' }} />
+                                            <img src={LOCAL_ICONS.drive} alt="" style={{ width: '16px', height: '16px' }} />
                                             Google Drive
                                         </button>
                                         )}
@@ -1368,30 +1431,55 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                         </div>
 
                         {(!activeItem.files || activeItem.files.length === 0) ? (
-                            <div style={{ textAlign: 'center', color: '#888', padding: '40px', border: '1px dashed #ccc', borderRadius: '8px' }}>
-                                <div style={{ marginBottom: '16px' }}>
-                                    <FileText size={48} opacity={0.3} />
+                            <div className="glass-chip" style={{
+                                textAlign: 'center',
+                                color: 'hsl(var(--color-text-secondary))',
+                                padding: '44px 32px',
+                                borderRadius: '20px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center'
+                            }}>
+                                <div style={{
+                                    width: '56px',
+                                    height: '56px',
+                                    borderRadius: '50%',
+                                    background: 'linear-gradient(145deg, rgba(21, 42, 0, 0.08) 0%, rgba(167, 100, 0, 0.12) 100%)',
+                                    border: '1px solid var(--glass-chip-edge, hsl(var(--color-border)))',
+                                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.75)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'hsl(var(--color-brand-primary))',
+                                    marginBottom: '16px'
+                                }}>
+                                    <FileText size={24} />
                                 </div>
-                                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 500 }}>No files attached yet</h3>
-                                <p style={{ margin: 0, fontSize: '14px' }}>Upload files to share with your team.</p>
+                                <h3 className="narai-heading" style={{ margin: '0 0 6px 0', fontSize: '20px', fontWeight: 600, fontFamily: 'var(--font-family-display)', color: 'hsl(var(--color-text-primary))' }}>
+                                    No files attached yet
+                                </h3>
+                                <p style={{ margin: 0, fontSize: '13.5px', color: 'hsl(var(--color-text-tertiary))' }}>
+                                    Attach cloud links from Google Drive or OneDrive to share with your team.
+                                </p>
                             </div>
                         ) : (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
                                 {activeItem.files.map((file) => (
                                     <div key={file.id} style={{
-                                        backgroundColor: 'hsl(var(--color-bg-surface))',
-                                        borderRadius: '8px',
-                                        border: '1px solid hsl(var(--color-border))',
+                                        backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                                        borderRadius: '14px',
+                                        border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                        boxShadow: 'var(--paper-shadow)',
                                         padding: '16px',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         gap: '12px',
-                                        transition: 'box-shadow 0.2s',
+                                        transition: 'box-shadow 0.2s, transform 0.15s',
                                         cursor: 'pointer',
                                         position: 'relative'
                                     }}
-                                        onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
-                                        onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
+                                        onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 8px 20px -8px rgba(21,42,0,0.2)'}
+                                        onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--paper-shadow)'}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                                             <div style={{
@@ -1416,7 +1504,7 @@ export const TaskDetail = ({ itemId, onClose }: { itemId: string; onClose: () =>
                                                     background: 'none',
                                                     border: 'none',
                                                     cursor: 'pointer',
-                                                    color: '#999',
+                                                    color: 'hsl(var(--color-text-tertiary))',
                                                     padding: '4px'
                                                 }}
                                                 title="Remove File"

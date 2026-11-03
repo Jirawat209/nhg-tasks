@@ -42,36 +42,59 @@ export const StatusCell: React.FC<StatusCellProps> = memo(({ itemId, column, val
     // treat it as plain text (e.g. for Date in hybrid column)
     const isHybridValue = !statusOption && value;
     
-    const backgroundColor = isHybridValue ? 'transparent' : tintLabel(statusOption?.color || '#c4c4c4');
-    const textColor = isHybridValue ? 'hsl(var(--color-text-primary))' : LABEL_TEXT;
     const content = statusOption ? (statusOption.label === 'Default' ? '' : statusOption.label) : (value || '');
 
+    // Status reads as a compact pill badge, not a block filling the whole cell —
+    // the brand's own badge component (narai-design-system.vercel.app/components)
+    // is a small rounded tag with tracked uppercase text, not a full-bleed colour
+    // fill (that full-bleed pattern is Monday's own signature status-cell look).
     return (
         <>
             <div
                 ref={cellRef}
-                className="table-cell status-cell-full"
+                className="table-cell"
                 onClick={() => !isEditing && startEditing()}
                 style={{
                     width: '100%',
                     height: '100%',
                     padding: '0 8px',
-                    backgroundColor: backgroundColor,
-                    color: textColor,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    textAlign: 'center',
-                    fontWeight: 500,
-                    fontSize: '13px',
                     cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    userSelect: 'none',
-                    letterSpacing: '0.01em'
+                    userSelect: 'none'
                 }}
             >
-                {content}
+                {content && !isHybridValue && (
+                    <span style={{
+                        backgroundColor: tintLabel(statusOption?.color || '#c4c4c4'),
+                        color: LABEL_TEXT,
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        fontWeight: 500,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: '100%'
+                    }}>
+                        {content}
+                    </span>
+                )}
+                {isHybridValue && (
+                    <span style={{
+                        color: 'hsl(var(--color-text-primary))',
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                    }}>
+                        {content}
+                    </span>
+                )}
             </div>
 
             {isEditing && pickerPos && (

@@ -126,7 +126,7 @@ export const MoreScreen = () => {
             <BottomSheet open={confirmSignOut} onClose={() => setConfirmSignOut(false)} title="Sign out?">
                 <div style={{ padding: '16px 20px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ fontSize: 15, color: 'hsl(var(--m-text-2))' }}>
-                        You'll need to sign in again to use Saturday on this phone.
+                        You'll need to sign in again to use NHG Tasks on this phone.
                     </div>
                     <PrimaryButton
                         style={{ background: 'hsl(var(--color-danger))' }}

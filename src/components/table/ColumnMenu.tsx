@@ -75,6 +75,7 @@ export const ColumnMenu = ({
     return createPortal(
         <div
             ref={menuRef}
+            className="glass-pop"
             style={{
                 position: 'fixed',
                 top: position.top,
@@ -85,20 +86,17 @@ export const ColumnMenu = ({
                     }
                     return position.left;
                 })(),
-                backgroundColor: 'hsl(var(--color-bg-surface))',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                border: '1px solid hsl(var(--color-border))',
+                borderRadius: '16px',
                 zIndex: 9999,
                 width: '240px',
-                padding: '8px 0',
-                fontSize: '14px',
+                padding: '6px',
+                fontSize: '13.5px',
                 color: 'hsl(var(--color-text-primary))'
             }}
         >
             <div className="menu-group">
                 <MenuItem
-                    icon={<Filter size={16} />}
+                    icon={<Filter size={15} />}
                     label="Filter"
                     onClick={() => {
                         if (onFilter) onFilter();
@@ -108,12 +106,9 @@ export const ColumnMenu = ({
                 />
 
                 <MenuItem
-                    icon={<ArrowUpDown size={16} />}
+                    icon={<ArrowUpDown size={15} />}
                     label={currentSort === 'asc' ? "Sort Descending" : "Sort Ascending"}
                     onClick={() => {
-                        // Toggle: null -> asc -> desc -> null
-                        // Actually better UX: Asc -> Desc -> Asc (clicking again toggles)
-                        // Or if unsorted, Asc.
                         const newDir = currentSort === 'asc' ? 'desc' : 'asc';
                         onSort(newDir);
                         onClose();
@@ -135,14 +130,10 @@ export const ColumnMenu = ({
 
             {columnType === 'due_date' && onNotificationSettings && (
                 <>
-                    <div className="menu-divider" style={{
-                        height: '1px',
-                        backgroundColor: '#e1e4e8',
-                        margin: '8px 0'
-                    }} />
+                    <div className="menu-sep" />
                     <div className="menu-group">
                         <MenuItem
-                            icon={<BellRing size={16} />}
+                            icon={<BellRing size={15} />}
                             label="Notification Settings"
                             onClick={() => { onNotificationSettings(); onClose(); }}
                         />
@@ -152,49 +143,38 @@ export const ColumnMenu = ({
 
             {can('manage_columns') && (
                 <>
-                    <div className="menu-divider" style={{
-                        height: '1px',
-                        backgroundColor: '#e1e4e8',
-                        margin: '8px 0'
-                    }} />
+                    <div className="menu-sep" />
 
                     <div className="menu-group">
                         {COLUMN_FORMAT_TITLES[columnType] && onNumberFormat && (
                             <MenuItem
-                                // Number's menu carries formats and currency too;
-                                // every other type gets alignment alone.
-                                icon={columnType === 'number' ? <Hash size={16} /> : <AlignLeft size={16} />}
+                                icon={columnType === 'number' ? <Hash size={15} /> : <AlignLeft size={15} />}
                                 label={COLUMN_FORMAT_TITLES[columnType]}
                                 onClick={() => { onNumberFormat(); onClose(); }}
                             />
                         )}
                         <MenuItem
-                            icon={<Copy size={16} />}
+                            icon={<Copy size={15} />}
                             label="Duplicate column"
                             onClick={() => { onDuplicate(); onClose(); }}
                         />
                         <MenuItem
-                            icon={<ArrowRightFromLine size={16} />}
+                            icon={<ArrowRightFromLine size={15} />}
                             label="Add column to right"
                             onClick={() => { onAddRight(); onClose(); }}
                         />
                     </div>
 
-
-                    <div className="menu-divider" style={{
-                        height: '1px',
-                        backgroundColor: '#e1e4e8',
-                        margin: '8px 0'
-                    }} />
+                    <div className="menu-sep" />
 
                     <div className="menu-group">
                         <MenuItem
-                            icon={<PenLine size={16} />}
+                            icon={<PenLine size={15} />}
                             label="Rename"
                             onClick={() => { onRename(); onClose(); }}
                         />
                         <MenuItem
-                            icon={<Trash2 size={16} />}
+                            icon={<Trash2 size={15} />}
                             label="Delete"
                             onClick={() => { onDelete(); onClose(); }}
                             danger
@@ -227,18 +207,19 @@ const MenuItem = ({ icon, label, onClick, disabled, danger, active }: MenuItemPr
             style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '8px 16px',
+                padding: '8px 12px',
+                borderRadius: '8px',
                 cursor: disabled ? 'not-allowed' : 'pointer',
-                backgroundColor: (!disabled && isHovered) ? 'hsl(var(--color-bg-surface-hover))' : (active ? 'hsl(var(--color-brand-light))' : 'transparent'),
-                color: disabled ? 'hsl(var(--color-text-tertiary))' : (danger ? 'hsl(var(--color-status-red-bg))' : 'hsl(var(--color-text-primary))'),
+                backgroundColor: (!disabled && isHovered) ? 'hsl(var(--color-text-primary) / 0.06)' : (active ? 'hsl(var(--color-brand-primary) / 0.1)' : 'transparent'),
+                color: disabled ? 'hsl(var(--color-text-tertiary))' : (danger ? 'hsl(var(--color-danger))' : 'hsl(var(--color-text-primary))'),
                 transition: 'background-color 0.1s'
             }}
         >
-            <div style={{ marginRight: '12px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ marginRight: '10px', display: 'flex', alignItems: 'center' }}>
                 {icon}
             </div>
-            <span style={{ fontWeight: active ? 500 : 400 }}>{label}</span>
-            {active && <Check size={14} style={{ marginLeft: 'auto', color: '#0073ea' }} />}
+            <span style={{ fontWeight: active ? 600 : 400 }}>{label}</span>
+            {active && <Check size={14} style={{ marginLeft: 'auto', color: 'hsl(var(--color-brand-primary))' }} />}
         </div>
     );
 };

@@ -31,15 +31,16 @@ export const CheckboxCell: React.FC<CheckboxCellProps> = memo(({ itemId, column,
             <div style={{
                 width: '18px',
                 height: '18px',
-                borderRadius: '3px',
-                border: '2px solid ' + (isChecked ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-tertiary))'),
-                backgroundColor: isChecked ? 'hsl(var(--color-brand-primary))' : 'transparent',
+                borderRadius: '5px',
+                border: '1.5px solid ' + (isChecked ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-border-strong))'),
+                backgroundColor: isChecked ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--paper, transparent))',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                transition: 'all 0.1s ease'
+                transition: 'all 0.12s ease',
+                boxShadow: isChecked ? '0 1px 2px rgba(21, 42, 0, 0.18)' : 'none'
             }}>
-                {isChecked && <Check size={14} color="white" strokeWidth={3} />}
+                {isChecked && <Check size={13} color="#FFEFD2" strokeWidth={3} />}
             </div>
         </div>
     );

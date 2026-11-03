@@ -184,81 +184,98 @@ export const TimelineView = () => {
     if (!activeBoard) return null;
 
     const navBtnStyle: React.CSSProperties = {
-        height: '32px',
-        display: 'flex',
+        height: '30px',
+        display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: '8px',
-        border: '1px solid var(--card-border)',
-        background: 'var(--card-solid)',
+        borderRadius: '999px',
         cursor: 'pointer',
-        color: 'hsl(var(--color-text-secondary))',
-        padding: '0 8px'
+        color: 'hsl(var(--color-text-primary))',
+        padding: '0 12px',
+        fontSize: '12.5px',
+        fontWeight: 500,
+        transition: 'background-color 0.15s, color 0.15s, transform 0.15s'
     };
 
     return (
         // One lifted sheet (styles/cards.css .board-sheet); overflow clips the grid to its rounded corners
-        <div className="board-sheet" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        <div className="board-sheet timeline-sheet" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            overflow: 'hidden',
+            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+            borderColor: 'var(--paper-edge, var(--card-border))'
+        }}>
             {/* Timeline Header (Navigator) */}
-            <div style={{
+            <div className="timeline-toolbar" style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '12px 24px',
-                borderBottom: '1px solid var(--card-border)'
+                padding: '12px 20px',
+                backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)))',
+                borderBottom: '1px solid var(--paper-edge, var(--card-border))'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <h3 className="narai-heading" style={{
+                        fontFamily: 'var(--font-family-display)',
+                        fontSize: '22px',
+                        fontWeight: 500,
+                        letterSpacing: '-0.02em',
+                        lineHeight: 1.1,
+                        color: 'hsl(var(--color-text-primary))',
+                        margin: 0,
+                        minWidth: '58px'
+                    }}>
                         {viewType === 'day' ? format(viewDate, 'MMMM yyyy') : 
                          viewType === 'month' ? format(viewDate, 'yyyy') : 
-                         `${format(subYears(viewDate, 2), 'yyyy')} - ${format(addYears(viewDate, 2), 'yyyy')}`}
+                         `${format(subYears(viewDate, 2), 'yyyy')} – ${format(addYears(viewDate, 2), 'yyyy')}`}
                     </h3>
-                    <div style={{ display: 'flex', gap: '4px' }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
                         <button 
+                            type="button"
+                            className="glass-chip"
                             onClick={() => {
                                 if (viewType === 'day') setViewDate(subMonths(viewDate, 1));
                                 else if (viewType === 'month') setViewDate(subYears(viewDate, 1));
                                 else setViewDate(subYears(viewDate, 5));
                             }}
-                            style={navBtnStyle}
+                            style={{ ...navBtnStyle, width: '30px', padding: 0 }}
+                            aria-label="Previous period"
                         >
-                            <ChevronLeft size={18} />
+                            <ChevronLeft size={16} />
                         </button>
                         <button 
+                            type="button"
+                            className="glass-chip"
                             onClick={() => {
                                 if (viewType === 'day') setViewDate(addMonths(viewDate, 1));
                                 else if (viewType === 'month') setViewDate(addYears(viewDate, 1));
                                 else setViewDate(addYears(viewDate, 5));
                             }}
-                            style={navBtnStyle}
+                            style={{ ...navBtnStyle, width: '30px', padding: 0 }}
+                            aria-label="Next period"
                         >
-                            <ChevronRight size={18} />
+                            <ChevronRight size={16} />
                         </button>
                     </div>
                     <button 
+                        type="button"
+                        className="glass-chip"
                         onClick={() => setViewDate(new Date())}
-                        style={{ ...navBtnStyle, fontSize: '14px', padding: '0 12px' }}
+                        style={navBtnStyle}
                     >
                         Today
                     </button>
 
-                    <div style={{ display: 'flex', backgroundColor: 'var(--card-row-hover)', borderRadius: '10px', padding: '2px', marginLeft: '16px' }}>
+                    <div className="seg glass-chip" style={{ marginLeft: '6px' }}>
                         {(['day', 'month', 'year'] as const).map(type => (
                             <button
                                 key={type}
+                                type="button"
+                                className={`seg-btn${viewType === type ? ' is-active' : ''}`}
                                 onClick={() => setViewType(type)}
-                                style={{
-                                    border: 'none',
-                                    padding: '4px 12px',
-                                    borderRadius: '8px',
-                                    fontSize: '13px',
-                                    fontWeight: viewType === type ? 600 : 400,
-                                    backgroundColor: viewType === type ? 'var(--card-solid)' : 'transparent',
-                                    color: viewType === type ? 'hsl(var(--color-text-primary))' : 'hsl(var(--color-text-tertiary))',
-                                    cursor: 'pointer',
-                                    boxShadow: viewType === type ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                                    textTransform: 'capitalize'
-                                }}
+                                style={{ textTransform: 'capitalize', height: '26px', padding: '0 12px', fontSize: '12px' }}
                             >
                                 {type}
                             </button>
@@ -272,27 +289,56 @@ export const TimelineView = () => {
                 <div style={{ display: 'flex', minWidth: 'max-content', minHeight: '100%', flexDirection: 'column', position: 'relative' }}>
                     
                     {/* Calendar Day Headers */}
-                    <div style={{ display: 'flex', borderBottom: '1px solid var(--card-border)', position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'var(--card-solid)' }}>
-                        <div style={{ width: '200px', flexShrink: 0, borderRight: '1px solid var(--card-border)', padding: '12px 16px', fontWeight: 600, fontSize: '13px', color: 'hsl(var(--color-text-primary))' }}>Item Name</div>
+                    <div style={{
+                        display: 'flex',
+                        borderBottom: '1px solid var(--paper-edge, var(--card-border))',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 10,
+                        backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))'
+                    }}>
+                        <div style={{
+                            position: 'sticky',
+                            left: 0,
+                            zIndex: 11,
+                            width: `${NAME_COL_WIDTH}px`,
+                            flexShrink: 0,
+                            borderRight: '1px solid var(--paper-edge, var(--card-border))',
+                            padding: '10px 16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                            fontWeight: 600,
+                            fontSize: '10.5px',
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                            color: 'hsl(var(--color-text-tertiary))'
+                        }}>
+                            Item Name
+                        </div>
                         {timeGrid.map(unit => {
                             const isCurrent = isCurrentUnit(viewType, unit);
                             return (
                                 <div key={unit.toISOString()} style={{
                                     width: `${unitWidth}px`,
+                                    flexShrink: 0,
                                     textAlign: 'center',
-                                    padding: '12px 0',
-                                    fontSize: '12px',
-                                    borderRight: '1px solid var(--card-grid)',
-                                    color: isCurrent ? 'hsl(var(--color-brand-primary))' : 'inherit',
-                                    fontWeight: isCurrent ? 700 : 400
+                                    padding: '8px 0',
+                                    fontSize: '11px',
+                                    borderRight: '1px solid var(--paper-row-line, var(--card-grid))',
+                                    backgroundColor: isCurrent ? 'rgba(21, 42, 0, 0.045)' : 'transparent',
+                                    color: isCurrent ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-secondary))',
+                                    fontWeight: isCurrent ? 700 : 600,
+                                    letterSpacing: '0.06em',
+                                    textTransform: 'uppercase'
                                 }}>
                                     <div>
                                         {viewType === 'day' ? format(unit, 'd') : 
                                          viewType === 'month' ? format(unit, 'MMM') : 
                                          format(unit, 'yyyy')}
                                     </div>
-                                    {viewType === 'day' && <div style={{ fontSize: '10px', opacity: 0.5 }}>{format(unit, 'EEE')}</div>}
-                                    {viewType === 'month' && <div style={{ fontSize: '10px', opacity: 0.5 }}>{format(unit, 'yyyy')}</div>}
+                                    {viewType === 'day' && <div style={{ fontSize: '9.5px', opacity: 0.65, marginTop: '1px' }}>{format(unit, 'EEE')}</div>}
+                                    {viewType === 'month' && <div style={{ fontSize: '9.5px', opacity: 0.65, marginTop: '1px', fontWeight: isCurrent ? 600 : 500 }}>{format(unit, 'yyyy')}</div>}
                                 </div>
                             );
                         })}
@@ -306,15 +352,26 @@ export const TimelineView = () => {
                         return (
                             <div style={{
                                 position: 'absolute',
-                                left: `${200 + pos}px`,
+                                left: `${NAME_COL_WIDTH + pos}px`,
                                 top: 0,
                                 bottom: 0,
-                                width: '2px',
-                                backgroundColor: '#f00',
+                                width: '1.5px',
+                                backgroundColor: '#9E2A2B',
                                 zIndex: 8,
                                 pointerEvents: 'none',
-                                opacity: 0.6
-                            }} />
+                                opacity: 0.75
+                            }}>
+                                <span style={{
+                                    position: 'absolute',
+                                    top: '38px',
+                                    left: '-3.5px',
+                                    width: '8px',
+                                    height: '8px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#9E2A2B',
+                                    boxShadow: '0 0 0 2px hsl(var(--paper, var(--color-bg-surface)))'
+                                }} />
+                            </div>
                         );
                     })()}
 
@@ -340,28 +397,81 @@ export const TimelineView = () => {
                     >
                         {items.map(item => {
                             const geometry = barGeometry.get(item.id);
+                            const isHovered = hoveredItemId === item.id;
+                            const isNarrowBar = geometry ? geometry.width < 68 : false;
+                            const dragTranslate = draggingItem?.id === item.id ? `translateX(${draggingItem.offsetUnits * unitWidth}px)` : undefined;
 
                             return (
                                 <div
                                     key={item.id}
                                     onMouseEnter={() => setHoveredItemId(item.id)}
                                     onMouseLeave={() => setHoveredItemId(prev => (prev === item.id ? null : prev))}
-                                    style={{ display: 'flex', borderBottom: '1px solid var(--card-grid)', height: `${ROW_INNER_HEIGHT}px`, alignItems: 'center' }}
+                                    style={{
+                                        display: 'flex',
+                                        borderBottom: '1px solid var(--paper-row-line, var(--card-grid))',
+                                        height: `${ROW_INNER_HEIGHT}px`,
+                                        alignItems: 'center',
+                                        backgroundColor: isHovered ? 'rgba(21, 42, 0, 0.025)' : 'transparent',
+                                        transition: 'background-color 0.12s'
+                                    }}
                                 >
                                     <div
                                         onClick={() => setActiveItem(item.id)}
-                                        style={{ width: `${NAME_COL_WIDTH}px`, flexShrink: 0, borderRight: '1px solid var(--card-grid)', padding: '8px 16px', fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer', color: 'hsl(var(--color-brand-primary))', fontWeight: 500 }}
+                                        style={{
+                                            position: 'sticky',
+                                            left: 0,
+                                            zIndex: 6,
+                                            width: `${NAME_COL_WIDTH}px`,
+                                            height: '100%',
+                                            boxSizing: 'border-box',
+                                            flexShrink: 0,
+                                            borderRight: '1px solid var(--paper-edge, var(--card-grid))',
+                                            padding: '0 16px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                                            fontSize: '13px',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            cursor: 'pointer',
+                                            color: 'hsl(var(--color-text-primary))',
+                                            fontWeight: 500
+                                        }}
                                     >
-                                        {item.title}
+                                        <span style={{
+                                            width: '7px',
+                                            height: '7px',
+                                            borderRadius: '50%',
+                                            backgroundColor: item.groupColor || 'hsl(var(--color-brand-primary))',
+                                            flexShrink: 0
+                                        }} />
+                                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {item.title}
+                                        </span>
                                     </div>
                                     <div style={{ display: 'flex', position: 'relative', flex: 1 }}>
-                                        {timeGrid.map(unit => (
-                                            <div key={unit.toISOString()} style={{ width: `${unitWidth}px`, height: `${ROW_INNER_HEIGHT}px`, borderRight: '1px solid var(--card-grid)', flexShrink: 0 }} />
-                                        ))}
+                                        {timeGrid.map(unit => {
+                                            const isCurrent = isCurrentUnit(viewType, unit);
+                                            return (
+                                                <div
+                                                    key={unit.toISOString()}
+                                                    style={{
+                                                        width: `${unitWidth}px`,
+                                                        height: `${ROW_INNER_HEIGHT}px`,
+                                                        borderRight: '1px solid var(--paper-row-line, var(--card-grid))',
+                                                        backgroundColor: isCurrent ? 'rgba(21, 42, 0, 0.02)' : 'transparent',
+                                                        flexShrink: 0
+                                                    }}
+                                                />
+                                            );
+                                        })}
 
                                         {geometry && (
                                             <>
                                                 <div
+                                                    title={item.title}
                                                     onClick={() => {
                                                         if (suppressNextBarClickRef.current) {
                                                             suppressNextBarClickRef.current = false;
@@ -408,31 +518,60 @@ export const TimelineView = () => {
                                                         bottom: `${BAR_V_INSET}px`,
                                                         left: `${geometry.left}px`,
                                                         width: `${geometry.width}px`,
+                                                        boxSizing: 'border-box',
                                                         // Snaps to the same whole columns the commit uses, so the bar
                                                         // previews exactly where it will land. Following the cursor 1:1
                                                         // here instead made the release look like a correction, since
                                                         // the drop always rounds to a column anyway.
-                                                        transform: draggingItem?.id === item.id ? `translateX(${draggingItem.offsetUnits * unitWidth}px)` : undefined,
+                                                        transform: dragTranslate,
                                                         backgroundColor: item.groupColor || 'hsl(var(--color-brand-primary))',
-                                                        borderRadius: '12px',
-                                                        opacity: draggingItem?.id === item.id ? 0.7 : 0.8,
+                                                        borderRadius: '6px',
+                                                        opacity: draggingItem?.id === item.id ? 0.78 : 0.94,
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        color: 'white',
+                                                        justifyContent: isNarrowBar ? 'center' : 'flex-start',
+                                                        color: '#FFEFD2',
                                                         fontSize: '11px',
-                                                        fontWeight: 500,
-                                                        padding: '0 8px',
+                                                        fontWeight: 600,
+                                                        letterSpacing: '0.01em',
+                                                        padding: isNarrowBar ? 0 : '0 8px',
                                                         whiteSpace: 'nowrap',
                                                         overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
                                                         zIndex: 5,
                                                         cursor: canEdit ? 'move' : 'pointer',
-                                                        transition: draggingItem?.id === item.id ? 'none' : 'opacity 0.2s',
-                                                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                                        transition: draggingItem?.id === item.id ? 'none' : 'opacity 0.2s, box-shadow 0.2s',
+                                                        boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 6px -2px rgba(21, 42, 0, 0.28)'
                                                     }}
                                                 >
-                                                    {item.title}
+                                                    {!isNarrowBar && (
+                                                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                            {item.title}
+                                                        </span>
+                                                    )}
                                                 </div>
+
+                                                {isNarrowBar && (
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            left: `${geometry.left + geometry.width + 7}px`,
+                                                            top: 0,
+                                                            bottom: 0,
+                                                            transform: dragTranslate,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            fontSize: '11.5px',
+                                                            fontWeight: 500,
+                                                            color: 'hsl(var(--color-text-secondary))',
+                                                            whiteSpace: 'nowrap',
+                                                            pointerEvents: 'none',
+                                                            zIndex: 4
+                                                        }}
+                                                    >
+                                                        {item.title}
+                                                    </div>
+                                                )}
 
                                                 {/* Off-window markers: the bar's edge here is the window
                                                     boundary, not the item's real start/end — without these
@@ -500,8 +639,8 @@ export const TimelineView = () => {
                                                             width: '10px',
                                                             height: '10px',
                                                             borderRadius: '50%',
-                                                            backgroundColor: 'white',
-                                                            border: '2px solid #5b5b7b',
+                                                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                                                            border: '2px solid hsl(var(--color-brand-primary))',
                                                             cursor: 'crosshair',
                                                             zIndex: 7
                                                         }}
@@ -538,15 +677,12 @@ export const TimelineView = () => {
                                 <>
                                     <div onClick={() => setDependencyPopupItemId(null)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
                                     <div
+                                        className="glass-pop"
                                         style={{
                                             position: 'absolute',
                                             left: `${x}px`,
                                             top: `${y}px`,
                                             transform: 'translate(-50%, -110%)',
-                                            backgroundColor: 'white',
-                                            border: '1px solid hsl(var(--color-border))',
-                                            borderRadius: '8px',
-                                            boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
                                             zIndex: 41,
                                             width: '320px',
                                             overflow: 'hidden'
@@ -555,9 +691,9 @@ export const TimelineView = () => {
                                     >
                                         <div style={{
                                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                            padding: '10px 12px', borderBottom: '1px solid hsl(var(--color-border))'
+                                            padding: '10px 14px', borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))'
                                         }}>
-                                            <span style={{ fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            <span style={{ fontFamily: 'var(--font-family-display)', fontSize: '15px', fontWeight: 500, color: 'hsl(var(--color-text-primary))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                 {popupItem.title}
                                             </span>
                                             <button

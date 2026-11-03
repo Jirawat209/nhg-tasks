@@ -16,7 +16,7 @@ export const Avatar = ({ name, src, size = 32, ring = false, style }: AvatarProp
     const base: CSSProperties = {
         width: size,
         height: size,
-        borderRadius: '28%',
+        borderRadius: '50%',
         flexShrink: 0,
         boxShadow: ring ? '0 0 0 2px hsl(var(--m-card))' : undefined,
         ...style
@@ -81,7 +81,7 @@ export const AvatarStack = ({ people, max = 2, size = 32 }: {
                         marginLeft: -Math.round(size * 0.28),
                         width: size,
                         height: size,
-                        borderRadius: '28%',
+                        borderRadius: '50%',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',

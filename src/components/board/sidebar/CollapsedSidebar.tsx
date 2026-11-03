@@ -2,6 +2,7 @@ import { Menu, Home, Star } from 'lucide-react';
 import { useBoardStore } from '../../../store/useBoardStore';
 import { useAccessibleWorkspaces } from '../../../hooks/useAccessibleWorkspaces';
 import { WorkspaceIcon } from './SidebarIcons';
+import { SidebarProfile } from './SidebarProfile';
 
 /**
  * The collapsed state of the sidebar: an icon-only rail (Mews' left nav,
@@ -52,7 +53,7 @@ export const CollapsedSidebar = ({ onExpand }: { onExpand: () => void }) => {
                 className={`rail-icon-btn${activePage === 'favorites' ? ' active' : ''}`}
                 onClick={() => navigateTo('favorites')}
             >
-                <Star size={20} color="#ffcb00" fill={activePage === 'favorites' ? '#ffcb00' : 'none'} />
+                <Star size={20} color="#E5A93C" fill={activePage === 'favorites' ? '#E5A93C' : 'none'} />
                 <span className="rail-tooltip">Favorites</span>
             </button>
 
@@ -68,6 +69,10 @@ export const CollapsedSidebar = ({ onExpand }: { onExpand: () => void }) => {
                     <span className="rail-tooltip">{ws.title}</span>
                 </button>
             ))}
+
+            <div style={{ marginTop: 'auto', paddingTop: '8px' }}>
+                <SidebarProfile collapsed />
+            </div>
         </aside>
     );
 };

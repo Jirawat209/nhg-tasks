@@ -25,6 +25,8 @@ export const ProfileSettingsModal = ({ onClose }: ProfileSettingsModalProps) => 
     const { user } = useAuth();
     const { currentUser, setUser } = useUserStore();
     const palette = useThemeStore(state => state.palette);
+    const density = useThemeStore(state => state.density);
+    const setDensity = useThemeStore(state => state.setDensity);
 
     const [name, setName] = useState(currentUser.name);
     const [saving, setSaving] = useState(false);
@@ -171,12 +173,12 @@ export const ProfileSettingsModal = ({ onClose }: ProfileSettingsModalProps) => 
                         <div
                             onClick={() => !uploadingAvatar && fileInputRef.current?.click()}
                             style={{
-                                position: 'relative', width: '56px', height: '56px', borderRadius: '28%', flexShrink: 0,
+                                position: 'relative', width: '56px', height: '56px', borderRadius: '50%', flexShrink: 0,
                                 cursor: uploadingAvatar ? 'default' : 'pointer'
                             }}
                         >
                             <div style={{
-                                width: '100%', height: '100%', borderRadius: '28%', overflow: 'hidden',
+                                width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden',
                                 border: '1px solid hsl(var(--color-border))',
                                 backgroundColor: userAvatar ? 'transparent' : 'hsl(var(--color-brand-primary))',
                                 color: 'white', fontSize: '20px', fontWeight: 600,
@@ -245,6 +247,39 @@ export const ProfileSettingsModal = ({ onClose }: ProfileSettingsModalProps) => 
                             {PALETTES.map(p => (
                                 <ThemeChoiceCard key={p.id} palette={p} selected={palette === p.id} onSelect={() => chooseAccountPalette(user?.id, p.id)} />
                             ))}
+                        </div>
+                    </div>
+
+                    {/* Layout Density */}
+                    <div style={{ marginTop: '18px', paddingTop: '16px', borderTop: '1px solid hsl(var(--color-border))' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'hsl(var(--color-text-primary))' }}>Layout density</div>
+                        <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', margin: '2px 0 10px' }}>
+                            Choose between normal spacing and a tighter compact view.
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                            {(['normal', 'compact'] as const).map(opt => {
+                                const active = density === opt;
+                                return (
+                                    <button
+                                        key={opt}
+                                        type="button"
+                                        onClick={() => setDensity(opt)}
+                                        style={{
+                                            padding: '9px 12px',
+                                            borderRadius: '8px',
+                                            border: active ? '2px solid hsl(var(--color-brand-primary))' : '1px solid hsl(var(--color-border))',
+                                            backgroundColor: active ? 'hsl(var(--color-brand-primary) / 0.08)' : 'hsl(var(--color-bg-canvas))',
+                                            color: 'hsl(var(--color-text-primary))',
+                                            fontSize: '13px',
+                                            fontWeight: active ? 600 : 500,
+                                            cursor: 'pointer',
+                                            textTransform: 'capitalize'
+                                        }}
+                                    >
+                                        {opt}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 

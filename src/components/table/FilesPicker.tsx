@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { FileLink } from '../../types';
 import { useGooglePicker } from '../../hooks/useGooglePicker';
 import { fileLinkFromUrl, isOneDriveUrl, ONEDRIVE_ICON } from '../../lib/fileLinks';
+import { LOCAL_ICONS } from '../../lib/localIcons';
 import { useCloudDrives } from '../../hooks/useCloudDrives';
 
 interface FilesPickerProps {
@@ -79,10 +80,7 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
         left: position.left,
         minWidth: drives.google && drives.onedrive ? '360px' : '320px',
         maxWidth: '420px',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-        border: '1px solid #e1e4e8',
+        borderRadius: '16px',
         zIndex: 1000,
         padding: '16px',
         display: 'flex',
@@ -110,14 +108,14 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
     };
 
     return createPortal(
-        <div ref={pickerRef} style={style}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#333' }}>
+        <div ref={pickerRef} className="glass-pop" style={style}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                <div style={{ fontFamily: 'var(--font-family-display)', fontSize: '15px', fontWeight: 600, color: 'hsl(var(--color-text-primary))' }}>
                     Attached Files
                 </div>
                 <button 
                   onClick={() => handleClose(true)} 
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '4px' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--color-text-tertiary))', padding: '4px' }}
                 >
                     <X size={16} />
                 </button>
@@ -126,7 +124,7 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
             {/* List of Files */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
                 {localFiles.length === 0 && (
-                    <div style={{ fontSize: '12px', color: '#888', fontStyle: 'italic', padding: '12px 0', textAlign: 'center', border: '1px dashed #eee', borderRadius: '4px' }}>
+                    <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', fontStyle: 'italic', padding: '12px 0', textAlign: 'center', border: '1px dashed var(--paper-edge, hsl(var(--color-border)))', borderRadius: '10px' }}>
                         No files attached yet.
                     </div>
                 )}
@@ -136,10 +134,10 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         padding: '8px 10px',
-                        backgroundColor: '#f8fafc',
-                        border: '1px solid #edf2f7',
-                        borderRadius: '6px',
-                        fontSize: '12px'
+                        backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                        border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                        borderRadius: '10px',
+                        fontSize: '12.5px'
                     }}>
                         <a
                             href={file.url}
@@ -165,32 +163,32 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
                                 if (file.type === 'onedrive') {
                                     iconUrl = ONEDRIVE_ICON;
                                 } else if (mime.includes('spreadsheet')) {
-                                    iconUrl = "https://www.gstatic.com/images/branding/product/1x/sheets_2020q4_48dp.png";
+                                    iconUrl = LOCAL_ICONS.sheets;
                                 } else if (mime.includes('document')) {
-                                    iconUrl = "https://www.gstatic.com/images/branding/product/1x/docs_2020q4_48dp.png";
+                                    iconUrl = LOCAL_ICONS.docs;
                                 } else if (mime.includes('presentation')) {
-                                    iconUrl = "https://www.gstatic.com/images/branding/product/1x/slides_2020q4_48dp.png";
+                                    iconUrl = LOCAL_ICONS.slides;
                                 } else if (mime.includes('form')) {
-                                    iconUrl = "https://www.gstatic.com/images/branding/product/1x/forms_2020q4_48dp.png";
+                                    iconUrl = LOCAL_ICONS.forms;
                                 } else if (mime.includes('pdf') || name.endsWith('.pdf')) {
-                                    iconUrl = "https://drive-thirdparty.googleusercontent.com/32/type/application/pdf";
+                                    iconUrl = LOCAL_ICONS.pdf;
                                 } else if (mime.includes('image') || name.endsWith('.jpg') || name.endsWith('.png') || name.endsWith('.jpeg')) {
-                                    iconUrl = "https://www.gstatic.com/images/branding/product/1x/photos_48dp.png"; // Fixed icon mapping
+                                    iconUrl = LOCAL_ICONS.photos;
                                 } else if (file.type === 'google-drive') {
-                                    iconUrl = "https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png";
+                                    iconUrl = LOCAL_ICONS.drive;
                                 }
 
                                 return iconUrl ? (
                                     <img src={iconUrl} alt="" referrerPolicy="no-referrer" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
                                 ) : (
-                                    <Globe size={16} color="#666" />
+                                    <Globe size={16} color="hsl(var(--color-text-secondary))" />
                                 );
                             })()}
                             <span title={file.name} style={{ fontWeight: 500 }}>{file.name}</span>
                         </a>
                         <button
                             onClick={(e) => handleRemoveFile(e, file.id)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#94a3b8', display: 'flex' }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'hsl(var(--color-text-tertiary))', display: 'flex' }}
                         >
                             <X size={14} />
                         </button>
@@ -198,32 +196,32 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
                 ))}
             </div>
 
-            <div style={{ height: '1px', backgroundColor: '#f1f5f9', margin: '4px 0' }} />
+            <div style={{ height: '1px', backgroundColor: 'var(--paper-row-line, hsl(var(--color-border)))', margin: '2px 0' }} />
 
             {/* Addition Choice */}
             {isAddingUrl ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', backgroundColor: '#f9fafb', borderRadius: '6px', border: '1px solid #eee' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#666', textTransform: 'uppercase', marginBottom: '2px' }}>{addKind === 'onedrive' ? 'Add OneDrive / SharePoint link' : 'Add File URL'}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)))', borderRadius: '10px', border: '1px solid var(--paper-edge, hsl(var(--color-border)))' }}>
+                    <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em', color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase', marginBottom: '2px' }}>{addKind === 'onedrive' ? 'Add OneDrive / SharePoint link' : 'Add File URL'}</div>
                     <input 
                         autoFocus
                         placeholder={addKind === 'onedrive' ? 'File Name (optional)' : 'File Name (e.g. My Document)'}
                         value={urlName}
                         onChange={(e) => setUrlName(e.target.value)}
-                        style={{ padding: '8px', fontSize: '13px', border: '1px solid #ddd', borderRadius: '4px', outline: 'none' }}
+                        style={{ padding: '7px 10px', fontSize: '13px', border: '1px solid var(--paper-edge, hsl(var(--color-border)))', borderRadius: '8px', backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))', color: 'hsl(var(--color-text-primary))', outline: 'none' }}
                         onKeyDown={(e) => e.key === 'Enter' && handleAddUrlFile()}
                     />
                     <input 
                         placeholder={addKind === 'onedrive' ? 'Paste the OneDrive share link' : 'https://example.com/file.pdf'}
                         value={urlValue}
                         onChange={(e) => { setUrlValue(e.target.value); setUrlError(null); }}
-                        style={{ padding: '8px', fontSize: '13px', border: urlError ? '1px solid #e11d48' : '1px solid #ddd', borderRadius: '4px', outline: 'none' }}
+                        style={{ padding: '7px 10px', fontSize: '13px', border: urlError ? '1px solid hsl(var(--color-danger))' : '1px solid var(--paper-edge, hsl(var(--color-border)))', borderRadius: '8px', backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))', color: 'hsl(var(--color-text-primary))', outline: 'none' }}
                         onKeyDown={(e) => e.key === 'Enter' && handleAddUrlFile()}
                     />
-                    {urlError && <div style={{ fontSize: '12px', color: '#e11d48' }}>{urlError}</div>}
+                    {urlError && <div style={{ fontSize: '12px', color: 'hsl(var(--color-danger))' }}>{urlError}</div>}
                     <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
                         <button 
                             onClick={() => { setIsAddingUrl(false); setUrlError(null); }}
-                            style={{ flex: 1, padding: '8px', fontSize: '13px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                            style={{ flex: 1, padding: '7px', fontSize: '12.5px', fontWeight: 500, border: '1px solid var(--paper-edge, hsl(var(--color-border)))', borderRadius: '999px', background: 'hsl(var(--paper, var(--color-bg-surface)))', color: 'hsl(var(--color-text-primary))', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                         >
                             Cancel
                         </button>
@@ -232,12 +230,12 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
                             disabled={(addKind === 'url' && !urlName.trim()) || !urlValue.trim()}
                             style={{ 
                               flex: 2, 
-                              padding: '8px', 
-                              fontSize: '13px', 
+                              padding: '7px', 
+                              fontSize: '12.5px', 
                               background: 'hsl(var(--color-brand-primary))', 
-                              color: 'white', 
+                              color: '#FFEFD2', 
                               border: 'none', 
-                              borderRadius: '4px', 
+                              borderRadius: '999px', 
                               cursor: 'pointer', 
                               opacity: ((addKind === 'url' && !urlName.trim()) || !urlValue.trim()) ? 0.6 : 1,
                               fontWeight: 600,
@@ -272,35 +270,33 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
                         }}
                         style={{
                             flex: 1,
-                            backgroundColor: 'white',
-                            color: '#333',
-                            border: '1px solid #d0d4e4',
-                            borderRadius: '8px',
-                            padding: '12px 8px',
-                            fontSize: '13px',
+                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                            color: 'hsl(var(--color-text-primary))',
+                            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                            borderRadius: '10px',
+                            padding: '10px 8px',
+                            fontSize: '12.5px',
                             fontWeight: 500,
                             cursor: 'pointer',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s'
+                            gap: '6px',
+                            transition: 'all 0.15s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f8fafc';
                           e.currentTarget.style.borderColor = 'hsl(var(--color-brand-primary))';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'white';
-                          e.currentTarget.style.borderColor = '#d0d4e4';
+                          e.currentTarget.style.borderColor = 'var(--paper-edge, hsl(var(--color-border)))';
                         }}
                     >
-                        <img 
-                            src="https://commons.wikimedia.org/wiki/Special:FilePath/Google%20Drive%20icon%20%282020%29.svg" 
-                            alt="Google Drive" 
-                            width="24" 
-                            height="24" 
+                        <img
+                            src={LOCAL_ICONS.drive}
+                            alt="Google Drive"
+                            width="22"
+                            height="22"
                         />
                         Google Drive
                     </button>
@@ -312,31 +308,29 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
                         onClick={() => { setAddKind('onedrive'); setIsAddingUrl(true); }}
                         style={{
                             flex: 1,
-                            backgroundColor: 'white',
-                            color: '#333',
-                            border: '1px solid #d0d4e4',
-                            borderRadius: '8px',
-                            padding: '12px 8px',
-                            fontSize: '13px',
+                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                            color: 'hsl(var(--color-text-primary))',
+                            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                            borderRadius: '10px',
+                            padding: '10px 8px',
+                            fontSize: '12.5px',
                             fontWeight: 500,
                             cursor: 'pointer',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s'
+                            gap: '6px',
+                            transition: 'all 0.15s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f8fafc';
                           e.currentTarget.style.borderColor = 'hsl(var(--color-brand-primary))';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'white';
-                          e.currentTarget.style.borderColor = '#d0d4e4';
+                          e.currentTarget.style.borderColor = 'var(--paper-edge, hsl(var(--color-border)))';
                         }}
                     >
-                        <img src={ONEDRIVE_ICON} alt="OneDrive" width="24" height="24" />
+                        <img src={ONEDRIVE_ICON} alt="OneDrive" width="22" height="22" />
                         OneDrive
                     </button>
                     )}
@@ -346,60 +340,58 @@ export const FilesPicker = ({ files = [], position, onSave, onClose }: FilesPick
                         onClick={() => { setAddKind('url'); setIsAddingUrl(true); }}
                         style={{
                             flex: 1,
-                            backgroundColor: 'white',
-                            color: '#333',
-                            border: '1px solid #d0d4e4',
-                            borderRadius: '8px',
-                            padding: '12px 8px',
-                            fontSize: '13px',
+                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                            color: 'hsl(var(--color-text-primary))',
+                            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                            borderRadius: '10px',
+                            padding: '10px 8px',
+                            fontSize: '12.5px',
                             fontWeight: 500,
                             cursor: 'pointer',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s'
+                            gap: '6px',
+                            transition: 'all 0.15s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f8fafc';
                           e.currentTarget.style.borderColor = 'hsl(var(--color-brand-primary))';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'white';
-                          e.currentTarget.style.borderColor = '#d0d4e4';
+                          e.currentTarget.style.borderColor = 'var(--paper-edge, hsl(var(--color-border)))';
                         }}
                     >
                         <div style={{ 
                             width: '24px', 
                             height: '24px', 
-                            borderRadius: '6px', 
-                            backgroundColor: '#f1f5f9', 
+                            borderRadius: '50%', 
+                            backgroundColor: 'hsl(var(--color-text-primary) / 0.07)', 
                             display: 'flex', 
                             alignItems: 'center', 
                             justifyContent: 'center',
-                            color: '#475569'
+                            color: 'hsl(var(--color-text-secondary))'
                         }}>
-                            <Globe size={18} />
+                            <Globe size={15} />
                         </div>
                         File URL
                     </button>
                 </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: isAddingUrl ? '0' : '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: isAddingUrl ? '0' : '4px' }}>
                 <button
                     onClick={() => handleClose(true)}
                     style={{
-                        padding: '10px 24px',
+                        padding: '7px 26px',
                         backgroundColor: 'hsl(var(--color-brand-primary))',
-                        color: 'white',
+                        color: '#FFEFD2',
                         border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '14px',
+                        borderRadius: '999px',
+                        fontSize: '13px',
                         fontWeight: 600,
                         cursor: 'pointer',
-                        transition: 'opacity 0.2s'
+                        transition: 'opacity 0.15s'
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}

@@ -18,7 +18,7 @@ let adopted = false;
 export const adoptAccountPalette = (value: unknown) => {
     if (adopted) return;
     adopted = true;
-    useThemeStore.getState().setPalette(isPaletteId(value) ? value : 'saturday');
+    useThemeStore.getState().setPalette(isPaletteId(value) ? value : 'narai');
 };
 
 /** Signing out: the next account's own palette is adopted when it loads. */

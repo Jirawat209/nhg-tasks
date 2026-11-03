@@ -52,7 +52,7 @@ const Attachments = ({ files }: { files: FileLink[] }) => (
 /** One post or reply's head: picture, name, how long ago, and its "…". */
 const UpdateHead = ({ update, avatarUrl, size, onMore }: { update: Comment; avatarUrl: string | null; size: number; onMore: () => void }) => (
     <header className="m-update__head">
-        <Avatar name={update.author} src={avatarUrl} size={size} style={{ borderRadius: Math.round(size * 0.3) }} />
+        <Avatar name={update.author} src={avatarUrl} size={size} />
         <div className="m-update__who">
             <span className="m-update__author m-truncate">{update.author}</span>
             <span className="m-update__time">{shortAge(update.createdAt)}</span>

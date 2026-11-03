@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand';
+import { APP_URL } from '../../lib/appUrl';
 import { supabase } from '../../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { arrayMove } from '@dnd-kit/sortable';
@@ -435,7 +436,7 @@ export const createItemSlice: StateCreator<
                                         boardName: board.title || 'a board',
                                         oldStatus: oldLabel,
                                         newStatus: newLabel,
-                                        itemLink: `https://saturdaycom.vercel.app/?boardId=${activeBoardId}&itemId=${itemId}`
+                                        itemLink: `${APP_URL}/?boardId=${activeBoardId}&itemId=${itemId}`
                                     }
                                 }).catch((e: unknown) => console.error('Status update email error:', e));
                             }
@@ -471,7 +472,7 @@ export const createItemSlice: StateCreator<
                                             itemName: currentItem.title || 'an item',
                                             boardName: board.title || 'a board',
                                             changeSummary: summary,
-                                            itemLink: `https://saturdaycom.vercel.app/?boardId=${activeBoardId}&itemId=${itemId}`
+                                            itemLink: `${APP_URL}/?boardId=${activeBoardId}&itemId=${itemId}`
                                         }
                                     }).catch((e: unknown) => console.error('Item change email error:', e));
                                 }
@@ -751,7 +752,7 @@ export const createItemSlice: StateCreator<
         // place: the board with the item open. Keep these in step if either side
         // changes.
         // updateId takes the link to this very update (or reply) inside the item.
-        const itemLink = `https://saturdaycom.vercel.app/?boardId=${activeBoardId}&itemId=${itemId}&updateId=${newUpdate.id}`;
+        const itemLink = `${APP_URL}/?boardId=${activeBoardId}&itemId=${itemId}&updateId=${newUpdate.id}`;
         const dataIdRegex = /data-id="([^"]+)"/g;
         let dataIdMatch;
         const mentionedUserIds = new Set<string>();
@@ -906,7 +907,7 @@ export const createItemSlice: StateCreator<
                         likerName: user.name,
                         itemName: itemTitle || 'an item',
                         boardName: get().boards.find(b => b.id === activeBoardId)?.title || 'a board',
-                        itemLink: `https://saturdaycom.vercel.app/?boardId=${activeBoardId}&itemId=${itemId}&updateId=${updateId}`
+                        itemLink: `${APP_URL}/?boardId=${activeBoardId}&itemId=${itemId}&updateId=${updateId}`
                     }
                 }).catch((e: unknown) => console.error('Like email error:', e));
             }

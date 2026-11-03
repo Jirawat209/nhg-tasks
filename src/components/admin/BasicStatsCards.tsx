@@ -67,20 +67,26 @@ export const BasicStatsCards = () => {
 
     return (
         <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#0f172a', margin: '0 0 4px 0' }}>
-                Basic stats
+            <h2 className="narai-heading" style={{
+                fontFamily: 'var(--font-family-display)',
+                fontSize: '20px',
+                fontWeight: 600,
+                color: 'hsl(var(--color-text-primary))',
+                margin: '0 0 2px 0'
+            }}>
+                Platform Engagement
             </h2>
-            <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#94a3b8' }}>
+            <p style={{ margin: '0 0 14px 0', fontSize: '13px', color: 'hsl(var(--color-text-secondary))' }}>
                 Activity across the whole system over the last {WINDOW_DAYS} days.
             </p>
 
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-                gap: '20px'
+                gap: '18px'
             }}>
-                <StatPanel title="Summary" period={PERIOD_LABEL} color="#4f46e5" stats={summaryStats} loading={loading} />
-                <StatPanel title="People activity" period={PERIOD_LABEL} color="#047857" stats={peopleStats} loading={loading} />
+                <StatPanel title="Board Summary" period={PERIOD_LABEL} color="#152A00" stats={summaryStats} loading={loading} />
+                <StatPanel title="People Activity" period={PERIOD_LABEL} color="#7D4B00" stats={peopleStats} loading={loading} />
             </div>
         </div>
     );
@@ -97,21 +103,47 @@ interface StatPanelProps {
 const StatPanel = ({ title, period, color, stats, loading }: StatPanelProps) => (
     <div className="admin-panel-lit" style={{
         '--panel-color': color,
-        padding: '20px 24px 24px',
-        color: 'white'
+        padding: '20px 24px 22px',
+        color: '#FFEFD2'
     } as React.CSSProperties}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>{title}</h3>
-            <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.85)' }}>{period}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+            <h3 style={{
+                margin: 0,
+                fontFamily: 'var(--font-family-display)',
+                fontSize: '17px',
+                fontWeight: 600,
+                color: '#FFEFD2'
+            }}>
+                {title}
+            </h3>
+            <span style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                padding: '3px 10px',
+                borderRadius: '999px',
+                backgroundColor: 'rgba(255, 239, 210, 0.14)',
+                color: '#FFEFD2'
+            }}>
+                {period}
+            </span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
             {stats.map(stat => (
                 <div key={stat.label} style={{ textAlign: 'center' }} title={stat.hint}>
-                    <div style={{ fontSize: '34px', fontWeight: 600, lineHeight: 1.15 }}>
+                    <div style={{
+                        fontFamily: 'var(--font-family-display)',
+                        fontSize: '34px',
+                        fontWeight: 600,
+                        lineHeight: 1.1,
+                        fontVariantNumeric: 'tabular-nums',
+                        color: '#FFEFD2'
+                    }}>
                         {loading ? '–' : stat.value.toLocaleString()}
                     </div>
-                    <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.85)', marginTop: '6px' }}>
+                    <div style={{ fontSize: '12.5px', color: 'rgba(255, 239, 210, 0.82)', marginTop: '6px', fontWeight: 500 }}>
                         {stat.label}
                     </div>
                 </div>

@@ -173,18 +173,18 @@ export const DependencyLinkSection = ({ itemId, type, label, hint, matchDate }: 
                     </button>
 
                     {isAdding && (
-                        <div style={{
-                            position: 'absolute',
-                            bottom: 'calc(100% + 6px)',
-                            left: 0,
-                            width: '240px',
-                            backgroundColor: 'hsl(var(--color-bg-surface))',
-                            border: '1px solid hsl(var(--color-border))',
-                            borderRadius: '8px',
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                            zIndex: 1,
-                            overflow: 'hidden'
-                        }}>
+                        <div
+                            className="glass-pop"
+                            style={{
+                                position: 'absolute',
+                                bottom: 'calc(100% + 6px)',
+                                left: 0,
+                                width: '240px',
+                                borderRadius: '14px',
+                                zIndex: 10,
+                                overflow: 'hidden'
+                            }}
+                        >
                             <input
                                 autoFocus
                                 value={query}
@@ -194,7 +194,9 @@ export const DependencyLinkSection = ({ itemId, type, label, hint, matchDate }: 
                                     width: '100%',
                                     padding: '8px 10px',
                                     border: 'none',
-                                    borderBottom: '1px solid hsl(var(--color-border))',
+                                    borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
+                                    backgroundColor: 'hsl(var(--paper, transparent))',
+                                    color: 'hsl(var(--color-text-primary))',
                                     outline: 'none',
                                     fontSize: '12px',
                                     boxSizing: 'border-box',

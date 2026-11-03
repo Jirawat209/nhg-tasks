@@ -64,33 +64,38 @@ export const CalendarView = () => {
         return items;
     }, [activeBoard, searchQuery, showHiddenItems]);
     
-    const timeColumn = useMemo(() => itemColumns(activeBoard?.columns || []).find(c => c.type === 'timeline' || c.type === 'date' || c.type === 'due_date'), [activeBoard]);
+    const timeColumns = useMemo(
+        () => itemColumns(activeBoard?.columns || []).filter(c => c.type === 'timeline' || c.type === 'date' || c.type === 'due_date'),
+        [activeBoard]
+    );
 
     const getItemsForDay = (day: Date) => {
-        if (!activeBoard || !timeColumn) return [];
-        
+        if (!activeBoard || timeColumns.length === 0) return [];
+        const d = new Date(day).setHours(0, 0, 0, 0);
+
         return filteredItems.filter(item => {
-            const val = item.values?.[timeColumn.id];
-            if (!val) return false;
+            for (const col of timeColumns) {
+                const val = item.values?.[col.id];
+                if (!val) continue;
 
-            let start: Date | null = null;
-            let end: Date | null = null;
+                let start: Date | null = null;
+                let end: Date | null = null;
 
-            if (timeColumn.type === 'timeline') {
-                if (val.from) start = new Date(val.from);
-                if (val.to) end = new Date(val.to);
-            } else if (timeColumn.type === 'date') {
-                start = new Date(val);
-                end = new Date(val);
+                if (col.type === 'timeline') {
+                    if (val.from) start = new Date(val.from);
+                    if (val.to) end = new Date(val.to);
+                } else {
+                    start = new Date(val);
+                    end = new Date(val);
+                }
+
+                if (!start || !end) continue;
+
+                const s = new Date(start).setHours(0, 0, 0, 0);
+                const e = new Date(end).setHours(0, 0, 0, 0);
+                return d >= s && d <= e;
             }
-
-            if (!start || !end) return false;
-
-            const d = new Date(day).setHours(0,0,0,0);
-            const s = new Date(start).setHours(0,0,0,0);
-            const e = new Date(end).setHours(0,0,0,0);
-
-            return d >= s && d <= e;
+            return false;
         });
     };
 
@@ -108,47 +113,62 @@ export const CalendarView = () => {
 
     if (!activeBoard) return null;
 
+    const navBtnStyle: React.CSSProperties = {
+        height: '30px',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '999px',
+        cursor: 'pointer',
+        color: 'hsl(var(--color-text-primary))',
+        padding: '0 12px',
+        fontSize: '12.5px',
+        fontWeight: 500,
+        transition: 'background-color 0.15s, color 0.15s'
+    };
+
     const renderHeader = () => (
         <div className="calendar-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, margin: 0, minWidth: '150px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <h2 className="narai-heading" style={{
+                    fontFamily: 'var(--font-family-display)',
+                    fontSize: '22px',
+                    fontWeight: 500,
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1.1,
+                    color: 'hsl(var(--color-text-primary))',
+                    margin: 0,
+                    minWidth: '140px'
+                }}>
                     {viewType === 'day' ? format(currentDate, 'MMMM d, yyyy') : 
                      viewType === 'month' ? format(currentDate, 'MMMM yyyy') : 
                      format(currentDate, 'yyyy')}
                 </h2>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                    <button onClick={handlePrev} className="nav-btn">
-                        <ChevronLeft size={18} />
+                <div style={{ display: 'flex', gap: '6px' }}>
+                    <button type="button" onClick={handlePrev} className="glass-chip" style={{ ...navBtnStyle, width: '30px', padding: 0 }} aria-label="Previous">
+                        <ChevronLeft size={16} />
                     </button>
-                    <button 
-                        className="nav-btn"
-                        style={{ width: 'auto', fontSize: '12px', padding: '0 12px' }}
-                        onClick={() => setCurrentDate(new Date())}
-                    >
-                        Today
-                    </button>
-                    <button onClick={handleNext} className="nav-btn">
-                        <ChevronRight size={18} />
+                    <button type="button" onClick={handleNext} className="glass-chip" style={{ ...navBtnStyle, width: '30px', padding: 0 }} aria-label="Next">
+                        <ChevronRight size={16} />
                     </button>
                 </div>
+                <button 
+                    type="button"
+                    className="glass-chip"
+                    style={navBtnStyle}
+                    onClick={() => setCurrentDate(new Date())}
+                >
+                    Today
+                </button>
 
-                <div style={{ display: 'flex', backgroundColor: 'var(--card-row-hover)', borderRadius: '10px', padding: '2px', marginLeft: '16px' }}>
+                <div className="seg glass-chip" style={{ marginLeft: '6px' }}>
                     {(['day', 'month', 'year'] as const).map(type => (
                         <button
                             key={type}
+                            type="button"
+                            className={`seg-btn${viewType === type ? ' is-active' : ''}`}
                             onClick={() => setViewType(type)}
-                            style={{
-                                border: 'none',
-                                padding: '4px 12px',
-                                borderRadius: '8px',
-                                fontSize: '13px',
-                                fontWeight: viewType === type ? 600 : 400,
-                                backgroundColor: viewType === type ? 'var(--card-solid)' : 'transparent',
-                                color: viewType === type ? 'hsl(var(--color-text-primary))' : 'hsl(var(--color-text-tertiary))',
-                                cursor: 'pointer',
-                                boxShadow: viewType === type ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                                textTransform: 'capitalize'
-                            }}
+                            style={{ textTransform: 'capitalize', height: '26px', padding: '0 12px', fontSize: '12px' }}
                         >
                             {type}
                         </button>
@@ -161,15 +181,29 @@ export const CalendarView = () => {
     const renderDayView = () => {
         const dayItems = getItemsForDay(currentDate);
         return (
-            <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
-                <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-                    <h3 style={{ borderBottom: '2px solid hsl(var(--color-brand-primary))', paddingBottom: '8px', color: 'hsl(var(--color-brand-primary))' }}>
-                        Tasks for {format(currentDate, 'EEEE')}
+            <div style={{ flex: 1, padding: '24px 28px', overflowY: 'auto' }}>
+                <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+                    <div className="bh-eyebrow" style={{ marginBottom: '4px' }}>
+                        DAILY SCHEDULE
+                    </div>
+                    <h3 className="narai-heading" style={{
+                        fontFamily: 'var(--font-family-display)',
+                        fontSize: '22px',
+                        fontWeight: 500,
+                        letterSpacing: '-0.015em',
+                        borderBottom: '1px solid var(--paper-edge, var(--card-border))',
+                        paddingBottom: '10px',
+                        margin: 0,
+                        color: 'hsl(var(--color-text-primary))'
+                    }}>
+                        Tasks for {format(currentDate, 'EEEE, MMM d')}
                     </h3>
                     {dayItems.length === 0 ? (
-                        <p style={{ color: 'hsl(var(--color-text-tertiary))', textAlign: 'center', marginTop: '40px' }}>No tasks scheduled for this day.</p>
+                        <p style={{ color: 'hsl(var(--color-text-tertiary))', textAlign: 'center', marginTop: '40px', fontSize: '13.5px' }}>
+                            No tasks scheduled for this day.
+                        </p>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
                             {dayItems.map(item => {
                                 const group = activeBoard.groups.find(g => g.id === item.groupId);
                                 return (
@@ -178,15 +212,33 @@ export const CalendarView = () => {
                                         onClick={() => setActiveItem(item.id)}
                                         className="card-surface calendar-pick"
                                         style={{
-                                            padding: '16px',
+                                            padding: '12px 16px',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '12px'
+                                            gap: '10px',
+                                            borderRadius: '12px'
                                         }}
                                     >
-                                        <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: group?.color || '#333' }} />
-                                        <span style={{ fontWeight: 500 }}>{item.title}</span>
-                                        <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'hsl(var(--color-text-tertiary))' }}>{group?.title}</span>
+                                        <span style={{
+                                            width: '9px',
+                                            height: '9px',
+                                            borderRadius: '50%',
+                                            backgroundColor: group?.color || 'hsl(var(--color-brand-primary))',
+                                            flexShrink: 0
+                                        }} />
+                                        <span style={{ fontWeight: 500, fontSize: '13.5px', color: 'hsl(var(--color-text-primary))' }}>
+                                            {item.title}
+                                        </span>
+                                        <span style={{
+                                            marginLeft: 'auto',
+                                            fontSize: '11px',
+                                            fontWeight: 600,
+                                            letterSpacing: '0.06em',
+                                            textTransform: 'uppercase',
+                                            color: 'hsl(var(--color-text-tertiary))'
+                                        }}>
+                                            {group?.title}
+                                        </span>
                                     </div>
                                 );
                             })}
@@ -205,7 +257,7 @@ export const CalendarView = () => {
         const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
 
         return (
-            <div className="board-sheet calendar-sheet">
+            <div className="calendar-month-body">
                 <div className="calendar-grid-header">
                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
                         <div key={day} className="weekday-label">{day}</div>
@@ -235,7 +287,7 @@ export const CalendarView = () => {
                                                 key={item.id} 
                                                 onClick={(e) => { e.stopPropagation(); setActiveItem(item.id); }}
                                                 className="calendar-item-bar"
-                                                style={{ backgroundColor: group?.color || '#333' }}
+                                                style={{ backgroundColor: group?.color || 'hsl(var(--color-brand-primary))' }}
                                                 title={item.title}
                                             >
                                                 {item.title}
@@ -257,11 +309,11 @@ export const CalendarView = () => {
         const months = eachMonthOfInterval({ start: yearStart, end: yearEnd });
 
         return (
-            <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+            <div style={{ flex: 1, padding: '20px 24px', overflowY: 'auto' }}>
                 <div style={{ 
                     display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
-                    gap: '24px' 
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', 
+                    gap: '16px' 
                 }}>
                     {months.map(month => {
                         const mStart = startOfMonth(month);
@@ -278,14 +330,22 @@ export const CalendarView = () => {
                                     setViewType('month');
                                 }}
                                 className="card-surface calendar-pick"
-                                style={{ padding: '12px' }}
+                                style={{ padding: '14px' }}
                             >
-                                <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px', textAlign: 'center' }}>
+                                <div style={{
+                                    fontFamily: 'var(--font-family-display)',
+                                    fontSize: '16.5px',
+                                    fontWeight: 500,
+                                    letterSpacing: '-0.015em',
+                                    marginBottom: '8px',
+                                    textAlign: 'center',
+                                    color: 'hsl(var(--color-text-primary))'
+                                }}>
                                     {format(month, 'MMMM')}
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
                                     {['S','M','T','W','T','F','S'].map((d, i) => (
-                                        <div key={i} style={{ fontSize: '9px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))' }}>{d}</div>
+                                        <div key={i} style={{ fontSize: '9.5px', fontWeight: 600, textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', paddingBottom: '2px' }}>{d}</div>
                                     ))}
                                     {days.map((day, i) => {
                                         const hasItems = getItemsForDay(day).length > 0;
@@ -294,12 +354,12 @@ export const CalendarView = () => {
                                             <div 
                                                 key={i} 
                                                 style={{ 
-                                                    fontSize: '9px', 
+                                                    fontSize: '9.5px', 
                                                     textAlign: 'center', 
-                                                    padding: '2px 0',
-                                                    color: isM ? 'inherit' : 'hsl(var(--color-text-tertiary) / 0.55)',
-                                                    backgroundColor: (isM && hasItems) ? 'hsl(var(--color-brand-primary) / 0.12)' : 'transparent',
-                                                    borderRadius: '2px',
+                                                    padding: '2.5px 0',
+                                                    color: (isM && hasItems) ? '#FFEFD2' : isM ? 'hsl(var(--color-text-primary))' : 'hsl(var(--color-text-tertiary) / 0.45)',
+                                                    backgroundColor: (isM && hasItems) ? 'hsl(var(--color-brand-primary))' : 'transparent',
+                                                    borderRadius: '4px',
                                                     fontWeight: (isM && hasItems) ? 700 : 400
                                                 }}
                                             >
@@ -317,7 +377,7 @@ export const CalendarView = () => {
     };
 
     return (
-        <div className="calendar-container">
+        <div className="board-sheet calendar-container">
             {renderHeader()}
             {viewType === 'day' && renderDayView()}
             {viewType === 'month' && renderMonthView()}
@@ -328,34 +388,21 @@ export const CalendarView = () => {
                     flex: 1;
                     display: flex;
                     flex-direction: column;
-                    padding: 24px 32px;
                     overflow: hidden;
                     height: 100%;
+                    background-color: hsl(var(--paper, var(--color-bg-surface)));
+                    border-color: var(--paper-edge, var(--card-border));
                 }
                 .calendar-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    margin-bottom: 24px;
+                    padding: 12px 20px;
+                    background-color: hsl(var(--paper-head, var(--color-bg-subtle)));
+                    border-bottom: 1px solid var(--paper-edge, var(--card-border));
+                    flex-shrink: 0;
                 }
-                .nav-btn {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 28px;
-                    height: 28px;
-                    border: 1px solid var(--card-border);
-                    border-radius: 8px;
-                    background: var(--card-solid);
-                    cursor: pointer;
-                    color: hsl(var(--color-text-secondary));
-                }
-                .nav-btn:hover {
-                    background-color: var(--card-row-hover);
-                }
-                /* The month grid sits in one sheet (styles/cards.css .board-sheet),
-                   whose edge is the grid's outer line */
-                .calendar-sheet {
+                .calendar-month-body {
                     flex: 1;
                     min-height: 0;
                     display: flex;
@@ -365,16 +412,18 @@ export const CalendarView = () => {
                 .calendar-grid-header {
                     display: grid;
                     grid-template-columns: repeat(7, 1fr);
+                    background-color: hsl(var(--paper, var(--color-bg-surface)));
+                    border-bottom: 1px solid var(--paper-edge, var(--card-border));
                 }
                 .weekday-label {
-                    padding: 8px;
+                    padding: 9px 8px;
                     text-align: center;
-                    font-size: 13px;
+                    font-size: 10.5px;
+                    font-weight: 600;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
                     color: hsl(var(--color-text-tertiary));
-                    border-right: 1px solid var(--card-grid);
-                    border-bottom: 1px solid var(--card-border);
-                    background-color: var(--card-tray);
-                    font-weight: 500;
+                    border-right: 1px solid var(--paper-row-line, var(--card-grid));
                 }
                 .weekday-label:last-child {
                     border-right: none;
@@ -387,13 +436,14 @@ export const CalendarView = () => {
                     overflow-y: auto;
                 }
                 .calendar-day {
-                    min-height: 100px;
-                    border-right: 1px solid var(--card-grid);
-                    border-bottom: 1px solid var(--card-grid);
-                    padding: 4px;
+                    min-height: 96px;
+                    border-right: 1px solid var(--paper-row-line, var(--card-grid));
+                    border-bottom: 1px solid var(--paper-row-line, var(--card-grid));
+                    padding: 6px;
                     display: flex;
                     flex-direction: column;
                     cursor: pointer;
+                    transition: background-color 0.15s;
                 }
                 /* The sheet's edge is the outer line: no second one on the last column or row */
                 .calendar-day:nth-child(7n) {
@@ -403,49 +453,57 @@ export const CalendarView = () => {
                     border-bottom: none;
                 }
                 .calendar-day:hover {
-                    background-color: var(--card-row-hover);
+                    background-color: rgba(21, 42, 0, 0.03);
                 }
                 .calendar-day.other-month {
-                    background-color: var(--card-tray);
+                    background-color: rgba(21, 42, 0, 0.02);
+                }
+                .calendar-day.other-month .day-number {
+                    opacity: 0.45;
                 }
                 .calendar-day.today {
-                    background-color: hsl(var(--color-brand-primary) / 0.06);
+                    background-color: rgba(21, 42, 0, 0.045);
                 }
                 .day-number {
                     font-size: 12px;
                     color: hsl(var(--color-text-secondary));
-                    margin-bottom: 4px;
-                    font-weight: 500;
-                }
-                .calendar-day.today .day-number {
-                    color: white;
-                    background-color: hsl(var(--color-brand-primary));
-                    width: 20px;
-                    height: 20px;
-                    display: flex;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                    width: 22px;
+                    height: 22px;
+                    display: inline-flex;
                     align-items: center;
                     justify-content: center;
+                }
+                .calendar-day.today .day-number {
+                    color: #FFEFD2;
+                    background-color: hsl(var(--color-brand-primary));
                     border-radius: 50%;
+                    box-shadow: 0 2px 5px -1px rgba(21, 42, 0, 0.35);
                 }
                 .day-content {
                     flex: 1;
                     display: flex;
                     flex-direction: column;
-                    gap: 2px;
+                    gap: 3px;
                     overflow: hidden;
                 }
                 .calendar-item-bar {
                     font-size: 11px;
-                    color: white;
-                    padding: 2px 6px;
-                    border-radius: 3px;
+                    font-weight: 600;
+                    color: #FFEFD2;
+                    padding: 3px 8px;
+                    border-radius: 6px;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     cursor: pointer;
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 3px rgba(21, 42, 0, 0.2);
+                    transition: filter 0.15s, transform 0.15s;
                 }
                 .calendar-item-bar:hover {
-                    filter: brightness(1.1);
+                    filter: brightness(1.08);
+                    transform: translateY(-0.5px);
                 }
             `}</style>
         </div>

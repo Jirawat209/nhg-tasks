@@ -1,0 +1,497 @@
+/*
+ * Narai glass — the default (Narai) palette's surface language: frosted
+ * Galangal glass over a backdrop lit by the brand's own earth tones, a dark
+ * Narai Green glass sidebar, and warm paper cards for the data itself (data
+ * stays near-opaque so it reads; the glass is chrome).
+ *
+ * Every rule is scoped to html:not([data-palette='saturday']), so the legacy
+ * violet theme renders exactly as before.
+ *
+ * backdrop-filter never sits on .app-main or .sidebar themselves: an element
+ * with a backdrop-filter becomes the containing block of its position:fixed
+ * descendants, which would trap the full-screen Admin Console (rendered
+ * inside <main>) inside the panel. The sidebar's frost is drawn by a ::before
+ * layer behind it; <main> must not become a stacking context at all (see its
+ * rule below), so its glass is a plain translucent background.
+ */
+
+:root {
+    --glass-backdrop:
+        radial-gradient(42% 38% at 6% 10%, rgba(170, 160, 36, 0.50), transparent 70%),
+        radial-gradient(36% 34% at 97% 4%, rgba(167, 100, 0, 0.40), transparent 70%),
+        radial-gradient(48% 42% at 80% 98%, rgba(225, 255, 179, 0.75), transparent 70%),
+        radial-gradient(38% 40% at 34% 96%, rgba(42, 74, 18, 0.28), transparent 70%),
+        linear-gradient(160deg, #fff3dc 0%, #f6e3c1 58%, #ecd4a8 100%);
+    --glass-panel: rgba(255, 250, 240, 0.60);
+    --glass-panel-edge: rgba(255, 255, 255, 0.75);
+    --glass-panel-shadow: 0 30px 70px -36px rgba(21, 42, 0, 0.45), 0 2px 8px rgba(21, 42, 0, 0.05);
+    --glass-blur: blur(28px) saturate(150%);
+
+    --glass-chip: rgba(255, 255, 255, 0.46);
+    --glass-chip-edge: rgba(21, 42, 0, 0.10);
+    --glass-chip-hover: rgba(255, 255, 255, 0.78);
+    --glass-chip-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 4px 14px -8px rgba(21, 42, 0, 0.25);
+
+    --glass-pop: rgba(255, 250, 240, 0.88);
+    --glass-pop-edge: rgba(255, 255, 255, 0.85);
+    --glass-pop-shadow: 0 22px 48px -18px rgba(21, 42, 0, 0.40), 0 2px 6px rgba(21, 42, 0, 0.08);
+
+    --sidebar-glass: rgba(21, 42, 0, 0.90);
+    --sidebar-glass-edge: rgba(255, 239, 210, 0.10);
+
+    /* Data cards: warm paper, near-opaque, so table text never sits on glass */
+    --paper: 43 100% 98%;              /* #fffbf3 */
+    --paper-edge: rgba(21, 42, 0, 0.09);
+    --paper-row-line: rgba(21, 42, 0, 0.06);
+    --paper-shadow: 0 18px 40px -30px rgba(21, 42, 0, 0.45);
+    --paper-head: 40 70% 95%;          /* group header band */
+}
+
+.dark {
+    --glass-backdrop:
+        radial-gradient(44% 40% at 6% 8%, rgba(37, 7, 25, 0.95), transparent 70%),
+        radial-gradient(34% 32% at 96% 4%, rgba(167, 100, 0, 0.28), transparent 70%),
+        radial-gradient(50% 44% at 78% 100%, rgba(63, 125, 50, 0.38), transparent 70%),
+        radial-gradient(36% 36% at 30% 96%, rgba(170, 160, 36, 0.16), transparent 70%),
+        linear-gradient(160deg, #0d1508 0%, #070c04 100%);
+    --glass-panel: rgba(18, 28, 11, 0.66);
+    --glass-panel-edge: rgba(255, 239, 210, 0.09);
+    --glass-panel-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.8), 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    --glass-chip: rgba(255, 239, 210, 0.06);
+    --glass-chip-edge: rgba(255, 239, 210, 0.10);
+    --glass-chip-hover: rgba(255, 239, 210, 0.12);
+    --glass-chip-shadow: inset 0 1px 0 rgba(255, 239, 210, 0.06), 0 4px 14px -8px rgba(0, 0, 0, 0.6);
+
+    --glass-pop: rgba(20, 31, 13, 0.92);
+    --glass-pop-edge: rgba(255, 239, 210, 0.10);
+    --glass-pop-shadow: 0 22px 48px -18px rgba(0, 0, 0, 0.8), 0 2px 6px rgba(0, 0, 0, 0.4);
+
+    --sidebar-glass: rgba(4, 8, 2, 0.55);
+    --sidebar-glass-edge: rgba(255, 239, 210, 0.07);
+
+    --paper: 97 38% 9%;
+    --paper-edge: rgba(255, 239, 210, 0.08);
+    --paper-row-line: rgba(255, 239, 210, 0.06);
+    --paper-shadow: 0 18px 40px -26px rgba(0, 0, 0, 0.8);
+    --paper-head: 97 32% 12%;
+}
+
+/* ── Backdrop ─────────────────────────────────────────────────────────── */
+html:not([data-palette='saturday']) .app-container {
+    background: var(--glass-backdrop) !important;
+    background-attachment: fixed !important;
+    border-radius: 0 !important;
+}
+
+/* ── Main panel: frosted Galangal glass ───────────────────────────────── */
+/* The panel's glass is its own translucent background, with no blur layer.
+   The backdrop behind it is only soft gradients, so a blur would show nothing,
+   and the layer it needs (isolation / a z-indexed ::before) makes <main> a
+   stacking context: everything position:fixed inside it — the full-screen
+   Admin Console, modals, the item side panel — then sinks below the sidebar
+   (z-index 10) however high its own z-index. */
+html:not([data-palette='saturday']) .app-main {
+    position: relative;
+    background: var(--glass-panel) !important;
+    border: 1px solid var(--glass-panel-edge) !important;
+    border-radius: 24px !important;
+    box-shadow: var(--glass-panel-shadow) !important;
+    margin: 12px 12px 12px 0 !important;
+}
+
+/* ── Sidebar: a floating dark Narai Green glass card ─────────────────── *
+ * The sidebar's components all colour themselves through the --color-*
+ * tokens, so redefining those on this subtree turns it into a dark surface
+ * without touching each component. Menus it opens are portaled to <body> and
+ * keep the light tokens. */
+html:not([data-palette='saturday']) .sidebar {
+    background: transparent !important;
+    border-right: none !important;
+    margin: 12px;
+    height: calc(100% - 24px) !important;
+    border-radius: 24px;
+    border: 1px solid var(--sidebar-glass-edge);
+    box-shadow: inset 0 1px 0 rgba(255, 239, 210, 0.16), 0 30px 60px -34px rgba(21, 42, 0, 0.65);
+
+    --color-text-primary: 39 100% 91%;
+    --color-text-secondary: 38 45% 80%;
+    --color-text-tertiary: 50 16% 60%;
+    --color-text-disabled: 50 16% 50%;
+    --color-bg: 92 45% 9%;
+    --color-bg-canvas: 92 45% 9%;
+    --color-bg-surface: 92 38% 14%;
+    --color-bg-surface-hover: 92 32% 18%;
+    --color-bg-subtle: 92 40% 11%;
+    --color-bg-hover: 92 32% 18%;
+    --color-border: 80 18% 24%;
+    --color-border-hover: 80 16% 32%;
+    --color-border-strong: 80 16% 32%;
+    --color-brand-primary: 39 100% 91%;
+    --color-brand-light: 39 100% 91% / 0.12;
+    --color-brand-subtle: 39 100% 91% / 0.18;
+    --color-nav-accent: #FFEFD2;
+    --color-nav-accent-bg: rgba(255, 239, 210, 0.08);
+    --color-icon-accent: #E1FFB3;
+    --shadow-sm: none;
+    color: hsl(var(--color-text-primary));
+}
+
+html:not([data-palette='saturday']) .sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background:
+        radial-gradient(85% 42% at 0% 0%, rgba(170, 160, 36, 0.22), transparent 68%),
+        radial-gradient(75% 45% at 100% 100%, rgba(63, 125, 50, 0.20), transparent 70%),
+        var(--sidebar-glass);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    backdrop-filter: blur(28px) saturate(150%);
+    pointer-events: none;
+}
+
+/* Search pill & inline rename inputs inside the dark glass sidebar */
+html:not([data-palette='saturday']) .sidebar .sidebar-search-box {
+    background: rgba(255, 239, 210, 0.07) !important;
+    border: 1px solid rgba(255, 239, 210, 0.14) !important;
+    border-radius: 999px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 239, 210, 0.06);
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+html:not([data-palette='saturday']) .sidebar .sidebar-search-box:focus-within {
+    background: rgba(255, 239, 210, 0.11) !important;
+    border-color: rgba(255, 239, 210, 0.28) !important;
+    box-shadow: 0 0 0 3px rgba(255, 239, 210, 0.08), inset 0 1px 0 rgba(255, 239, 210, 0.12);
+}
+html:not([data-palette='saturday']) .sidebar .sidebar-search-box input {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 999px !important;
+    color: #FFEFD2 !important;
+}
+html:not([data-palette='saturday']) .sidebar input:not(.sidebar-search-input) {
+    background-color: rgba(255, 239, 210, 0.08) !important;
+    border-color: rgba(255, 239, 210, 0.18) !important;
+    border-radius: 8px !important;
+    color: hsl(var(--color-text-primary)) !important;
+}
+html:not([data-palette='saturday']) .sidebar input::placeholder {
+    color: hsl(var(--color-text-tertiary));
+}
+
+/* Workspace badge tiles inside the dark glass sidebar:
+   - Active: warm Galangal (#FFEFD2) tile with deep Narai Green (#152A00) ink
+   - Inactive: frosted translucent glass tile with Galangal ink */
+html:not([data-palette='saturday']) .sidebar [data-ws-badge][data-ws-active='true'] {
+    background-color: #FFEFD2 !important;
+    color: #152A00 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28), inset 0 1px 0 #ffffff !important;
+}
+html:not([data-palette='saturday']) .sidebar [data-ws-badge][data-ws-active='false'] {
+    background-color: rgba(255, 239, 210, 0.12) !important;
+    color: #FFEFD2 !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 239, 210, 0.20) !important;
+}
+
+/* Active workspace header vs Active board capsule */
+html:not([data-palette='saturday']) .sidebar .tree-node-parent.active {
+    background: rgba(255, 239, 210, 0.08) !important;
+    color: #FFEFD2 !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 239, 210, 0.10);
+}
+html:not([data-palette='saturday']) .sidebar .tree-sidebar-item.active,
+html:not([data-palette='saturday']) .sidebar .sidebar-item.active {
+    background: linear-gradient(135deg, rgba(255, 239, 210, 0.20) 0%, rgba(255, 239, 210, 0.10) 100%) !important;
+    color: #FFEFD2 !important;
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgba(255, 239, 210, 0.22), inset 0 0 0 1px rgba(255, 239, 210, 0.14);
+}
+html:not([data-palette='saturday']) .sidebar .sidebar-item.active::before {
+    display: none;
+}
+html:not([data-palette='saturday']) .sidebar .tree-sidebar-item,
+html:not([data-palette='saturday']) .sidebar .tree-node-parent,
+html:not([data-palette='saturday']) .sidebar .sidebar-item {
+    border-radius: 10px;
+}
+html:not([data-palette='saturday']) .sidebar .tree-node-parent:hover {
+    background: rgba(255, 239, 210, 0.08);
+    box-shadow: none;
+    transform: none;
+}
+html:not([data-palette='saturday']) .sidebar .tree-sidebar-item:hover {
+    background: rgba(255, 239, 210, 0.07);
+}
+html:not([data-palette='saturday']) .sidebar .tree-node-children {
+    margin-left: 16px;
+    padding-left: 6px;
+    border-left: 1px solid rgba(255, 239, 210, 0.10);
+}
+html:not([data-palette='saturday']) .sidebar .sidebar-footer {
+    border-top-color: rgba(255, 239, 210, 0.10);
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.12));
+}
+html:not([data-palette='saturday']) .sidebar .sidebar-profile-avatar {
+    background: linear-gradient(145deg, #3F7D32 0%, #1f3a08 100%);
+    color: #FFEFD2;
+    border: 1px solid rgba(255, 239, 210, 0.28);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Glass utility classes used by the board chrome ───────────────────── */
+.glass-chip {
+    background: var(--glass-chip);
+    border: 1px solid var(--glass-chip-edge);
+    box-shadow: var(--glass-chip-shadow);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+}
+
+.glass-pop {
+    background: var(--glass-pop) !important;
+    border: 1px solid var(--glass-pop-edge) !important;
+    box-shadow: var(--glass-pop-shadow) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+    border-radius: 14px !important;
+}
+
+html[data-palette='saturday'] .glass-chip {
+    background: hsl(var(--color-bg-surface));
+    border-color: hsl(var(--color-border));
+    box-shadow: none;
+}
+html[data-palette='saturday'] .glass-pop {
+    background: hsl(var(--color-bg-surface)) !important;
+}
+
+/* ── Home, Favorites & Card surfaces (Narai Glass + Paper) ────────────── */
+.home-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.home-section-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-section-title {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: hsl(var(--color-text-primary));
+}
+
+.home-section-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: hsl(var(--color-text-primary));
+    flex-shrink: 0;
+}
+
+.home-section-badge--count {
+    background: hsl(var(--color-brand-primary));
+    color: hsl(var(--color-bg-canvas));
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: none;
+}
+
+.home-see-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: hsl(var(--color-text-primary));
+    cursor: pointer;
+    transition: background-color 0.18s, border-color 0.18s, transform 0.18s;
+}
+
+.home-see-all:hover {
+    background: var(--glass-chip-hover);
+    transform: translateY(-1px);
+}
+
+html:not([data-palette='saturday']) .card-surface {
+    background:
+        radial-gradient(130% 90% at 0% 0%, rgba(167, 100, 0, 0.06), transparent 58%),
+        hsl(var(--paper));
+    border: 1px solid var(--paper-edge);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88), var(--paper-shadow);
+}
+
+html:not([data-palette='saturday']).dark .card-surface {
+    box-shadow: inset 0 1px 0 rgba(255, 239, 210, 0.08), var(--paper-shadow);
+}
+
+html:not([data-palette='saturday']) .board-card {
+    padding: 14px 16px 12px;
+}
+
+html:not([data-palette='saturday']) .board-card:hover {
+    border-color: rgba(21, 42, 0, 0.20);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 22px 44px -26px rgba(21, 42, 0, 0.50),
+        0 4px 12px -4px rgba(21, 42, 0, 0.08);
+}
+
+html:not([data-palette='saturday']) .board-card__open::after {
+    border-radius: 16px;
+}
+
+html:not([data-palette='saturday']) .board-card__tile {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(21, 42, 0, 0.06);
+    color: hsl(var(--color-brand-primary));
+    box-shadow: none;
+}
+
+html:not([data-palette='saturday']).dark .board-card__tile {
+    background: rgba(255, 239, 210, 0.10);
+    box-shadow: none;
+}
+
+html:not([data-palette='saturday']) .board-card__tile::after {
+    background: #152A00;
+    box-shadow: none;
+}
+
+html:not([data-palette='saturday']) .board-card:hover .board-card__tile {
+    color: #FFEFD2;
+    box-shadow: none;
+}
+
+html:not([data-palette='saturday']) .dash-widget__icon {
+    border-radius: 50%;
+    background: rgba(21, 42, 0, 0.06);
+    color: hsl(var(--color-brand-primary));
+    box-shadow: none;
+}
+
+html:not([data-palette='saturday']).dark .dash-widget__icon {
+    background: rgba(255, 239, 210, 0.10);
+    box-shadow: none;
+}
+
+html:not([data-palette='saturday']) .board-card__body {
+    margin-top: 10px;
+}
+
+html:not([data-palette='saturday']) .board-card__title {
+    font-family: var(--font-family-display);
+    font-size: 16.5px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+}
+
+html:not([data-palette='saturday']) .board-card__kind {
+    margin-top: 2px;
+    font-size: 11.5px;
+}
+
+html:not([data-palette='saturday']) .board-card__star:hover,
+html:not([data-palette='saturday']) .board-card__star[aria-pressed='true'] {
+    color: #E5A93C;
+}
+
+html:not([data-palette='saturday']) .board-card__meta {
+    margin-top: 12px;
+    padding-top: 10px;
+    gap: 10px;
+    border-top-color: var(--paper-row-line);
+}
+
+html:not([data-palette='saturday']) .board-card__meta dt {
+    margin-bottom: 3px;
+    font-size: 9.5px;
+}
+
+html:not([data-palette='saturday']) .board-card__meta dd {
+    font-size: 12px;
+    gap: 6px;
+}
+
+html:not([data-palette='saturday']) .board-card [data-ws-badge] {
+    border-radius: 5px !important;
+    background: rgba(21, 42, 0, 0.09) !important;
+    color: hsl(var(--color-text-primary)) !important;
+    box-shadow: inset 0 0 0 1px rgba(21, 42, 0, 0.15) !important;
+}
+
+html:not([data-palette='saturday']).dark .board-card [data-ws-badge] {
+    background: rgba(255, 239, 210, 0.12) !important;
+    color: #FFEFD2 !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 239, 210, 0.20) !important;
+}
+
+html:not([data-palette='saturday']) .home-feed {
+    padding: 4px 6px;
+}
+
+html:not([data-palette='saturday']) .feed-row {
+    gap: 12px;
+    padding: 10px 10px 10px 12px;
+    border-radius: 12px;
+}
+
+html:not([data-palette='saturday']) .feed-row__tile {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--tone) 11%, transparent);
+    box-shadow: none;
+}
+
+html:not([data-palette='saturday']) .feed-row__title {
+    font-size: 13.5px;
+}
+
+html:not([data-palette='saturday']) .feed-row__text {
+    margin-top: 2px;
+    font-size: 12.5px;
+}
+
+html:not([data-palette='saturday']) .home-feed__footer {
+    margin: 2px 6px 0;
+    padding: 4px 0 2px;
+    border-top-color: var(--paper-row-line);
+}
+
+html:not([data-palette='saturday']) .home-more {
+    background: var(--glass-chip);
+    border: 1px solid var(--glass-chip-edge);
+    box-shadow: var(--glass-chip-shadow);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: hsl(var(--color-text-primary));
+}
+
+html:not([data-palette='saturday']) .home-more:hover {
+    background: var(--glass-chip-hover);
+}

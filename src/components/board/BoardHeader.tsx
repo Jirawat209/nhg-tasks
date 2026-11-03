@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Share2, Activity, X, MoreHorizontal, Star, Trash2, Edit2, Plus, Download, FileSpreadsheet } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Share2, Activity, X, MoreHorizontal, Star, Trash2, Edit2, Download, FileSpreadsheet } from 'lucide-react';
 import { useBoardStore } from '../../store/useBoardStore';
 import { usePermission } from '../../hooks/usePermission';
 import { ActivityLogList } from '../common/ActivityLogList';
@@ -9,7 +8,6 @@ import { SidePanel } from '../ui/SidePanel';
 import { ExportBoardModal } from './ExportBoardModal';
 import { ImportBoardModal } from '../workspace/ImportBoardModal';
 
-import { BoardViewsTabs } from './BoardViewsTabs';
 import { GlobalTopActions } from '../layout/GlobalTopActions';
 
 interface BoardHeaderProps {
@@ -20,7 +18,7 @@ export const BoardHeader = ({ boardId }: BoardHeaderProps) => {
     const boards = useBoardStore(state => state.boards);
     const updateBoard = useBoardStore(state => state.updateBoard);
     const deleteBoard = useBoardStore(state => state.deleteBoard);
-    const activeBoardMembers = useBoardStore(state => state.activeBoardMembers);
+    const workspaces = useBoardStore(state => state.workspaces);
     const board = boards.find(b => b.id === boardId);
 
     // Permission Hook
@@ -103,232 +101,83 @@ export const BoardHeader = ({ boardId }: BoardHeaderProps) => {
 
     if (!board) return null;
 
-    // Show up to 7 members
-    const displayMembers = activeBoardMembers.slice(0, 7);
-    const remainingMembers = activeBoardMembers.length - 7;
+    const workspaceTitle = workspaces.find(w => w.id === board.workspaceId)?.title;
 
-    // --color-bg-canvas, not -subtle: this header sits at the very top of the
-    // floating main panel, right where its rounded corner is. -subtle is the
-    // same tone as the backdrop behind the panel, so the header used to
-    // camouflage that corner against the backdrop instead of reading as part
-    // of the white card.
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'hsl(var(--color-bg-canvas))' }}>
-            <header style={{
-                minHeight: '56px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '16px 24px 4px 24px',
-                position: 'relative'
-            }}>
-            {/* Left Side: Title & Description */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div>
-                    {isEditing ? (
-                        <input
-                            autoFocus
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            onBlur={handleRename}
-                            onKeyDown={handleKeyDown}
+        <div>
+            <header className="bh">
+            <div className="bh-titles">
+                <div className="bh-eyebrow">
+                    {workspaceTitle && <span>{workspaceTitle}</span>}
+                    {workspaceTitle && <span className="bh-eyebrow-dot" />}
+                    <span>Board</span>
+                </div>
+                {isEditing ? (
+                    <input
+                        autoFocus
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        onBlur={handleRename}
+                        onKeyDown={handleKeyDown}
+                        className="bh-title-input"
+                    />
+                ) : (
+                    <h1
+                        className="bh-title narai-heading"
+                        onClick={() => can('create_board') && setIsEditing(true)}
+                        style={{ cursor: can('create_board') ? 'pointer' : 'default' }}
+                    >
+                        {board.title}
+                        <Star
+                            size={20}
+                            aria-label={board.isFavorite ? 'Remove from favourites' : 'Add to favourites'}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                useBoardStore.getState().toggleFavorite(board.id);
+                            }}
                             style={{
-                                fontSize: '18px',
-                                fontWeight: 600,
-                                letterSpacing: '-0.02em',
-                                border: '1px solid hsl(var(--color-brand-primary))',
-                                borderRadius: '4px',
-                                padding: '0 4px',
-                                outline: 'none',
-                                background: 'white',
-                                color: 'hsl(var(--color-text-primary))',
-                                minWidth: '150px'
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                                fill: board.isFavorite ? '#A76400' : 'transparent',
+                                color: board.isFavorite ? '#A76400' : 'hsl(var(--color-text-tertiary))',
+                                transition: 'all 0.2s ease'
                             }}
                         />
-                    ) : (
-                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                            <h1
-                                onClick={() => can('create_board') && setIsEditing(true)}
-                                style={{
-                                    fontSize: '18px',
-                                    fontWeight: 600,
-                                    margin: 0,
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    color: 'hsl(var(--color-text-primary))',
-                                    cursor: can('create_board') ? 'pointer' : 'default',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px'
-                                }}
-                            >
-                                {board.title}
-                                <Star 
-                                    size={18} 
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        useBoardStore.getState().toggleFavorite(board.id);
-                                    }}
-                                    style={{ 
-                                        cursor: 'pointer',
-                                        fill: board.isFavorite ? '#ffcb00' : 'transparent',
-                                        color: board.isFavorite ? '#ffcb00' : 'hsl(var(--color-text-tertiary))',
-                                        transition: 'all 0.2s ease'
-                                    }} 
-                                />
-                            </h1>
-                            
-                            {isEditingDescription ? (
-                                <input
-                                    autoFocus
-                                    value={descriptionValue}
-                                    onChange={(e) => setDescriptionValue(e.target.value)}
-                                    onBlur={handleUpdateDescription}
-                                    onKeyDown={handleDescriptionKeyDown}
-                                    placeholder="Add description..."
-                                    style={{
-                                        margin: '4px 0 0 0',
-                                        fontSize: '12px',
-                                        color: 'hsl(var(--color-text-primary))',
-                                        border: '1px solid hsl(var(--color-brand-primary))',
-                                        borderRadius: '4px',
-                                        padding: '0 4px',
-                                        outline: 'none',
-                                        background: 'white',
-                                        minWidth: '200px'
-                                    }}
-                                />
-                            ) : (
-                                <div 
-                                    onClick={() => can('create_board') && setIsEditingDescription(true)}
-                                    style={{ 
-                                        margin: '2px 0 0 0', 
-                                        fontSize: '12px', 
-                                        color: board.description ? 'hsl(var(--color-text-tertiary))' : 'hsl(var(--color-text-tertiary))',
-                                        opacity: board.description ? 1 : 0.6,
-                                        cursor: can('create_board') ? 'pointer' : 'default',
-                                        fontStyle: board.description ? 'normal' : 'italic',
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        maxWidth: '450px'
-                                    }}
-                                >
-                                    {board.description || (can('create_board') ? '+ Add description' : '')}
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
+                    </h1>
+                )}
+
+                {isEditingDescription ? (
+                    <input
+                        autoFocus
+                        value={descriptionValue}
+                        onChange={(e) => setDescriptionValue(e.target.value)}
+                        onBlur={handleUpdateDescription}
+                        onKeyDown={handleDescriptionKeyDown}
+                        placeholder="Add a description"
+                        className="bh-desc-input"
+                    />
+                ) : (
+                    <div
+                        className={`bh-desc${board.description ? '' : ' is-empty'}`}
+                        onClick={() => can('create_board') && setIsEditingDescription(true)}
+                        style={{ cursor: can('create_board') ? 'pointer' : 'default' }}
+                    >
+                        {board.description || (can('create_board') ? 'Add a description' : '')}
+                    </div>
+                )}
             </div>
 
-            {/* Right Side: Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-
-                {/* Search / Filter */}
-                <div style={{ position: 'relative' }}>
-                    {/* Search removed per user request */}
-                </div>
-
-                <div style={{ height: '24px', width: '1px', background: 'hsl(var(--color-border))', margin: '0 8px' }} />
-
-                {/* Members Display */}
-                <div style={{ display: 'flex', marginRight: '8px', alignItems: 'center' }}>
-                    {activeBoardMembers.length > 0 ? (
-                        <>
-                            {displayMembers.map((member, index) => {
-                                const isOwner = member.role === 'owner';
-                                 const profileData = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
-                                const profile = profileData || {};
-                                const name = profile.full_name || member.full_name || profile.email || member.email || '?';
-                                const avatar = profile.avatar_url || member.avatar_url;
-                                const initials = name.substring(0, 2).toUpperCase();
-
-                                return (
-                                    <div
-                                        key={member.user_id || index}
-                                        title={`${name} (${member.role})`}
-                                        style={{
-                                            width: '28px', height: '28px', borderRadius: '28%',
-                                            background: isOwner ? 'hsl(var(--color-brand-primary))' : '#9ca3af',
-                                            color: 'white',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: '11px', border: '2px solid white', marginLeft: index === 0 ? 0 : '-8px',
-                                            cursor: 'pointer',
-                                            position: 'relative',
-                                            overflow: 'hidden',
-                                            zIndex: 10 - index
-                                        }}
-                                    >
-                                        {avatar ? (
-                                            <img
-                                                src={avatar}
-                                                alt={initials}
-                                                referrerPolicy="no-referrer"
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
-                                        ) : (
-                                            initials
-                                        )}
-                                    </div>
-                                );
-                            })}
-                            {remainingMembers > 0 && (
-                                <div style={{
-                                    width: '28px', height: '28px', borderRadius: '28%',
-                                    background: '#e5e7eb', color: '#6b7280',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    fontSize: '10px', border: '2px solid white', marginLeft: '-6px',
-                                    fontWeight: 600
-                                }}>
-                                    +{remainingMembers}
-                                </div>
-                            )}
-
-                            {/* Invitation Button (+) */}
-                            <button
-                                onClick={() => can('invite_members') && setShowShareModal(true)}
-                                style={{
-                                    width: '28px', height: '28px', borderRadius: '28%',
-                                    background: 'hsl(var(--color-bg-subtle))',
-                                    color: 'hsl(var(--color-text-secondary))',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    fontSize: '14px', border: '2px solid white', marginLeft: '-6px',
-                                    cursor: can('invite_members') ? 'pointer' : 'not-allowed',
-                                    zIndex: 0
-                                }}
-                                title="Invite to board"
-                            >
-                                <Plus size={16} />
-                            </button>
-                        </>
-                    ) : (
-                        <div style={{ fontSize: '12px', color: 'hsl(var(--color-text-tertiary))', fontStyle: 'italic' }}>
-                            No members
-                        </div>
-                    )}
-                </div>
-
+            <div className="bh-actions">
                 {/* Activity Log */}
                 <div style={{ position: 'relative' }}>
-                    <motion.button
-                        className="btn-ghost"
+                    <button
+                        className={`bh-icon-btn${showActivityLog ? ' is-on' : ''}`}
                         onClick={() => setShowActivityLog(!showActivityLog)}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            background: showActivityLog ? 'hsl(var(--color-bg-subtle))' : 'transparent',
-                            color: showActivityLog ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-secondary))'
-                        }}
+                        title="Board activity"
+                        aria-label="Board activity"
                     >
-                        <Activity size={16} />
-                    </motion.button>
+                        <Activity size={17} />
+                    </button>
 
                     <SidePanel isOpen={showActivityLog} onClose={() => setShowActivityLog(false)} width="600px">
                         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -388,129 +237,55 @@ export const BoardHeader = ({ boardId }: BoardHeaderProps) => {
                 </div>
 
                 <button
-                    onClick={() => can('invite_members') && setShowShareModal(true)}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '6px 12px',
-                        backgroundColor: 'var(--color-action-2, #6b4cc3)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '13px',
-                        fontWeight: 500,
-                        cursor: can('invite_members') ? 'pointer' : 'not-allowed',
-                        opacity: can('invite_members') ? 1 : 0.7,
-                        marginLeft: '4px',
-                        boxShadow: '0 2px 4px rgba(107, 76, 195, 0.15)'
-                    }}
+                    className="bh-share glass-chip"
+                    // Open to everyone: the share window is also where members are listed,
+                    // and it shows the invite form / role controls only to those allowed.
+                    onClick={() => setShowShareModal(true)}
+                    title={can('invite_members') ? 'Share board and manage members' : 'See who is on this board'}
                 >
-                    <Share2 size={16} />
-                    Invite / Share
+                    <Share2 size={15} />
+                    Share
                 </button>
 
                 {/* More Menu */}
                 <div style={{ position: 'relative' }} ref={menuRef}>
                     <button
-                        className="btn-ghost"
-                        style={{ padding: '8px', background: showMenu ? 'hsl(var(--color-bg-subtle))' : 'transparent' }}
+                        className={`bh-icon-btn${showMenu ? ' is-on' : ''}`}
                         onClick={() => setShowMenu(!showMenu)}
+                        title="Board options"
+                        aria-label="Board options"
                     >
-                        <MoreHorizontal size={16} />
+                        <MoreHorizontal size={17} />
                     </button>
 
                     {showMenu && (
-                        <div style={{
+                        <div className="glass-pop" style={{
                             position: 'absolute',
                             top: '100%',
                             right: 0,
                             marginTop: '8px',
-                            backgroundColor: 'hsl(var(--color-bg-surface))',
-                            border: '1px solid hsl(var(--color-border))',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                             zIndex: 100,
-                            minWidth: '160px',
-                            padding: '4px 0'
+                            minWidth: '220px',
+                            padding: '6px'
                         }}>
-                            <button
-                                onClick={() => { setIsEditing(true); setShowMenu(false); }}
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                    width: '100%', padding: '8px 16px',
-                                    textAlign: 'left', background: 'none', border: 'none',
-                                    fontSize: '14px', color: 'hsl(var(--color-text-primary))',
-                                    cursor: 'pointer'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                            >
-                                <Edit2 size={14} /> Rename
+                            <button className="menu-item" onClick={() => { setIsEditing(true); setShowMenu(false); }}>
+                                <Edit2 size={14} /> Rename board
                             </button>
-
-                            <div style={{ height: '1px', background: 'hsl(var(--color-border))', margin: '4px 0' }} />
-
-                            <button
-                                onClick={() => { handleDeleteBoard(); setShowMenu(false); }}
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                    width: '100%', padding: '8px 16px',
-                                    textAlign: 'left', background: 'none', border: 'none',
-                                    fontSize: '14px', color: '#9159FF',
-                                    cursor: 'pointer'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                            >
-                                <Trash2 size={14} /> Delete Board
+                            <button className="menu-item" onClick={() => { setShowImportModal(true); setShowMenu(false); }}>
+                                <FileSpreadsheet size={14} /> Import from Excel
                             </button>
-
-                            <div style={{ height: '1px', background: 'hsl(var(--color-border))', margin: '4px 0' }} />
-
-                            <button
-                                onClick={() => {
-                                    setShowImportModal(true);
-                                    setShowMenu(false);
-                                }}
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                    width: '100%', padding: '8px 16px',
-                                    textAlign: 'left', background: 'none', border: 'none',
-                                    fontSize: '14px', color: 'hsl(var(--color-text-secondary))',
-                                    cursor: 'pointer'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                            >
-                                <FileSpreadsheet size={14} /> Import Board
+                            <button className="menu-item" onClick={() => { setShowExportModal(true); setShowMenu(false); }}>
+                                <Download size={14} /> Export to Excel / CSV
                             </button>
-
-                            <div style={{ height: '1px', background: 'hsl(var(--color-border))', margin: '4px 0' }} />
-
-                            <button
-                                onClick={() => {
-                                    setShowExportModal(true);
-                                    setShowMenu(false);
-                                }}
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                    width: '100%', padding: '8px 16px',
-                                    textAlign: 'left', background: 'none', border: 'none',
-                                    fontSize: '14px', color: 'hsl(var(--color-text-secondary))',
-                                    cursor: 'pointer'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                            >
-                                <Download size={14} /> Export Board to Excel/CSV
+                            <div className="menu-sep" />
+                            <button className="menu-item is-danger" onClick={() => { handleDeleteBoard(); setShowMenu(false); }}>
+                                <Trash2 size={14} /> Delete board
                             </button>
                         </div>
                     )}
                 </div>
 
-                {/* Divider & Global Actions */}
-                <div style={{ width: '1px', height: '24px', backgroundColor: 'hsl(var(--color-border))', margin: '0 4px' }} />
+                <div className="bh-divider" />
                 <GlobalTopActions />
 
             </div>
@@ -537,7 +312,6 @@ export const BoardHeader = ({ boardId }: BoardHeaderProps) => {
 
             {showImportModal && <ImportBoardModal onClose={() => setShowImportModal(false)} />}
             </header>
-            <BoardViewsTabs />
         </div>
     );
 };

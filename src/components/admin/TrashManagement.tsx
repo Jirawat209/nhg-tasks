@@ -87,38 +87,39 @@ export const TrashManagement = () => {
             onClick={canRestore ? onClick : undefined}
             disabled={!canRestore || restoringId === id}
             title={canRestore ? undefined : 'Only Super Admin can restore'}
+            className="glass-chip"
             style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
-                padding: '6px 12px', borderRadius: '4px',
-                border: '1px solid #e2e8f0',
-                backgroundColor: canRestore ? 'white' : '#f8fafc',
+                padding: '6px 12px',
                 cursor: canRestore ? (restoringId === id ? 'not-allowed' : 'pointer') : 'not-allowed',
-                fontSize: '13px', fontWeight: 500,
-                color: canRestore ? '#0f172a' : '#94a3b8',
+                fontSize: '12.5px', fontWeight: 600,
+                color: canRestore ? 'hsl(var(--ink))' : 'hsl(var(--ink-soft))',
                 opacity: restoringId === id ? 0.6 : 1
             }}
         >
-            <RotateCcw size={14} /> {restoringId === id ? 'Restoring...' : 'Restore'}
+            <RotateCcw size={13} /> {restoringId === id ? 'Restoring...' : 'Restore'}
         </button>
     );
 
     return (
-        <div className="card-surface">
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Search size={18} color="#64748b" />
-                <input
-                    type="text"
-                    placeholder="Search trash..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ border: 'none', outline: 'none', fontSize: '14px', flex: 1, color: '#0f172a' }}
-                />
+        <div className="card-surface" style={{ overflow: 'hidden' }}>
+            <div style={{ padding: '14px 20px', background: 'hsl(var(--paper-head))', borderBottom: '1px solid hsl(var(--paper-edge))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, maxWidth: '380px', padding: '7px 14px', borderRadius: '999px', background: 'hsl(var(--paper))', border: '1px solid hsl(var(--paper-edge))' }}>
+                    <Search size={15} color="hsl(var(--ink-soft))" />
+                    <input
+                        type="text"
+                        placeholder="Search trash..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ border: 'none', outline: 'none', fontSize: '13.5px', flex: 1, background: 'transparent', color: 'hsl(var(--ink))' }}
+                    />
+                </div>
                 <button
                     onClick={fetchTrash}
+                    className="glass-chip"
                     style={{
-                        padding: '6px 12px', backgroundColor: '#f1f5f9', border: '1px solid #e2e8f0',
-                        borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center',
-                        gap: '6px', fontSize: '13px', color: '#475569'
+                        padding: '6px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                        gap: '6px', fontSize: '13px', fontWeight: 600, color: 'hsl(var(--ink))'
                     }}
                 >
                     <RefreshCw size={14} /> Refresh
@@ -126,31 +127,35 @@ export const TrashManagement = () => {
             </div>
 
             {!canRestore && (
-                <div style={{ padding: '10px 20px', fontSize: '12px', color: '#92400e', backgroundColor: '#fef3c7', borderBottom: '1px solid #e2e8f0' }}>
+                <div style={{ padding: '10px 20px', fontSize: '12.5px', color: '#A76400', backgroundColor: 'rgba(167, 100, 0, 0.08)', borderBottom: '1px solid hsl(var(--paper-edge))' }}>
                     You can view everything that's been deleted, but only a Super Admin can restore it.
                 </div>
             )}
 
             {isLoading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--ink-dim))' }}>Loading...</div>
             ) : (
-                <div style={{ padding: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                        <Trello size={16} color="#64748b" />
-                        <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>Archived Boards ({filteredBoards.length})</h3>
+                <div style={{ padding: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                        <div className="admin-tile" style={{ width: '32px', height: '32px', background: 'rgba(42, 74, 18, 0.1)', color: '#2A4A12' }}>
+                            <Trello size={15} />
+                        </div>
+                        <h3 className="narai-heading" style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'hsl(var(--ink))' }}>
+                            Archived Boards ({filteredBoards.length})
+                        </h3>
                     </div>
                     {filteredBoards.length === 0 ? (
-                        <div style={{ padding: '16px', textAlign: 'center', color: '#94a3b8', fontSize: '13px', marginBottom: '24px' }}>No archived boards.</div>
+                        <div style={{ padding: '16px', textAlign: 'center', color: 'hsl(var(--ink-soft))', fontSize: '13px', marginBottom: '24px' }}>No archived boards.</div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '28px' }}>
                             {filteredBoards.map(b => (
                                 <div key={b.id} style={{
                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                    padding: '12px', borderRadius: '6px', border: '1px solid #e2e8f0', backgroundColor: '#f8fafc'
+                                    padding: '12px 16px', borderRadius: '14px', border: '1px solid hsl(var(--paper-edge))', backgroundColor: 'hsl(var(--paper-muted))'
                                 }}>
                                     <div>
-                                        <div style={{ fontWeight: 500, fontSize: '14px', color: '#0f172a' }}>{b.title}</div>
-                                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>{b.workspaceTitle}</div>
+                                        <div style={{ fontWeight: 600, fontSize: '14px', color: 'hsl(var(--ink))' }}>{b.title}</div>
+                                        <div style={{ fontSize: '12px', color: 'hsl(var(--ink-dim))' }}>{b.workspaceTitle}</div>
                                     </div>
                                     {restoreButton(b.id, () => handleRestoreBoard(b.id))}
                                 </div>
@@ -158,22 +163,26 @@ export const TrashManagement = () => {
                         </div>
                     )}
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                        <Layers size={16} color="#64748b" />
-                        <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>Archived Groups ({filteredGroups.length})</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                        <div className="admin-tile" style={{ width: '32px', height: '32px', background: 'rgba(167, 100, 0, 0.12)', color: '#A76400' }}>
+                            <Layers size={15} />
+                        </div>
+                        <h3 className="narai-heading" style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'hsl(var(--ink))' }}>
+                            Archived Groups ({filteredGroups.length})
+                        </h3>
                     </div>
                     {filteredGroups.length === 0 ? (
-                        <div style={{ padding: '16px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>No archived groups.</div>
+                        <div style={{ padding: '16px', textAlign: 'center', color: 'hsl(var(--ink-soft))', fontSize: '13px' }}>No archived groups.</div>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {filteredGroups.map(g => (
                                 <div key={g.id} style={{
                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                    padding: '12px', borderRadius: '6px', border: '1px solid #e2e8f0', backgroundColor: '#f8fafc'
+                                    padding: '12px 16px', borderRadius: '14px', border: '1px solid hsl(var(--paper-edge))', backgroundColor: 'hsl(var(--paper-muted))'
                                 }}>
                                     <div>
-                                        <div style={{ fontWeight: 500, fontSize: '14px', color: '#0f172a' }}>{g.title}</div>
-                                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>{g.boardTitle} › {g.workspaceTitle}</div>
+                                        <div style={{ fontWeight: 600, fontSize: '14px', color: 'hsl(var(--ink))' }}>{g.title}</div>
+                                        <div style={{ fontSize: '12px', color: 'hsl(var(--ink-dim))' }}>{g.boardTitle} › {g.workspaceTitle}</div>
                                     </div>
                                     {restoreButton(g.id, () => handleRestoreGroup(g.id, g.boardId))}
                                 </div>

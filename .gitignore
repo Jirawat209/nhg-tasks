@@ -34,3 +34,6 @@ desktop.ini
 
 .tmp.driveupload/
 .superpowers/
+
+# Local browser-test screenshots and logs (Playwright MCP)
+.playwright-mcp/

@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     }
 
     // 1. Prepare Email Content
-    const subject = `Test Email from NHG Saturday Admin Console`;
+    const subject = `Test Email from NHG Tasks Admin Console`;
     const htmlBody = `
       <h1>SMTP Test Configuration Success!</h1>
       <p>This is a test email sent from the Admin Console to verify your SMTP settings.</p>
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     });
 
     const mailOptions = {
-      from: `"${smtp_config.fromName || 'NHG Saturday'}" <${smtp_config.fromEmail || smtp_config.user}>`,
+      from: `"${smtp_config.fromName || 'NHG Tasks'}" <${smtp_config.fromEmail || smtp_config.user}>`,
       to: test_email,
       subject: subject,
       html: htmlBody,

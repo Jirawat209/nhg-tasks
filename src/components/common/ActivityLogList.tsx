@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { RefreshCw } from 'lucide-react';
+import { ArrowUpRight, RefreshCw } from 'lucide-react';
 import { useBoardStore } from '../../store/useBoardStore';
+import { tintLabel } from '../../lib/labelTint';
 
 export interface ActivityLogListProps {
     scope: 'global' | 'board' | 'item';
@@ -78,11 +79,22 @@ const ACTION_LABELS: Record<string, string> = {
 // board's activity panel does, rather than keeping a second, thinner copy.
 // boardName is for feeds that span boards, where "which board" is the missing
 // context; the board's own panel doesn't need it.
-export const ActivityLogItem = ({ log, onClickTask, boardName }: { log: ActivityLog; onClickTask: (id: string) => void; boardName?: string }) => {
+export const ActivityLogItem = ({
+    log,
+    onClickTask,
+    onClickBoard,
+    boardId,
+    boardName
+}: {
+    log: ActivityLog;
+    onClickTask: (id: string, boardId?: string) => void;
+    onClickBoard?: (boardId: string) => void;
+    boardId?: string;
+    boardName?: string;
+}) => {
     const [imgError, setImgError] = useState(false);
 
     const { action_type, metadata, actor_name, actor_email, actor_avatar, created_at } = log;
-    // const Icon = ACTION_ICONS[action_type] || User; // Default fallback? Activity symbol maybe
     const label = ACTION_LABELS[action_type] || action_type.replace(/_/g, ' ');
 
     // Helper: Truncate
@@ -90,6 +102,19 @@ export const ActivityLogItem = ({ log, onClickTask, boardName }: { log: Activity
         if (!str) return '';
         return str.length > length ? str.substring(0, length) + '...' : str;
     };
+
+    const statusBadgeStyle = (rawColor?: string): React.CSSProperties => ({
+        backgroundColor: tintLabel(rawColor || '#797E93'),
+        color: '#FFEFD2',
+        padding: '2px 7px',
+        borderRadius: '6px',
+        fontSize: '10.5px',
+        fontWeight: 600,
+        letterSpacing: '0.03em',
+        textTransform: 'uppercase',
+        display: 'inline-block',
+        lineHeight: 1.35
+    });
 
     // Helper: Description Renderer
     const renderDescription = () => {
@@ -133,9 +158,9 @@ export const ActivityLogItem = ({ log, onClickTask, boardName }: { log: Activity
                     return <span>Updated Person in <strong>{colName}</strong> for <strong>{itemTitle}</strong></span>;
                 }
                 if (colType === 'files') {
-                    const added = meta.added_files || [];
-                    const removed = meta.removed_files || [];
-                    const parts = [];
+                    const added: string[] = meta.added_files || [];
+                    const removed: string[] = meta.removed_files || [];
+                    const parts: string[] = [];
                     if (added.length > 0) parts.push(`Added ${added.length > 1 ? `${added.length} files` : `"${truncate(added[0], 20)}"`}`);
                     if (removed.length > 0) parts.push(`Removed ${removed.length > 1 ? `${removed.length} files` : `"${truncate(removed[0], 20)}"`}`);
                     const actionText = parts.join(' and ') || 'Updated files';
@@ -158,7 +183,9 @@ export const ActivityLogItem = ({ log, onClickTask, boardName }: { log: Activity
             case 'item_status_updated':
                 return (
                     <span>
-                        Changed status of <strong>{itemTitle}</strong> from <span style={{ backgroundColor: meta.old_color || '#eee', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', color: '#333' }}>{meta.old_label || 'None'}</span> to <span style={{ backgroundColor: meta.new_color || '#eee', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', color: '#333' }}>{meta.new_label}</span>
+                        Changed status of <strong>{itemTitle}</strong> from{' '}
+                        <span style={statusBadgeStyle(meta.old_color)}>{meta.old_label || 'None'}</span>{' '}
+                        to <span style={statusBadgeStyle(meta.new_color)}>{meta.new_label}</span>
                     </span>
                 );
             case 'item_created':
@@ -231,7 +258,16 @@ export const ActivityLogItem = ({ log, onClickTask, boardName }: { log: Activity
                 return (
                     <span>
                         Mentioned{' '}
-                        <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#dbeafe', color: '#1d4ed8', padding: '1px 7px', borderRadius: '12px', fontWeight: 500, fontSize: '12px' }}>
+                        <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            backgroundColor: 'hsl(var(--color-brand-primary) / 0.1)',
+                            color: 'hsl(var(--color-brand-primary))',
+                            padding: '1px 8px',
+                            borderRadius: '999px',
+                            fontWeight: 600,
+                            fontSize: '11.5px'
+                        }}>
                             @{meta.mentioned_user_name || 'someone'}
                         </span>
                         {' '}in <strong>{itemTitle}</strong>
@@ -244,14 +280,19 @@ export const ActivityLogItem = ({ log, onClickTask, boardName }: { log: Activity
         }
     };
 
-    // Determine if clickable
-    const itemId = log.target_type === 'item' ? log.target_id : log.metadata?.item_id;
-    const isClickable = !!itemId;
+    const resolvedBoardId = boardId || log.metadata?.board_id || log.metadata?.to_board_id || (log.target_type === 'board' ? log.target_id : undefined) || undefined;
+    const itemId = (log.target_type === 'item' ? log.target_id : log.metadata?.item_id) || (Array.isArray(log.metadata?.item_ids) ? log.metadata.item_ids[0] : undefined);
+    const isTaskClickable = !!itemId && action_type !== 'item_deleted';
+    const isBoardClickable = !!resolvedBoardId && !!onClickBoard;
+    const isClickable = isTaskClickable || isBoardClickable;
 
     const handleClick = (e: React.MouseEvent) => {
-        if (isClickable) {
-            e.stopPropagation();
-            onClickTask(itemId!);
+        if (!isClickable) return;
+        e.stopPropagation();
+        if (isTaskClickable && itemId) {
+            onClickTask(itemId, resolvedBoardId);
+        } else if (isBoardClickable && resolvedBoardId) {
+            onClickBoard!(resolvedBoardId);
         }
     };
 
@@ -261,28 +302,45 @@ export const ActivityLogItem = ({ log, onClickTask, boardName }: { log: Activity
             style={{
                 display: 'flex',
                 gap: '12px',
-                padding: '16px',
-                // borderBottom: '1px solid hsl(var(--color-border))', // Removed border
-                fontSize: '13px',
+                padding: '12px 14px',
+                fontSize: '12.5px',
                 color: 'hsl(var(--color-text-primary))',
                 cursor: isClickable ? 'pointer' : 'default',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                borderRadius: '8px',
-                backgroundColor: '#fff', // White Card
-                marginBottom: '8px', // Spacing
-                boxShadow: '0 1px 2px rgba(0,0,0,0.05)', // Subtle shadow
+                transition: 'background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease',
+                borderRadius: '12px',
+                backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                marginBottom: '8px',
+                boxShadow: 'inset 0 1px 0 var(--card-edge, rgba(255,255,255,0.65))'
             }}
-            onMouseEnter={(e) => isClickable && (e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))')}
-            onMouseLeave={(e) => isClickable && (e.currentTarget.style.backgroundColor = 'transparent')}
+            onMouseEnter={(e) => {
+                if (isClickable) {
+                    e.currentTarget.style.backgroundColor = 'hsl(var(--paper-head, var(--color-bg-hover)))';
+                    e.currentTarget.style.borderColor = 'hsl(var(--color-brand-primary) / 0.25)';
+                }
+            }}
+            onMouseLeave={(e) => {
+                if (isClickable) {
+                    e.currentTarget.style.backgroundColor = 'hsl(var(--paper, var(--color-bg-surface)))';
+                    e.currentTarget.style.borderColor = 'var(--paper-edge, hsl(var(--color-border)))';
+                }
+            }}
         >
             {/* Avatar */}
             <div style={{ flexShrink: 0 }}>
                 <div style={{
-                    width: '32px', height: '32px', borderRadius: '50%',
-                    backgroundColor: '#e5e7eb',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '30px',
+                    height: '30px',
+                    borderRadius: '50%',
+                    backgroundColor: 'hsl(var(--color-brand-primary))',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     overflow: 'hidden',
-                    fontSize: '12px', fontWeight: 600, color: '#4b5563'
+                    fontSize: '11.5px',
+                    fontWeight: 700,
+                    color: '#FFEFD2',
+                    boxShadow: '0 0 0 1.5px hsl(var(--paper, #fff))'
                 }}>
                     {actor_avatar && !imgError ? (
                         <img
@@ -299,27 +357,63 @@ export const ActivityLogItem = ({ log, onClickTask, boardName }: { log: Activity
             </div>
 
             {/* Content */}
-            <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '2px' }}>
                     <span style={{ fontWeight: 600, color: 'hsl(var(--color-text-primary))' }}>
                         {actor_name || actor_email || 'Unknown User'}
                     </span>
-                    <span style={{ fontSize: '11px', color: 'hsl(var(--color-text-tertiary))' }}>
-                        {new Date(created_at).toLocaleString()}
+                    <span style={{ fontSize: '11px', color: 'hsl(var(--color-text-tertiary))', flexShrink: 0 }}>
+                        {new Date(created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </span>
                 </div>
 
-                <div style={{ fontWeight: 600, color: '#374151', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{
+                    fontSize: '10.5px',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    color: 'hsl(var(--color-brand-secondary, 36 100% 33%))',
+                    marginBottom: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                }}>
                     {label}
                 </div>
 
-                <div style={{ color: 'hsl(var(--color-text-secondary))', lineHeight: '1.5' }}>
+                <div style={{ color: 'hsl(var(--color-text-secondary))', lineHeight: 1.45 }}>
                     {renderDescription()}
                 </div>
 
                 {boardName && (
-                    <div style={{ marginTop: '4px', fontSize: '11px', color: 'hsl(var(--color-text-tertiary))' }}>
-                        in {boardName}
+                    <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                if (isBoardClickable && resolvedBoardId) {
+                                    e.stopPropagation();
+                                    onClickBoard!(resolvedBoardId);
+                                }
+                            }}
+                            title={`Open board "${boardName}"`}
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '2px 8px',
+                                borderRadius: '999px',
+                                border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                backgroundColor: 'hsl(var(--color-brand-primary) / 0.05)',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                color: 'hsl(var(--color-brand-primary))',
+                                cursor: isBoardClickable ? 'pointer' : 'default',
+                                transition: 'background-color 0.15s'
+                            }}
+                        >
+                            <span>in {boardName}</span>
+                            {isBoardClickable && <ArrowUpRight size={11} />}
+                        </button>
                     </div>
                 )}
             </div>
@@ -331,14 +425,11 @@ export const ActivityLogList = ({ scope, targetId, showHeader = true, onClose }:
     const [logs, setLogs] = useState<ActivityLog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    // const { setActiveItem, setHighlightedItem } = useBoardStore();
 
     const fetchLogs = async () => {
         setLoading(true);
         setError(null);
         try {
-
-
             // STRICT SCOPE CHECK: Prevent global leak
             if (scope !== 'global' && !targetId) {
                 setLoading(false);
@@ -361,7 +452,6 @@ export const ActivityLogList = ({ scope, targetId, showHeader = true, onClose }:
             // Apply Filters based on scope
             if (scope === 'board') {
                 // Board Log: STRICTLY filter by board_id in metadata or target_id
-                // Use a more specific filter to avoid leaking other boards
                 query = query.or(`target_id.eq.${targetId},metadata->>board_id.eq.${targetId}`);
             } else if (scope === 'item') {
                 // Item Log: STRICTLY item events
@@ -405,12 +495,14 @@ export const ActivityLogList = ({ scope, targetId, showHeader = true, onClose }:
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: 'white'
+            backgroundColor: 'transparent'
         }}>
             {showHeader && (
                 <div style={{
                     padding: '12px 0',
-                    borderBottom: '1px solid hsl(var(--color-border))',
+                    borderBottom: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                    fontFamily: 'var(--font-family-display)',
+                    fontSize: '16px',
                     fontWeight: 600,
                     color: 'hsl(var(--color-text-primary))',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between'
@@ -418,25 +510,35 @@ export const ActivityLogList = ({ scope, targetId, showHeader = true, onClose }:
                     <span>Activity Log</span>
                     <button
                         onClick={fetchLogs}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                        className="glass-chip"
+                        style={{
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '5px 8px',
+                            borderRadius: '999px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'hsl(var(--color-text-secondary))'
+                        }}
                         title="Refresh"
                     >
-                        <RefreshCw size={14} color="hsl(var(--color-text-tertiary))" />
+                        <RefreshCw size={13} />
                     </button>
                 </div>
             )}
 
-            <div style={{ flex: 1, overflowY: 'auto', minHeight: '200px', backgroundColor: '#f7f9fa', padding: '12px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', minHeight: '200px', backgroundColor: 'transparent', padding: '12px 4px' }}>
                 {loading ? (
-                    <div style={{ padding: '24px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))' }}>
+                    <div style={{ padding: '24px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', fontSize: '13px' }}>
                         Loading activities...
                     </div>
                 ) : error ? (
-                    <div style={{ padding: '24px', textAlign: 'center', color: '#ef4444' }}>
+                    <div style={{ padding: '24px', textAlign: 'center', color: 'hsl(var(--color-danger))', fontSize: '13px' }}>
                         Error: {error}
                     </div>
                 ) : logs.length === 0 ? (
-                    <div style={{ padding: '24px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))' }}>
+                    <div style={{ padding: '24px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', fontSize: '13px' }}>
                         No recent activity.
                     </div>
                 ) : (

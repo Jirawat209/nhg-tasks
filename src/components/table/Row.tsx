@@ -20,7 +20,7 @@ const CheckboxState = ({ itemId }: { itemId: string }) => {
             justifyContent: 'center',
             borderRadius: '2px' // Inner radius
         }}>
-            {isSelected && <Check size={12} color="white" strokeWidth={3} />}
+            {isSelected && <Check size={12} color="#FFEFD2" strokeWidth={3} />}
         </div>
     );
 };
@@ -75,37 +75,23 @@ export const Row = React.memo(({
 
     return (
         <div ref={rowRef} className={`table-row ${isSelected ? 'selected' : ''}`} style={{
-            height: '30px',
-            maxHeight: '30px',
+            height: '100%',
             boxSizing: 'border-box',
             position: 'relative',
             display: 'flex',
             opacity: item.isHidden ? 0.5 : 1,
             backgroundColor: isSelected
-                ? 'hsl(var(--color-brand-primary-subtle))'
-                : (item.isHidden ? 'hsl(var(--color-bg-subtle))' : 'transparent'),
-            transition: 'background-color 0.5s ease'
+                ? 'hsl(var(--color-brand-primary) / 0.06)'
+                : 'transparent',
+            transition: 'background-color 0.3s ease'
         }}>
-            {/* Visual Left Border */}
-            {groupColor && (
-                <div style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: '6px',
-                    backgroundColor: groupColor,
-                    zIndex: 80
-                }} />
-            )}
-
             {/* Frozen First Column: Item Name */}
             <div className="table-cell sticky-col" data-item-col="true" style={{
                 width: `${itemColumnWidth}px`,
                 position: 'sticky', left: 0, zIndex: 70,
-                backgroundColor: 'hsl(var(--color-bg-canvas))',
+                backgroundColor: 'hsl(var(--paper, var(--color-bg-canvas)))',
                 borderRight: 'none',
-                paddingLeft: groupColor ? (isSubItem ? '86px' : '14px') : (isSubItem ? '76px' : '8px'),
+                paddingLeft: isSubItem ? '80px' : '14px',
                 display: 'flex', alignItems: 'center', gap: '8px',
                 boxShadow: 'none'
             }}>
@@ -149,10 +135,11 @@ export const Row = React.memo(({
                         });
                     }}
                     style={{
-                        width: '14px',
-                        height: '14px',
-                        border: '1px solid hsl(var(--color-border))',
-                        borderRadius: '3px',
+                        width: '16px',
+                        height: '16px',
+                        border: '1.5px solid hsl(var(--color-border-strong))',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
                         cursor: 'pointer',
                         backgroundColor: 'transparent',
                         flexShrink: 0,
@@ -183,7 +170,7 @@ export const Row = React.memo(({
                             transition: 'opacity 0.2s, transform 0.2s, color 0.2s',
                             zIndex: 100,
                             width: '20px',
-                            height: '30px',
+                            height: '36px',
                             marginLeft: '4px' // Space from checkbox
                         }}
                         onMouseEnter={(e) => { e.currentTarget.style.color = 'hsl(var(--color-brand-primary))'; }}
@@ -209,7 +196,7 @@ export const Row = React.memo(({
                             border: 'none',
                             background: 'transparent',
                             width: '100%',
-                            fontSize: '13px',
+                            fontSize: '13.5px',
                             color: isSubItem ? 'hsl(var(--color-text-secondary))' : 'inherit',
                             outline: 'none',
                             cursor: can('edit_items') ? 'text' : 'default',
@@ -244,74 +231,45 @@ export const Row = React.memo(({
 
                 </div>
 
-                {/* Chat/Open Icon (Always Visible) - Moved outside overflow container */}
-                <div
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        import('../../store/useBoardStore').then(({ useBoardStore }) => {
-                            useBoardStore.getState().setActiveItem(item.id);
-                        });
-                    }}
-                    title="Open Updates"
-                    style={{
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '4px',
-                        // Blue if updates within 14 days, else gray
-                        color: (() => {
-                            if (!updateSummary.lastAt) return 'hsl(var(--color-text-tertiary))';
-                            const daysSinceLastUpdate = Math.floor((Date.now() - new Date(updateSummary.lastAt).getTime()) / (1000 * 60 * 60 * 24));
-                            return daysSinceLastUpdate <= 14
-                                ? 'hsl(var(--color-brand-primary))'
-                                : 'hsl(var(--color-text-tertiary))';
-                        })(),
-                        transition: 'background-color 0.2s, color 0.2s',
-                        zIndex: 10,
-                        flexShrink: 0, // Prevent shrinking
-                        marginRight: '8px' // Right spacing
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))';
-                        if (!updateSummary.count) e.currentTarget.style.color = 'hsl(var(--color-brand-primary))';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                        if (!updateSummary.count) e.currentTarget.style.color = 'hsl(var(--color-text-tertiary))';
-                    }}
-                >
-                    <div style={{ position: 'relative', display: 'flex' }}>
-                        <MessageSquare size={18} />
-
-                        {/* Update Count Badge */}
-                        {updateSummary.count > 0 && (
-                            <div style={{
-                                position: 'absolute',
-                                top: '-4px', // Adjusted top
-                                right: '-4px', // Adjusted right to be closer
-                                backgroundColor: 'hsl(var(--color-brand-primary))',
-                                color: 'white',
-                                fontSize: '8px', // Smaller font
-                                fontWeight: 700,
-                                width: '12px', // Fixed equal width
-                                height: '12px', // Fixed equal height
-                                borderRadius: '50%', // Perfect Circle
-                                display: 'flex',
+                {/* Updates: a count chip when the item has any (Narai Green if one is
+                    recent), otherwise an icon that appears on hover. */}
+                {(() => {
+                    const recent = !!updateSummary.lastAt &&
+                        (Date.now() - new Date(updateSummary.lastAt).getTime()) <= 14 * 24 * 60 * 60 * 1000;
+                    const hasUpdates = updateSummary.count > 0;
+                    return (
+                        <button
+                            className={`row-updates${hasUpdates ? ' has-updates' : ''}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                useBoardStore.getState().setActiveItem(item.id);
+                            }}
+                            title={hasUpdates ? `${updateSummary.count} update${updateSummary.count === 1 ? '' : 's'}` : 'Open item'}
+                            aria-label={hasUpdates ? `Open ${updateSummary.count} updates` : 'Open item'}
+                            style={{
+                                display: 'inline-flex',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                border: '2px solid white',
-                                boxSizing: 'content-box',
-                                zIndex: 20,
-                                lineHeight: '1' // Center vertically
-                            }}>
-                                {updateSummary.count}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                                gap: '4px',
+                                height: '24px',
+                                padding: hasUpdates ? '0 8px' : '0 6px',
+                                borderRadius: '999px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                flexShrink: 0,
+                                marginRight: '6px',
+                                zIndex: 10,
+                                color: hasUpdates && recent ? '#FFEFD2' : 'hsl(var(--color-text-secondary))',
+                                backgroundColor: hasUpdates
+                                    ? (recent ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-primary) / 0.07)')
+                                    : 'transparent',
+                                transition: 'background-color 0.15s, color 0.15s'
+                            }}
+                        >
+                            <MessageSquare size={13} />
+                            {hasUpdates && updateSummary.count}
+                        </button>
+                    );
+                })()}
 
 
             </div>
@@ -345,10 +303,6 @@ export const Row = React.memo(({
                 }
                 .table-row:hover .expand-chevron {
                     opacity: 1 !important;
-                }
-                .table-row:hover .open-btn {
-                    opacity: 1 !important;
-                    display: flex !important;
                 }
             `}</style>
         </div>

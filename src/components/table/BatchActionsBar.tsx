@@ -61,103 +61,104 @@ export const BatchActionsBar = () => {
     if (selectedItemIds.length === 0) return null;
 
     return (
-        <div style={{
-            position: 'fixed',
-            bottom: '32px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: 'hsl(var(--color-bg-surface))',
-            borderRadius: '8px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-            padding: '8px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '24px',
-            zIndex: 1000,
-            border: '1px solid hsl(var(--color-border))',
-            minWidth: '600px',
-            justifyContent: 'space-between'
-        }}>
+        <div
+            className="glass-pop"
+            style={{
+                position: 'fixed',
+                bottom: '28px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                borderRadius: '999px',
+                padding: '6px 14px 6px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '20px',
+                zIndex: 1000,
+                minWidth: '520px',
+                justifyContent: 'space-between'
+            }}
+        >
             {/* Left: Count */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{
                     backgroundColor: 'hsl(var(--color-brand-primary))',
-                    color: 'white',
-                    width: '24px',
-                    height: '24px',
+                    color: '#FFEFD2',
+                    width: '28px',
+                    height: '28px',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '12px',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    fontVariantNumeric: 'tabular-nums'
                 }}>
                     {selectedItemIds.length}
                 </div>
-                <span style={{ fontWeight: 600, fontSize: '14px', color: 'hsl(var(--color-text-primary))' }}>Tasks selected</span>
+                <span style={{ fontFamily: 'var(--font-family-display)', fontWeight: 600, fontSize: '15px', color: 'hsl(var(--color-text-primary))' }}>
+                    {selectedItemIds.length === 1 ? 'Task selected' : 'Tasks selected'}
+                </span>
             </div>
 
             {/* Center: Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <div
                     className="batch-action-btn"
                     onClick={() => duplicateSelectedItems()}
-                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '8px', borderRadius: '4px' }}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '999px' }}
                 >
-                    <Copy size={16} color="hsl(var(--color-text-secondary))" />
-                    <span style={{ fontSize: '12px', color: 'hsl(var(--color-text-secondary))' }}>Duplicate</span>
+                    <Copy size={14} color="hsl(var(--color-text-secondary))" />
+                    <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'hsl(var(--color-text-secondary))' }}>Duplicate</span>
                 </div>
 
                 <div
                     className="batch-action-btn"
                     onClick={() => showHiddenItems ? unhideSelectedItems() : hideSelectedItems()}
-                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '8px', borderRadius: '4px' }}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '999px' }}
                 >
                     {showHiddenItems
-                        ? <Eye size={16} color="hsl(var(--color-text-secondary))" />
-                        : <EyeOff size={16} color="hsl(var(--color-text-secondary))" />
+                        ? <Eye size={14} color="hsl(var(--color-text-secondary))" />
+                        : <EyeOff size={14} color="hsl(var(--color-text-secondary))" />
                     }
-                    <span style={{ fontSize: '12px', color: 'hsl(var(--color-text-secondary))' }}>{showHiddenItems ? 'Unhide' : 'Hide'}</span>
+                    <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'hsl(var(--color-text-secondary))' }}>{showHiddenItems ? 'Unhide' : 'Hide'}</span>
                 </div>
 
                 <div
                     className="batch-action-btn"
                     onClick={deleteSelectedItems}
-                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '8px', borderRadius: '4px' }}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '999px' }}
                 >
-                    <Trash2 size={16} color="hsl(var(--color-text-secondary))" />
-                    <span style={{ fontSize: '12px', color: 'hsl(var(--color-text-secondary))' }}>Delete</span>
+                    <Trash2 size={14} color="hsl(var(--color-danger))" />
+                    <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'hsl(var(--color-danger))' }}>Delete</span>
                 </div>
 
                 {/* Move to — with cross-workspace menu */}
                 <div
                     className="batch-action-btn"
                     onClick={() => setShowMoveMenu(prev => !prev)}
-                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '8px', borderRadius: '4px', position: 'relative' }}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '999px', position: 'relative' }}
                 >
-                    <LayoutDashboard size={16} color="hsl(var(--color-text-secondary))" />
-                    <span style={{ fontSize: '12px', color: 'hsl(var(--color-text-secondary))' }}>Move to</span>
+                    <LayoutDashboard size={14} color="hsl(var(--color-text-secondary))" />
+                    <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'hsl(var(--color-text-secondary))' }}>Move to</span>
 
                     {showMoveMenu && (
                         <div
+                            className="glass-pop"
                             style={{
                                 position: 'absolute',
                                 bottom: 'calc(100% + 12px)',
                                 left: '50%',
                                 transform: 'translateX(-50%)',
-                                backgroundColor: 'hsl(var(--color-bg-surface))',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
-                                padding: '4px',
+                                borderRadius: '16px',
+                                padding: '6px',
                                 minWidth: '260px',
                                 maxHeight: '380px',
                                 overflowY: 'auto',
-                                border: '1px solid hsl(var(--color-border))',
                                 textAlign: 'left'
                             }}
                             onClick={e => e.stopPropagation()}
                         >
-                            <div style={{ padding: '6px 10px 4px', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--color-text-secondary))', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                            <div style={{ padding: '6px 10px 4px', fontSize: '10px', fontWeight: 600, color: 'hsl(var(--color-text-tertiary))', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
                                 Select Destination
                             </div>
 
@@ -173,10 +174,10 @@ export const BatchActionsBar = () => {
                                     <div style={{
                                         padding: '8px 10px 2px',
                                         fontSize: '10px',
-                                        fontWeight: 700,
-                                        color: 'hsl(var(--color-text-secondary))',
+                                        fontWeight: 600,
+                                        color: 'hsl(var(--color-text-tertiary))',
                                         textTransform: 'uppercase',
-                                        letterSpacing: '0.08em'
+                                        letterSpacing: '0.12em'
                                     }}>
                                         {workspace.title}
                                     </div>
@@ -196,7 +197,7 @@ export const BatchActionsBar = () => {
                                                         gap: '6px',
                                                         padding: '7px 10px',
                                                         cursor: 'pointer',
-                                                        borderRadius: '5px',
+                                                        borderRadius: '8px',
                                                         fontSize: '13px',
                                                         color: isCurrent
                                                             ? 'hsl(var(--color-brand-primary))'
@@ -232,7 +233,7 @@ export const BatchActionsBar = () => {
                                                                         gap: '8px',
                                                                         padding: '6px 10px 6px 30px',
                                                                         cursor: 'pointer',
-                                                                        borderRadius: '5px',
+                                                                        borderRadius: '8px',
                                                                         fontSize: '13px',
                                                                         color: 'hsl(var(--color-text-primary))'
                                                                     }}
@@ -257,14 +258,25 @@ export const BatchActionsBar = () => {
             {/* Right: Close */}
             <button
                 onClick={clearSelection}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}
+                style={{
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%'
+                }}
+                className="batch-action-btn"
             >
-                <X size={20} color="hsl(var(--color-text-secondary))" />
+                <X size={16} color="hsl(var(--color-text-secondary))" />
             </button>
 
             <style>{`
                 .batch-action-btn:hover {
-                    background-color: hsl(var(--color-bg-hover));
+                    background-color: hsl(var(--color-text-primary) / 0.06);
                 }
                 .batch-action-btn:hover svg {
                     color: hsl(var(--color-text-primary)) !important;
@@ -273,7 +285,7 @@ export const BatchActionsBar = () => {
                     color: hsl(var(--color-text-primary)) !important;
                 }
                 .move-menu-item:hover {
-                    background-color: hsl(var(--color-bg-hover));
+                    background-color: hsl(var(--color-text-primary) / 0.06);
                 }
             `}</style>
         </div>

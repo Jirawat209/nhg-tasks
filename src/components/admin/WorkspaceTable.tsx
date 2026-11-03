@@ -136,9 +136,9 @@ export const WorkspaceTable = () => {
     return (
         <div className="card-surface" style={{ overflow: 'hidden' }}>
             {/* Header */}
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                    <Search size={18} color="#64748b" />
+            <div style={{ padding: '14px 20px', background: 'hsl(var(--paper-head))', borderBottom: '1px solid hsl(var(--paper-edge))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, maxWidth: '380px', padding: '7px 14px', borderRadius: '999px', background: 'hsl(var(--paper))', border: '1px solid hsl(var(--paper-edge))' }}>
+                    <Search size={15} color="hsl(var(--ink-soft))" />
                     <input
                         type="text"
                         placeholder="Search workspaces..."
@@ -147,25 +147,25 @@ export const WorkspaceTable = () => {
                         style={{
                             border: 'none',
                             outline: 'none',
-                            fontSize: '14px',
+                            fontSize: '13.5px',
                             flex: 1,
-                            color: '#0f172a'
+                            background: 'transparent',
+                            color: 'hsl(var(--ink))'
                         }}
                     />
                 </div>
                 <button
                     onClick={fetchWorkspaces}
+                    className="glass-chip"
                     style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#f1f5f9',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '4px',
+                        padding: '6px 14px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '6px',
                         fontSize: '13px',
-                        color: '#475569'
+                        fontWeight: 600,
+                        color: 'hsl(var(--ink))'
                     }}
                 >
                     <RefreshCw size={14} />
@@ -175,39 +175,39 @@ export const WorkspaceTable = () => {
 
             {/* Table */}
             {loading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading workspaces...</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--ink-dim))' }}>Loading workspaces...</div>
             ) : error ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#ef4444' }}>Error: {error}</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: '#C83E2B' }}>Error: {error}</div>
             ) : (
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Workspace</th>
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Owner</th>
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Members</th>
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Created</th>
-                                <th style={{ padding: '12px 20px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Actions</th>
+                            <tr style={{ backgroundColor: 'hsl(var(--paper-head))', borderBottom: '1px solid hsl(var(--paper-edge))' }}>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Workspace</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Owner</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Members</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Created</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'right', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredWorkspaces.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
+                                    <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--ink-soft))' }}>
                                         No workspaces found
                                     </td>
                                 </tr>
                             ) : (
                                 filteredWorkspaces.map((ws) => (
-                                    <tr key={ws.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '16px 20px' }}>
-                                            <div style={{ fontWeight: 500, color: '#0f172a', fontSize: '14px' }}>{ws.title}</div>
+                                    <tr key={ws.id} style={{ borderBottom: '1px solid hsl(var(--paper-row-line))' }}>
+                                        <td style={{ padding: '14px 20px' }}>
+                                            <div style={{ fontWeight: 600, color: 'hsl(var(--ink))', fontSize: '14px' }}>{ws.title}</div>
                                         </td>
-                                        <td style={{ padding: '16px 20px' }}>
-                                            <div style={{ fontSize: '14px', color: '#0f172a' }}>{ws.owner_name}</div>
-                                            <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{ws.owner_email}</div>
+                                        <td style={{ padding: '14px 20px' }}>
+                                            <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'hsl(var(--ink))' }}>{ws.owner_name}</div>
+                                            <div style={{ fontSize: '12px', color: 'hsl(var(--ink-dim))', marginTop: '2px' }}>{ws.owner_email}</div>
                                         </td>
-                                        <td style={{ padding: '16px 20px' }}>
+                                        <td style={{ padding: '14px 20px' }}>
                                             <button
                                                 onClick={() => setManagingWorkspace({ id: ws.id, title: ws.title, ownerId: ws.owner_id })}
                                                 title="Manage members"
@@ -227,7 +227,7 @@ export const WorkspaceTable = () => {
                                                         alignItems: 'center',
                                                         gap: '6px',
                                                         fontSize: '13px',
-                                                        color: '#94a3b8'
+                                                        color: 'hsl(var(--ink-soft))'
                                                     }}>
                                                         <Users size={14} />
                                                         No members
@@ -243,15 +243,15 @@ export const WorkspaceTable = () => {
                                                                         width: '26px',
                                                                         height: '26px',
                                                                         borderRadius: '50%',
-                                                                        backgroundColor: member.avatar_url ? 'transparent' : '#6366f1',
-                                                                        color: 'white',
+                                                                        backgroundColor: member.avatar_url ? 'transparent' : '#2A4A12',
+                                                                        color: '#FFEFD2',
                                                                         display: 'flex',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
                                                                         fontSize: '11px',
                                                                         fontWeight: 600,
                                                                         overflow: 'hidden',
-                                                                        border: '2px solid white',
+                                                                        border: '2px solid hsl(var(--paper))',
                                                                         marginLeft: idx === 0 ? 0 : '-8px',
                                                                         flexShrink: 0
                                                                     }}
@@ -270,21 +270,21 @@ export const WorkspaceTable = () => {
                                                             ))}
                                                         </div>
                                                         {ws.members.length > 4 && (
-                                                            <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>
+                                                            <span style={{ fontSize: '12px', color: 'hsl(var(--ink-dim))', fontWeight: 600 }}>
                                                                 +{ws.members.length - 4}
                                                             </span>
                                                         )}
-                                                        <span style={{ fontSize: '12px', color: '#94a3b8' }}>
+                                                        <span style={{ fontSize: '12px', color: 'hsl(var(--ink-soft))' }}>
                                                             ({ws.members.length})
                                                         </span>
                                                     </>
                                                 )}
                                             </button>
                                         </td>
-                                        <td style={{ padding: '16px 20px', fontSize: '14px', color: '#64748b' }}>
+                                        <td style={{ padding: '14px 20px', fontSize: '13.5px', color: 'hsl(var(--ink-dim))' }}>
                                             {new Date(ws.created_at).toLocaleDateString()}
                                         </td>
-                                        <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                                        <td style={{ padding: '14px 20px', textAlign: 'right' }}>
                                             <button
                                                 onClick={() => {
                                                     const username = slugify(currentUser.name || 'u');
@@ -292,30 +292,20 @@ export const WorkspaceTable = () => {
                                                     const url = `/${username}/${wsName}`;
                                                     window.open(url, '_blank');
                                                 }}
+                                                className="glass-chip"
                                                 style={{
                                                     padding: '6px 12px',
-                                                    backgroundColor: '#f1f5f9',
-                                                    border: '1px solid #cbd5e1',
-                                                    borderRadius: '6px',
                                                     cursor: 'pointer',
                                                     display: 'inline-flex',
                                                     alignItems: 'center',
                                                     gap: '6px',
-                                                    fontSize: '13px',
-                                                    fontWeight: 500,
-                                                    color: '#334155',
+                                                    fontSize: '12.5px',
+                                                    fontWeight: 600,
+                                                    color: 'hsl(var(--ink))',
                                                     transition: 'all 0.2s'
                                                 }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#e2e8f0';
-                                                    e.currentTarget.style.color = '#0f172a';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#f1f5f9';
-                                                    e.currentTarget.style.color = '#334155';
-                                                }}
                                             >
-                                                <ExternalLink size={14} />
+                                                <ExternalLink size={13} />
                                                 Access
                                             </button>
                                             <button
@@ -325,28 +315,20 @@ export const WorkspaceTable = () => {
                                                 style={{
                                                     marginLeft: '8px',
                                                     padding: '6px 12px',
-                                                    backgroundColor: canDelete ? '#fef2f2' : '#f8fafc',
-                                                    border: canDelete ? '1px solid #fecaca' : '1px solid #e2e8f0',
-                                                    borderRadius: '6px',
+                                                    backgroundColor: canDelete ? 'rgba(200, 62, 43, 0.08)' : 'hsl(var(--paper-muted))',
+                                                    border: canDelete ? '1px solid rgba(200, 62, 43, 0.28)' : '1px solid hsl(var(--paper-edge))',
+                                                    borderRadius: '999px',
                                                     cursor: canDelete ? 'pointer' : 'not-allowed',
                                                     display: 'inline-flex',
                                                     alignItems: 'center',
                                                     gap: '6px',
-                                                    fontSize: '13px',
-                                                    fontWeight: 500,
-                                                    color: canDelete ? '#dc2626' : '#94a3b8',
+                                                    fontSize: '12.5px',
+                                                    fontWeight: 600,
+                                                    color: canDelete ? '#C83E2B' : 'hsl(var(--ink-soft))',
                                                     transition: 'all 0.2s'
                                                 }}
-                                                onMouseEnter={(e) => {
-                                                    if (!canDelete) return;
-                                                    e.currentTarget.style.backgroundColor = '#fee2e2';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    if (!canDelete) return;
-                                                    e.currentTarget.style.backgroundColor = '#fef2f2';
-                                                }}
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 size={13} />
                                                 Delete
                                             </button>
                                         </td>

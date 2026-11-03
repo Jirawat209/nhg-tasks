@@ -6,19 +6,25 @@ import { usePermission } from '../../hooks/usePermission';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { supabase } from '../../lib/supabase';
 import { GROUP_COLORS, PALETTE_WIDTH, palettePosition } from '../../lib/labelColors';
+import { SummaryCell } from './SummaryCell';
+import type { Column } from '../../types';
 
-export const GroupRow = ({ 
-    data, 
+export const GroupRow = ({
+    data,
     groupColor,
-    isCollapsed, 
+    isCollapsed,
     onToggle,
-    dragHandleProps
-}: { 
-    data: any, 
+    dragHandleProps,
+    columns,
+    itemColumnWidth
+}: {
+    data: any,
     groupColor?: string,
-    isCollapsed: boolean, 
+    isCollapsed: boolean,
     onToggle: () => void,
-    dragHandleProps?: any
+    dragHandleProps?: any,
+    columns: Column[],
+    itemColumnWidth: number
 }) => {
     const updateGroupTitle = useBoardStore(state => state.updateGroupTitle);
     const deleteGroup = useBoardStore(state => state.deleteGroup);
@@ -73,158 +79,88 @@ export const GroupRow = ({
         }
     };
 
+    const color = groupColor || data.color || '#2E7D8C';
+
     return (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            height: '100%',
-            position: 'relative',
-            backgroundColor: 'hsl(var(--color-bg-canvas))',
-            width: '100%', // Group row spans the whole table row width
-        }}>
-            {/* Visual Left Border */}
-            {(groupColor || data.color || '#579bfc') && (
-                <div style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: '6px',
-                    backgroundColor: groupColor || data.color || '#579bfc',
-                    borderTopLeftRadius: '6px',
-                    zIndex: 65,
-                    pointerEvents: 'none'
-                }} />
-            )}
-            {/* Hover Drag Handle */}
-            {can('group_ungroup') && (
-                <div 
-                    {...dragHandleProps}
-                    className="group-drag-handle"
-                    style={{
-                        position: 'absolute',
-                        left: '4px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        cursor: 'grab',
-                        color: 'hsl(var(--color-text-tertiary))',
-                        opacity: 0,
-                        transition: 'opacity 0.2s',
-                        zIndex: 70,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '4px 2px'
-                    }}
+        <div
+            className={`gcard gcard-top${isCollapsed ? ' is-collapsed' : ''}`}
+            style={{ display: 'flex', alignItems: 'center', height: '100%', position: 'relative', width: '100%', boxSizing: 'border-box' }}
+        >
+            {/* The group's identity: a colour dot, its name and how many items it holds,
+                with the per-column roll-ups on the same line (aligned to the columns below). */}
+            <div className="gh-sticky" style={{ width: `${itemColumnWidth}px` }}>
+                {can('group_ungroup') && (
+                    <div {...dragHandleProps} className="gh-drag" title="Drag to reorder group">
+                        <GripVertical size={14} />
+                    </div>
+                )}
+
+                <button
+                    onClick={onToggle}
+                    className="gh-chevron"
+                    aria-label={isCollapsed ? `Expand ${data.title}` : `Collapse ${data.title}`}
+                    aria-expanded={!isCollapsed}
                 >
-                    <GripVertical size={16} />
-                </div>
-            )}
+                    {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                </button>
 
-            {/* Sticky Group Title Container */}
-            <div style={{
-                position: 'sticky',
-                left: 0,
-                zIndex: 60,
-                backgroundColor: 'hsl(var(--color-bg-canvas))',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                paddingLeft: '24px', 
-                boxSizing: 'border-box',
-                flexShrink: 0,
-                minWidth: 'max-content'
-            }}>
-                {/* Color Picker / Expand Trigger */}
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginRight: '4px' }}>
-                    <button
-                        onClick={onToggle}
-                        className="icon-btn"
-                        style={{ color: data.color || '#579bfc', marginRight: '6px', zIndex: 1 }}
-                    >
-                        {isCollapsed ? <ChevronRight size={18} /> : <ChevronDown size={18} />}
-                    </button>
+                <div
+                    ref={colorBtnRef}
+                    className="gh-dot"
+                    role="button"
+                    aria-label="Change group colour"
+                    title={can('group_ungroup') ? 'Change group colour' : undefined}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (can('group_ungroup')) setShowColorPicker(!showColorPicker);
+                    }}
+                    style={{ backgroundColor: color, color }}
+                />
 
-                    <div
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (can('group_ungroup')) setShowColorPicker(!showColorPicker);
-                        }}
-                        style={{
-                            position: 'absolute',
-                            left: 20,
-                            top: 0,
-                            width: '24px',
-                            height: '24px',
-                            cursor: 'pointer',
-                            zIndex: 2,
-                            opacity: 0
-                        }}
-                        title="Change Group Color"
-                    />
-
-                    <div
-                        ref={colorBtnRef}
-                        style={{
-                            width: '14px',
-                            height: '14px',
-                            backgroundColor: data.color || '#579bfc',
-                            borderRadius: '4px',
-                            marginRight: '8px'
-                        }}
-                    />
-
-                    {showColorPicker && colorBtnRef.current && createPortal(
-                        <>
-                            <div
-                                style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
-                                onClick={() => setShowColorPicker(false)}
-                            />
-                            <div style={{
-                                position: 'fixed',
-                                // Ten to a row keeps 50 swatches to five rows; at the
-                                // old five-wide it would have been a ten-row column.
-                                // Positioned through the shared helper so the wider
-                                // grid still can't run off the bottom or right edge.
-                                ...palettePosition(colorBtnRef.current),
-                                backgroundColor: 'white',
-                                border: '1px solid hsl(var(--color-border))',
-                                borderRadius: '8px',
-                                padding: '12px',
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(10, 1fr)',
-                                gap: '4px',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                zIndex: 9999,
-                                width: `${PALETTE_WIDTH}px`,
-                                boxSizing: 'border-box'
-                            }}>
-                                {GROUP_COLORS.map(c => (
-                                    <div
-                                        key={c}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            updateGroupColor(data.id, c);
-                                            setShowColorPicker(false);
-                                        }}
-                                        style={{
-                                            width: '18px',
-                                            height: '18px',
-                                            backgroundColor: c,
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            border: data.color === c ? '2px solid #000' : '1px solid rgba(0,0,0,0.1)',
-                                            transition: 'transform 0.1s'
-                                        }}
-                                        onMouseEnter={(e) => (e.target as HTMLElement).style.transform = 'scale(1.1)'}
-                                        onMouseLeave={(e) => (e.target as HTMLElement).style.transform = 'scale(1)'}
-                                    />
-                                ))}
-                            </div>
-                        </>,
-                        document.body
-                    )}
-                </div>
+                {showColorPicker && colorBtnRef.current && createPortal(
+                    <>
+                        <div
+                            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+                            onClick={() => setShowColorPicker(false)}
+                        />
+                        <div className="glass-pop" style={{
+                            position: 'fixed',
+                            // Ten to a row keeps 50 swatches to five rows; positioned through the
+                            // shared helper so the grid can't run off the bottom or right edge.
+                            ...palettePosition(colorBtnRef.current),
+                            padding: '12px',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(10, 1fr)',
+                            gap: '4px',
+                            zIndex: 9999,
+                            width: `${PALETTE_WIDTH}px`,
+                            boxSizing: 'border-box'
+                        }}>
+                            {GROUP_COLORS.map(c => (
+                                <div
+                                    key={c}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        updateGroupColor(data.id, c);
+                                        setShowColorPicker(false);
+                                    }}
+                                    style={{
+                                        width: '18px',
+                                        height: '18px',
+                                        backgroundColor: c,
+                                        borderRadius: '50%',
+                                        cursor: 'pointer',
+                                        boxShadow: data.color === c ? '0 0 0 2px hsl(var(--paper, var(--color-bg-surface))), 0 0 0 3.5px hsl(var(--color-text-primary))' : 'none',
+                                        transition: 'transform 0.1s'
+                                    }}
+                                    onMouseEnter={(e) => (e.target as HTMLElement).style.transform = 'scale(1.12)'}
+                                    onMouseLeave={(e) => (e.target as HTMLElement).style.transform = 'scale(1)'}
+                                />
+                            ))}
+                        </div>
+                    </>,
+                    document.body
+                )}
 
                 {isEditing ? (
                     <input
@@ -234,40 +170,29 @@ export const GroupRow = ({
                         onFocus={(e) => e.target.select()}
                         onBlur={handleSave}
                         onKeyDown={handleKeyDown}
-                        style={{
-                            fontSize: '15px',
-                            fontWeight: 600,
-                            color: data.color || '#579bfc',
-                            background: 'transparent',
-                            border: '1px solid hsl(var(--color-brand-primary))',
-                            borderRadius: '4px',
-                            padding: '0 4px',
-                            outline: 'none'
-                        }}
+                        className="gh-title-input"
                     />
                 ) : (
                     <span
-                        style={{
-                            fontSize: '15px',
-                            fontWeight: 600,
-                            color: data.color || '#579bfc',
-                            cursor: can('group_ungroup') ? 'text' : 'default',
-                            whiteSpace: 'nowrap'
-                        }}
+                        className="gh-title"
+                        style={{ cursor: can('group_ungroup') ? 'text' : 'default', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}
                         onDoubleClick={() => {
                             if (can('group_ungroup')) setIsEditing(true);
                         }}
-                        title={can('group_ungroup') ? "Double click to rename group" : "Read only"}
+                        title={can('group_ungroup') ? 'Double-click to rename' : undefined}
                     >
                         {data.title}
                     </span>
                 )}
 
+                <span className="gh-count">{data.count}</span>
+
                 {data.linkedGroupId && (
                     <div
                         ref={linkIconRef}
                         onClick={(e) => { e.stopPropagation(); handleOpenLinkPopover(); }}
-                        style={{ display: 'flex', alignItems: 'center', marginLeft: '6px', cursor: 'pointer', color: 'hsl(var(--color-text-tertiary))' }}
+                        className="gh-icon-btn"
+                        style={{ cursor: 'pointer' }}
                         title="This group is linked"
                     >
                         <Link2 size={13} />
@@ -277,27 +202,24 @@ export const GroupRow = ({
                 {showLinkPopover && linkIconRef.current && createPortal(
                     <>
                         <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setShowLinkPopover(false)} />
-                        <div style={{
+                        <div className="glass-pop" style={{
                             position: 'fixed',
                             top: linkIconRef.current.getBoundingClientRect().bottom + 6,
                             left: linkIconRef.current.getBoundingClientRect().left,
-                            backgroundColor: 'white',
-                            border: '1px solid hsl(var(--color-border))',
-                            borderRadius: '8px',
-                            padding: '12px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            padding: '14px',
                             zIndex: 9999,
-                            width: '220px',
+                            width: '240px',
                             fontSize: '13px'
                         }}>
-                            <div style={{ color: 'hsl(var(--color-text-secondary))', marginBottom: '8px' }}>
-                                Linked to: <br />
-                                <strong>{linkedNames ? `${linkedNames.workspaceTitle} / ${linkedNames.boardTitle} / ${linkedNames.groupTitle}` : 'Loading…'}</strong>
+                            <div style={{ color: 'hsl(var(--color-text-secondary))', marginBottom: '10px' }}>
+                                Linked to <br />
+                                <strong style={{ color: 'hsl(var(--color-text-primary))' }}>{linkedNames ? `${linkedNames.workspaceTitle} / ${linkedNames.boardTitle} / ${linkedNames.groupTitle}` : 'Loading…'}</strong>
                             </div>
                             {can('group_ungroup') && (
                                 <button
                                     onClick={() => { unlinkGroup(data.id); setShowLinkPopover(false); }}
-                                    style={{ width: '100%', padding: '6px 10px', borderRadius: '4px', border: '1px solid hsl(var(--color-border))', background: 'transparent', cursor: 'pointer', fontSize: '12px', color: '#e11d48' }}
+                                    className="chip-toggle"
+                                    style={{ color: 'hsl(var(--color-danger))' }}
                                 >
                                     Unlink
                                 </button>
@@ -307,25 +229,28 @@ export const GroupRow = ({
                     document.body
                 )}
 
-                <span style={{ fontSize: '13px', color: 'hsl(var(--color-text-tertiary))', marginLeft: '8px' }}>
-                    {data.count} items
-                </span>
-
                 {can('group_ungroup') && (
-                    <div className="group-actions" style={{ marginLeft: '12px', display: 'flex', gap: '4px', opacity: 0.2 }}>
+                    <div className="gh-actions">
                         <button
                             onClick={() => data.linkedGroupId ? setShowLinkedDeleteBlocked(true) : setShowDeleteConfirm(true)}
-                            className="icon-btn"
-                            title={data.linkedGroupId ? "Unlink before deleting" : "Delete Group"}
+                            className="gh-icon-btn"
+                            title={data.linkedGroupId ? 'Unlink before deleting' : 'Delete group'}
+                            aria-label="Delete group"
                         >
                             <Trash2 size={14} />
                         </button>
                     </div>
                 )}
             </div>
-            
-            {/* The rest of the row will be empty for GroupRow but spans the full table width */}
-            <div style={{ flex: 1 }} />
+
+            {/* Show per-column summaries in the group header only when the group is collapsed;
+                when expanded, they sit on the footer row at the bottom of the group card. */}
+            {isCollapsed && columns.map(col => (
+                <div key={col.id} className="gh-summary" style={{ width: `${col.width || 150}px` }}>
+                    <SummaryCell col={col} agg={data.aggregates?.[col.id]} totalCount={data.count || 0} color={color} />
+                </div>
+            ))}
+            <div style={{ width: '50px', flexShrink: 0 }} />
 
             <ConfirmModal
                 isOpen={showDeleteConfirm}
@@ -350,18 +275,6 @@ export const GroupRow = ({
                 }}
                 onCancel={() => setShowLinkedDeleteBlocked(false)}
             />
-
-            <style>{`
-                .table-content > div:hover .group-drag-handle {
-                    opacity: 1 !important;
-                }
-                .group-drag-handle:hover {
-                    color: hsl(var(--color-text-primary)) !important;
-                }
-                .group-drag-handle:active {
-                    cursor: grabbing;
-                }
-            `}</style>
         </div>
     );
 };

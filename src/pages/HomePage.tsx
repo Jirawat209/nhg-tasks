@@ -9,7 +9,6 @@ import { notificationKind } from '../components/notifications/notificationKind';
 export const HomePage = () => {
     const { user } = useAuth();
     const { boards, workspaces, setActiveBoard, toggleFavorite, activeWorkspaceId } = useBoardStore();
-    const [showAllRecent, setShowAllRecent] = useState(false);
     const [showAllWorkspace, setShowAllWorkspace] = useState(false);
     const [showAllFavorites, setShowAllFavorites] = useState(false);
 
@@ -28,7 +27,8 @@ export const HomePage = () => {
             return dateB - dateA;
         });
 
-    const displayedRecentBoards = showAllRecent ? recentBoards : recentBoards.slice(0, 3);
+    const RECENT_LIMIT = 4;
+    const displayedRecentBoards = recentBoards.slice(0, RECENT_LIMIT);
 
 
     // My workspace boards
@@ -47,43 +47,53 @@ export const HomePage = () => {
 
 
     // Greeting based on time
-    const hour = new Date().getHours();
+    const now = new Date();
+    const hour = now.getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    const dateLabel = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }).toUpperCase();
 
     return (
-        <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-            <header style={{ marginBottom: '40px' }}>
-                <h1 style={{
-                    fontSize: '32px',
-                    fontWeight: 600,
+        <div className="home-page" style={{ padding: '20px 28px 32px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+            <header style={{ marginBottom: '22px' }}>
+                <div className="bh-eyebrow" style={{ marginBottom: '4px' }}>
+                    {dateLabel} · WORKSPACE OVERVIEW
+                </div>
+                <h1 className="narai-heading" style={{
+                    fontFamily: 'var(--font-family-display)',
+                    fontSize: '28px',
+                    fontWeight: 500,
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1.15,
                     color: 'hsl(var(--color-text-primary))',
-                    marginBottom: '8px'
+                    marginBottom: '4px'
                 }}>
                     {greeting}, {user?.user_metadata?.full_name || user?.email?.split('@')[0]}!
                 </h1>
-                <p style={{ color: 'hsl(var(--color-text-secondary))', fontSize: '16px' }}>
+                <p style={{ color: 'hsl(var(--color-text-secondary))', fontSize: '13.5px', margin: 0 }}>
                     Quickly access your recent boards and work.
                 </p>
             </header>
 
             {/* 1. Update feed (Inbox) */}
-            <div style={{ marginBottom: '40px' }}>
+            <div style={{ marginBottom: '24px' }}>
                 <InboxFeed />
             </div>
 
             {/* 2. Recently visited */}
             {recentBoards.length > 0 && (
-                <section style={{ marginBottom: '40px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                        <Clock size={20} color="hsl(var(--color-brand-primary))" />
-                        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'hsl(var(--color-text-primary))', margin: 0 }}>Recently visited</h2>
+                <section style={{ marginBottom: '24px' }}>
+                    <div className="home-section-head">
+                        <div className="home-section-title-group">
+                            <Clock size={16} color="hsl(var(--color-brand-primary))" />
+                            <h2 className="home-section-title">Recently visited</h2>
+                        </div>
                     </div>
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                        gap: '24px',
-                        marginBottom: '20px'
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                        gap: '14px',
+                        marginBottom: '12px'
                     }}>
                         {displayedRecentBoards.map(board => (
                             <BoardCard
@@ -95,27 +105,24 @@ export const HomePage = () => {
                             />
                         ))}
                     </div>
-                    {recentBoards.length > 3 && (
-                        <div className="home-more-row">
-                            <ShowMoreButton expanded={showAllRecent} onToggle={() => setShowAllRecent(!showAllRecent)} />
-                        </div>
-                    )}
                 </section>
             )}
 
             {/* 3. My workspace */}
             {myWorkspaceBoards.length > 0 && (
-                <section style={{ marginBottom: '40px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                        <Layout size={20} color="hsl(var(--color-brand-primary))" />
-                        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'hsl(var(--color-text-primary))', margin: 0 }}>My workspace</h2>
+                <section style={{ marginBottom: '24px' }}>
+                    <div className="home-section-head">
+                        <div className="home-section-title-group">
+                            <Layout size={16} color="hsl(var(--color-brand-primary))" />
+                            <h2 className="home-section-title">My workspace</h2>
+                        </div>
                     </div>
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                        gap: '24px',
-                        marginBottom: '20px'
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                        gap: '14px',
+                        marginBottom: '12px'
                     }}>
                         {displayedWorkspaceBoards.map(board => (
                             <BoardCard
@@ -137,17 +144,19 @@ export const HomePage = () => {
 
             {/* 4. Favorites */}
             {favoritedBoards.length > 0 && (
-                <section style={{ marginBottom: '40px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                        <Star size={20} color="#ffcb00" fill="#ffcb00" />
-                        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'hsl(var(--color-text-primary))', margin: 0 }}>Favorites</h2>
+                <section style={{ marginBottom: '24px' }}>
+                    <div className="home-section-head">
+                        <div className="home-section-title-group">
+                            <Star size={16} color="#E5A93C" fill="#E5A93C" />
+                            <h2 className="home-section-title">Favorites</h2>
+                        </div>
                     </div>
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                        gap: '24px',
-                        marginBottom: '20px'
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                        gap: '14px',
+                        marginBottom: '12px'
                     }}>
                         {displayedFavoriteBoards.map(board => (
                             <BoardCard
@@ -169,8 +178,8 @@ export const HomePage = () => {
 
 
             {recentBoards.length === 0 && myWorkspaceBoards.length === 0 && (
-                <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', backgroundColor: 'hsl(var(--color-bg-surface))', borderRadius: '8px', border: '1px dashed hsl(var(--color-border))' }}>
-                    <p style={{ color: 'hsl(var(--color-text-secondary))' }}>No boards found. Create or visit a board to get started!</p>
+                <div className="card-surface" style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center' }}>
+                    <p style={{ color: 'hsl(var(--color-text-secondary))', margin: 0 }}>No boards found. Create or visit a board to get started!</p>
                 </div>
             )}
         </div>
@@ -271,22 +280,18 @@ const InboxFeed = () => {
 
     return (
         <section>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{
-                        width: '24px', height: '24px', borderRadius: '28%', backgroundColor: 'hsl(var(--color-brand-primary))', color: 'white',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600
-                    }}>
+            <div className="home-section-head">
+                <div className="home-section-title-group">
+                    <span className="home-section-badge home-section-badge--count">
                         {feedNotifications.length}
-                    </div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'hsl(var(--color-text-primary))', margin: 0 }}>Update feed (Inbox)</h2>
+                    </span>
+                    <h2 className="home-section-title">Update feed (Inbox)</h2>
                 </div>
                 {/* See All Button */}
                 <button
+                    type="button"
+                    className="home-see-all glass-chip"
                     onClick={() => navigateTo('notifications')}
-                    style={{
-                        background: 'transparent', border: 'none', color: 'hsl(var(--color-brand-primary))', cursor: 'pointer', fontSize: '14px', fontWeight: 500
-                    }}
                 >
                     See all
                 </button>

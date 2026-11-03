@@ -105,7 +105,7 @@ export const DueDateReminderSettings = () => {
     };
 
     if (loading) {
-        return <div style={{ padding: '24px', color: '#64748b' }}>Loading settings...</div>;
+        return <div style={{ padding: '24px', color: 'hsl(var(--ink-dim))' }}>Loading settings...</div>;
     }
 
     return (
@@ -113,53 +113,57 @@ export const DueDateReminderSettings = () => {
             {message.text && (
                 <div style={{
                     padding: '12px 16px',
-                    borderRadius: '8px',
+                    borderRadius: '12px',
                     marginBottom: '24px',
-                    backgroundColor: message.type === 'success' ? '#def7ec' : '#fee2e2',
-                    color: message.type === 'success' ? '#03543f' : '#991b1b',
-                    fontSize: '14px',
-                    border: `1px solid ${message.type === 'success' ? '#31c48d' : '#f87171'}`
+                    backgroundColor: message.type === 'success' ? 'rgba(42, 74, 18, 0.1)' : 'rgba(200, 62, 43, 0.1)',
+                    color: message.type === 'success' ? '#2A4A12' : '#C83E2B',
+                    fontSize: '13.5px',
+                    fontWeight: 600,
+                    border: `1px solid ${message.type === 'success' ? 'rgba(42, 74, 18, 0.25)' : 'rgba(200, 62, 43, 0.25)'}`
                 }}>
                     {message.text}
                 </div>
             )}
 
             <div className="card-surface" style={{ padding: '24px', marginBottom: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <h2 style={{ fontSize: '18px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                        <CalendarClock size={20} color="#6366f1" />
-                        Due Date Reminders
-                    </h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="admin-tile" style={{ width: '38px', height: '38px', background: 'rgba(167, 100, 0, 0.12)', color: '#A76400' }}>
+                            <CalendarClock size={18} />
+                        </div>
+                        <h2 className="narai-heading" style={{ fontSize: '20px', fontWeight: 700, color: 'hsl(var(--ink))', margin: 0 }}>
+                            Due Date Reminders
+                        </h2>
+                    </div>
                     <button
                         onClick={addOffset}
+                        className="glass-chip"
                         style={{
                             display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '8px 12px',
-                            backgroundColor: '#f8fafc',
-                            border: '1px solid #cbd5e1',
-                            borderRadius: '6px',
+                            padding: '7px 14px',
                             fontSize: '13px',
-                            fontWeight: 500,
+                            fontWeight: 600,
+                            color: 'hsl(var(--ink))',
                             cursor: 'pointer'
                         }}
                     >
-                        <Plus size={16} /> Add Reminder Point
+                        <Plus size={15} /> Add Reminder Point
                     </button>
                 </div>
 
-                <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '12px', lineHeight: '1.5' }}>
+                <p style={{ fontSize: '13.5px', color: 'hsl(var(--ink-dim))', marginBottom: '14px', lineHeight: '1.5' }}>
                     Everyone assigned to an item gets notified when its "Due Date" column value lands on one of
                     these day counts before the deadline. Use 0 for "due today". Applies to every board.
                     Each reminder sends both an in-app notification and an email.
                 </p>
 
                 <div style={{
-                    display: 'flex', alignItems: 'flex-start', gap: '8px',
-                    padding: '10px 12px', borderRadius: '6px', marginBottom: '20px',
-                    backgroundColor: '#eef2ff', border: '1px solid #c7d2fe',
-                    fontSize: '13px', color: '#475569', lineHeight: '1.5'
+                    display: 'flex', alignItems: 'flex-start', gap: '10px',
+                    padding: '12px 14px', borderRadius: '12px', marginBottom: '20px',
+                    backgroundColor: 'rgba(42, 74, 18, 0.08)', border: '1px solid rgba(42, 74, 18, 0.22)',
+                    fontSize: '13px', color: 'hsl(var(--ink))', lineHeight: '1.5'
                 }}>
-                    <Clock size={15} style={{ flexShrink: 0, marginTop: '1px', color: '#6366f1' }} />
+                    <Clock size={15} style={{ flexShrink: 0, marginTop: '2px', color: '#2A4A12' }} />
                     <span>
                         Reminders are sent once a day at <strong>{String(REMINDER_UTC_HOUR).padStart(2, '0')}:00 UTC</strong>
                         {' — '}that's <strong>{deliveryLocal}</strong> in {deliveryZone}.
@@ -169,7 +173,7 @@ export const DueDateReminderSettings = () => {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {offsets.map((offset, idx) => (
-                        <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '10px 14px', borderRadius: '12px', background: 'hsl(var(--paper-muted))', border: '1px solid hsl(var(--paper-edge))' }}>
                             <input
                                 type="number"
                                 min={0}
@@ -177,28 +181,28 @@ export const DueDateReminderSettings = () => {
                                 onChange={e => updateOffset(idx, e.target.value)}
                                 style={{ ...inputStyle, width: '100px', flex: 'none' }}
                             />
-                            <span style={{ fontSize: '14px', color: '#334155', flex: 1 }}>
+                            <span style={{ fontSize: '13.5px', fontWeight: 500, color: 'hsl(var(--ink))', flex: 1 }}>
                                 {offset === 0 ? 'Due today' : `${offset} day${offset === 1 ? '' : 's'} before due date`}
                             </span>
                             <button
                                 onClick={() => removeOffset(idx)}
                                 style={{
-                                    padding: '8px',
-                                    color: '#94a3b8',
+                                    padding: '6px',
+                                    color: 'hsl(var(--ink-soft))',
                                     background: 'none',
                                     border: 'none',
                                     cursor: 'pointer'
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                                onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                                onMouseEnter={e => e.currentTarget.style.color = '#C83E2B'}
+                                onMouseLeave={e => e.currentTarget.style.color = 'hsl(var(--ink-soft))'}
                             >
-                                <Trash2 size={18} />
+                                <Trash2 size={17} />
                             </button>
                         </div>
                     ))}
 
                     {offsets.length === 0 && (
-                        <div style={{ padding: '32px', textAlign: 'center', color: '#94a3b8', border: '2px dashed #e2e8f0', borderRadius: '12px' }}>
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'hsl(var(--ink-soft))', border: '1px dashed hsl(var(--paper-edge))', borderRadius: '14px' }}>
                             No reminder points defined. Click "Add Reminder Point" to start.
                         </div>
                     )}
@@ -209,21 +213,18 @@ export const DueDateReminderSettings = () => {
                 <button
                     onClick={handleSave}
                     disabled={saving}
+                    className="btn-solid"
                     style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
                         padding: '10px 24px',
-                        backgroundColor: '#6366f1',
-                        border: 'none',
-                        borderRadius: '6px',
-                        color: 'white',
+                        borderRadius: '999px',
                         fontWeight: 600,
                         cursor: saving ? 'not-allowed' : 'pointer',
-                        fontSize: '14px',
+                        fontSize: '13.5px',
                         opacity: saving ? 0.7 : 1,
-                        transition: 'background-color 0.2s'
                     }}
                 >
-                    <Save size={18} />
+                    <Save size={16} />
                     {saving ? 'Saving...' : 'Save Reminder Schedule'}
                 </button>
             </div>
@@ -233,9 +234,11 @@ export const DueDateReminderSettings = () => {
 
 const inputStyle: React.CSSProperties = {
     padding: '8px 12px',
-    borderRadius: '6px',
-    border: '1px solid #cbd5e1',
-    fontSize: '14px',
+    borderRadius: '10px',
+    border: '1px solid hsl(var(--paper-edge))',
+    backgroundColor: 'hsl(var(--paper))',
+    color: 'hsl(var(--ink))',
+    fontSize: '13.5px',
     outline: 'none',
     boxSizing: 'border-box'
 };

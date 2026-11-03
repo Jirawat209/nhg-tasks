@@ -1,99 +1,180 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useBoardStore } from '../store/useBoardStore';
+import { useAuth } from '../contexts/AuthContext';
 import { NotificationItem } from '../components/notifications/NotificationItem';
 import { CheckCheck, BellRing } from 'lucide-react';
 
 export const NotificationPage = () => {
+    const { user } = useAuth();
     const notifications = useBoardStore(state => state.notifications || []);
+    const loadNotifications = useBoardStore(state => state.loadNotifications);
     const unreadCount = useBoardStore(state => state.notifications?.filter(n => !n.is_read).length || 0);
     const markAllNotificationsAsRead = useBoardStore(state => state.markAllNotificationsAsRead);
 
     const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'mentions'>('all');
 
+    useEffect(() => {
+        if (user?.id) {
+            loadNotifications();
+        }
+    }, [user?.id, loadNotifications]);
+
+    const mentionsCount = notifications.filter(
+        n => n.type === 'mention' || n.type === 'assignment' || n.type === 'comment'
+    ).length;
+
     const filteredNotifications = notifications.filter(n => {
         if (activeTab === 'unread') return !n.is_read;
-        if (activeTab === 'mentions') return n.type === 'mention' || n.type === 'assignment';
+        if (activeTab === 'mentions') return n.type === 'mention' || n.type === 'assignment' || n.type === 'comment';
         return true;
     });
 
+    const tabLabels: Record<'all' | 'unread' | 'mentions', string> = {
+        all: `All (${notifications.length})`,
+        unread: `Unread (${unreadCount})`,
+        mentions: `Mentions (${mentionsCount})`
+    };
+
     return (
-        <div style={{ padding: '32px', maxWidth: '800px', margin: '0 auto', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: 'hsl(var(--color-text-primary))', margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    Notifications
-                    {unreadCount > 0 && (
-                        <span style={{
-                            backgroundColor: 'hsl(var(--color-status-red-bg))', color: 'white', fontSize: '14px', fontWeight: 'bold',
-                            padding: '2px 10px', borderRadius: '9999px'
-                        }}>
-                            {unreadCount}
-                        </span>
-                    )}
-                </h1>
-                <button
-                    onClick={() => markAllNotificationsAsRead()}
-                    style={{
-                        padding: '8px 16px', border: '1px solid hsl(var(--color-border))', backgroundColor: 'hsl(var(--color-bg-surface))', cursor: 'pointer',
-                        borderRadius: '6px', color: 'hsl(var(--color-text-secondary))', display: 'flex', alignItems: 'center', gap: '8px',
-                        fontSize: '14px', fontWeight: 500, transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-surface-hover))'; e.currentTarget.style.borderColor = 'hsl(var(--color-border-hover))'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-surface))'; e.currentTarget.style.borderColor = 'hsl(var(--color-border))'; }}
-                >
-                    <CheckCheck size={16} /> Mark all as read
-                </button>
-
-            </div>
-
-            <div style={{ backgroundColor: 'hsl(var(--color-bg-surface))', borderRadius: '12px', border: '1px solid hsl(var(--color-border))', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-                {/* Tabs */}
-                <div style={{ display: 'flex', padding: '12px 16px', gap: '8px', borderBottom: '1px solid hsl(var(--color-border))', backgroundColor: 'hsl(var(--color-bg-subtle))' }}>
-                    {(['all', 'unread', 'mentions'] as const).map(tab => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            style={{
-                                padding: '8px 16px', borderRadius: '6px', fontSize: '14px', fontWeight: 500,
-                                border: activeTab === tab ? '1px solid hsl(var(--color-border))' : '1px solid transparent',
-                                backgroundColor: activeTab === tab ? 'hsl(var(--color-bg-surface))' : 'transparent',
-                                color: activeTab === tab ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-secondary))',
-                                boxShadow: activeTab === tab ? 'var(--shadow-sm)' : 'none',
-                                cursor: 'pointer', transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={(e) => { if (activeTab !== tab) { e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-surface-hover))'; e.currentTarget.style.color = 'hsl(var(--color-text-primary))'; } }}
-                            onMouseLeave={(e) => { if (activeTab !== tab) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'hsl(var(--color-text-secondary))'; } }}
-                        >
-                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                        </button>
-                    ))}
+        <div className="home-page" style={{ padding: '20px 28px 32px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+            {/* Top Page Header matching Home & Favorites */}
+            <header style={{
+                marginBottom: '22px',
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                gap: '16px',
+                flexWrap: 'wrap'
+            }}>
+                <div>
+                    <div className="bh-eyebrow" style={{ marginBottom: '4px' }}>
+                        INBOX · ACTIVITY & UPDATES
+                    </div>
+                    <h1 className="narai-heading" style={{
+                        fontFamily: 'var(--font-family-display)',
+                        fontSize: '28px',
+                        fontWeight: 500,
+                        letterSpacing: '-0.02em',
+                        lineHeight: 1.15,
+                        color: 'hsl(var(--color-text-primary))',
+                        marginBottom: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px'
+                    }}>
+                        <span>Notifications</span>
+                        {unreadCount > 0 && (
+                            <span style={{
+                                backgroundColor: 'hsl(var(--color-brand-primary) / 0.12)',
+                                color: 'hsl(var(--color-brand-primary))',
+                                fontFamily: 'var(--font-family-sans)',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                                padding: '2px 9px',
+                                borderRadius: '999px'
+                            }}>
+                                {unreadCount} new
+                            </span>
+                        )}
+                    </h1>
+                    <p style={{ color: 'hsl(var(--color-text-secondary))', fontSize: '13.5px', margin: 0 }}>
+                        Stay updated on mentions, assignments, and workspace invitations.
+                    </p>
                 </div>
 
-                {/* List */}
-                <div style={{ flex: 1, overflowY: 'auto', backgroundColor: 'hsl(var(--color-bg-surface))' }}>
+                {/* Filter & Actions Bar */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <div className="seg glass-chip">
+                        {(['all', 'unread', 'mentions'] as const).map(tab => (
+                            <button
+                                key={tab}
+                                type="button"
+                                className={`seg-btn${activeTab === tab ? ' is-active' : ''}`}
+                                onClick={() => setActiveTab(tab)}
+                                style={{ height: '28px', padding: '0 13px', fontSize: '12px' }}
+                            >
+                                {tabLabels[tab]}
+                            </button>
+                        ))}
+                    </div>
+
+                    {unreadCount > 0 && (
+                        <button
+                            type="button"
+                            className="glass-chip"
+                            onClick={() => markAllNotificationsAsRead()}
+                            style={{
+                                height: '32px',
+                                padding: '0 13px',
+                                borderRadius: '999px',
+                                color: 'hsl(var(--color-brand-primary))',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <CheckCheck size={14} />
+                            <span>Mark all as read</span>
+                        </button>
+                    )}
+                </div>
+            </header>
+
+            {/* Section & Content Card matching Home Update Feed */}
+            <section style={{ marginBottom: '24px' }}>
+                <div className="home-section-head">
+                    <div className="home-section-title-group">
+                        <span className="home-section-badge home-section-badge--count">
+                            {filteredNotifications.length}
+                        </span>
+                        <h2 className="home-section-title">
+                            {activeTab === 'all' ? 'All updates' : activeTab === 'unread' ? 'Unread updates' : 'Mentions & assignments'}
+                        </h2>
+                    </div>
+                </div>
+
+                <div className="card-surface home-feed" style={{ padding: filteredNotifications.length > 0 ? '4px 0' : undefined, overflow: 'hidden' }}>
                     {filteredNotifications.length > 0 ? (
-                        filteredNotifications.map(notification => (
-                            <NotificationItem
+                        filteredNotifications.map((notification, index) => (
+                            <div
                                 key={notification.id}
-                                notification={notification}
-                            />
+                                style={{
+                                    borderBottom: index < filteredNotifications.length - 1
+                                        ? '1px solid var(--paper-row-line, hsl(var(--color-border)))'
+                                        : 'none'
+                                }}
+                            >
+                                <NotificationItem notification={notification} />
+                            </div>
                         ))
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '40px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))' }}>
-                            <div style={{ width: '80px', height: '80px', backgroundColor: 'hsl(var(--color-bg-subtle))', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
-                                <BellRing size={40} style={{ opacity: 0.2 }} />
+                        <div className="home-feed__state" style={{ padding: '44px 24px' }}>
+                            <div style={{
+                                width: '44px',
+                                height: '44px',
+                                margin: '0 auto 12px',
+                                backgroundColor: 'hsl(var(--color-brand-primary) / 0.08)',
+                                color: 'hsl(var(--color-brand-primary))',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <BellRing size={20} />
                             </div>
-                            <p style={{ fontSize: '16px', fontWeight: 600, color: 'hsl(var(--color-text-primary))', margin: 0 }}>All caught up!</p>
-                            <p style={{ fontSize: '14px', marginTop: '8px', maxWidth: '300px' }}>
-                                {activeTab === 'all'
-                                    ? "You have no notifications yet. When you get one, it will show up here."
-                                    : activeTab === 'unread'
-                                        ? "You've read all your notifications."
-                                        : "You haven't been mentioned in any tasks yet."}
-                            </p>
+                            <strong>You're all caught up</strong>
+                            {activeTab === 'all'
+                                ? 'New mentions, assignments, and workspace invites will show up here.'
+                                : activeTab === 'unread'
+                                    ? "You've read all your notifications."
+                                    : "You haven't been mentioned or assigned in any tasks yet."}
                         </div>
                     )}
                 </div>
-            </div>
+            </section>
         </div>
     );
 };

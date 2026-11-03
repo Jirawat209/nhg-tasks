@@ -46,7 +46,7 @@ const MicrosoftMark = ({ size = 12 }: { size?: number }) => (
         <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
     </svg>
 );
-const STATUS_COLORS: Record<UserStatus, string> = { pending: '#f59e0b', active: '#10b981', inactive: '#dc2626' };
+const STATUS_COLORS: Record<UserStatus, string> = { pending: '#A76400', active: '#2A4A12', inactive: '#C83E2B' };
 
 const HEADER_ROW_HEIGHT = 44;
 
@@ -56,17 +56,17 @@ const thStyle: React.CSSProperties = {
     height: `${HEADER_ROW_HEIGHT}px`,
     boxSizing: 'border-box',
     textAlign: 'left',
-    fontSize: '12px',
-    fontWeight: 600,
-    color: '#64748b',
+    fontSize: '11px',
+    fontWeight: 700,
+    color: 'hsl(var(--ink-soft))',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px',
+    letterSpacing: '0.07em',
     whiteSpace: 'nowrap',
     position: 'sticky',
     top: 0,
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'hsl(var(--paper-head))',
     zIndex: 2,
-    borderBottom: '1px solid #e2e8f0'
+    borderBottom: '1px solid hsl(var(--paper-edge))'
 };
 
 const thFilterStyle: React.CSSProperties = {
@@ -74,9 +74,9 @@ const thFilterStyle: React.CSSProperties = {
     boxSizing: 'border-box',
     position: 'sticky',
     top: `${HEADER_ROW_HEIGHT}px`,
-    backgroundColor: '#fcfdfe',
+    backgroundColor: 'hsl(var(--paper-muted))',
     zIndex: 2,
-    borderBottom: '1px solid #e2e8f0'
+    borderBottom: '1px solid hsl(var(--paper-edge))'
 };
 
 const ROLE_HIERARCHY = {
@@ -507,9 +507,9 @@ export const UserTable = () => {
     return (
         <div ref={tableCardRef} className="card-surface" style={{ minWidth: 'fit-content' }}>
             {/* Header */}
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '200px' }}>
-                    <Search size={18} color="#64748b" style={{ flexShrink: 0 }} />
+            <div style={{ padding: '14px 20px', background: 'hsl(var(--paper-head))', borderBottom: '1px solid hsl(var(--paper-edge))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '240px', maxWidth: '420px', padding: '7px 14px', borderRadius: '999px', background: 'hsl(var(--paper))', border: '1px solid hsl(var(--paper-edge))' }}>
+                    <Search size={15} color="hsl(var(--ink-soft))" style={{ flexShrink: 0 }} />
                     <input
                         type="text"
                         placeholder="Search users..."
@@ -518,18 +518,20 @@ export const UserTable = () => {
                         style={{
                             border: 'none',
                             outline: 'none',
-                            fontSize: '14px',
+                            fontSize: '13.5px',
                             flex: 1,
-                            color: '#0f172a'
+                            background: 'transparent',
+                            color: 'hsl(var(--ink))'
                         }}
                     />
                     {!isLoading && (
                         <span style={{
                             display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0,
-                            padding: '3px 10px', borderRadius: '999px', backgroundColor: '#f1f5f9',
-                            fontSize: '12px', fontWeight: 600, color: '#475569'
+                            padding: '2px 9px', borderRadius: '999px', backgroundColor: 'hsl(var(--paper-muted))',
+                            border: '1px solid hsl(var(--paper-edge))',
+                            fontSize: '11.5px', fontWeight: 700, color: 'hsl(var(--ink-dim))'
                         }}>
-                            <Users size={12} />
+                            <Users size={11} />
                             {filteredAndSortedProfiles.length}{filteredAndSortedProfiles.length !== profiles.length ? ` / ${profiles.length}` : ''}
                         </span>
                     )}
@@ -537,22 +539,17 @@ export const UserTable = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <button
                         onClick={() => setShowCreateUserModal(true)}
+                        className="btn-solid"
                         style={{
-                            padding: '6px 14px',
-                            backgroundColor: '#059669',
-                            border: '1px solid #059669',
-                            borderRadius: '4px',
+                            padding: '7px 15px',
+                            borderRadius: '999px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
                             fontSize: '13px',
                             fontWeight: 600,
-                            color: 'white',
-                            transition: 'background-color 0.15s'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#047857'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#059669'}
                     >
                         <UserPlus size={14} />
                         Create User
@@ -560,27 +557,16 @@ export const UserTable = () => {
                     <button
                         onClick={exportToExcel}
                         title={`Export ${filteredAndSortedProfiles.length} user(s) to Excel`}
+                        className="glass-chip"
                         style={{
-                            padding: '6px 12px',
-                            backgroundColor: '#f0fdf4',
-                            border: '1px solid #bbf7d0',
-                            borderRadius: '4px',
+                            padding: '7px 14px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
                             fontSize: '13px',
-                            fontWeight: 500,
-                            color: '#15803d',
-                            transition: 'all 0.15s'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#dcfce7';
-                            e.currentTarget.style.borderColor = '#86efac';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#f0fdf4';
-                            e.currentTarget.style.borderColor = '#bbf7d0';
+                            fontWeight: 600,
+                            color: '#2A4A12',
                         }}
                     >
                         <FileSpreadsheet size={14} />
@@ -588,40 +574,33 @@ export const UserTable = () => {
                     </button>
                     <button
                         onClick={fetchProfiles}
+                        className="glass-chip"
                         style={{
-                            padding: '6px 12px',
-                            backgroundColor: '#f1f5f9',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '4px',
+                            padding: '7px 14px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
                             fontSize: '13px',
-                            color: '#475569',
-                            transition: 'all 0.15s'
+                            fontWeight: 600,
+                            color: 'hsl(var(--ink))',
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e2e8f0'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
                     >
                         <RefreshCw size={14} />
                         Refresh
                     </button>
                     <button
                         onClick={() => setShowFilters(!showFilters)}
+                        className={`glass-chip ${showFilters ? 'active' : ''}`}
                         style={{
-                            padding: '6px 12px',
-                            backgroundColor: showFilters ? '#eef2ff' : '#f1f5f9',
-                            border: '1px solid',
-                            borderColor: showFilters ? '#6366f1' : '#e2e8f0',
-                            borderRadius: '4px',
+                            padding: '7px 14px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
                             fontSize: '13px',
-                            color: showFilters ? '#4338ca' : '#475569',
-                            transition: 'all 0.2s'
+                            fontWeight: 600,
+                            color: showFilters ? 'hsl(var(--accent-fg))' : 'hsl(var(--ink))',
                         }}
                     >
                         <Filter size={14} />
@@ -631,15 +610,13 @@ export const UserTable = () => {
             </div>
 
             {/* Table */}
-            {/* No scroll box of its own: the frame grows with the rows on the page, and
-                the header cells (position: sticky) stay at the top of the console page as it scrolls. */}
             <div>
                 {isLoading ? (
-                    <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+                    <div style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--ink-dim))' }}>Loading...</div>
                 ) : (
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8fafc' }}>
+                            <tr style={{ backgroundColor: 'hsl(var(--paper-head))' }}>
                                 <th onClick={() => requestSort('full_name')} style={thStyle}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         Name {getSortIcon('full_name')}
@@ -673,13 +650,13 @@ export const UserTable = () => {
                                 <th style={{ ...thStyle, cursor: 'default', textAlign: 'center' }}>Actions</th>
                             </tr>
                             {showFilters && (
-                                <tr style={{ backgroundColor: '#fcfdfe' }}>
+                                <tr style={{ backgroundColor: 'hsl(var(--paper-muted))' }}>
                                     <th style={thFilterStyle}>
                                         <input
                                             placeholder="Filter name..."
                                             value={columnFilters.full_name}
                                             onChange={(e) => setColumnFilters({ ...columnFilters, full_name: e.target.value })}
-                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '4px', border: '1px solid #e2e8f0', fontSize: '12px', boxSizing: 'border-box' }}
+                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '8px', border: '1px solid hsl(var(--paper-edge))', backgroundColor: 'hsl(var(--paper))', color: 'hsl(var(--ink))', fontSize: '12px', boxSizing: 'border-box' }}
                                         />
                                     </th>
                                     <th style={thFilterStyle}>
@@ -687,14 +664,14 @@ export const UserTable = () => {
                                             placeholder="Filter email..."
                                             value={columnFilters.email}
                                             onChange={(e) => setColumnFilters({ ...columnFilters, email: e.target.value })}
-                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '4px', border: '1px solid #e2e8f0', fontSize: '12px', boxSizing: 'border-box' }}
+                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '8px', border: '1px solid hsl(var(--paper-edge))', backgroundColor: 'hsl(var(--paper))', color: 'hsl(var(--ink))', fontSize: '12px', boxSizing: 'border-box' }}
                                         />
                                     </th>
                                     <th style={thFilterStyle}>
                                         <select
                                             value={columnFilters.system_role}
                                             onChange={(e) => setColumnFilters({ ...columnFilters, system_role: e.target.value })}
-                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '4px', border: '1px solid #e2e8f0', fontSize: '12px', backgroundColor: 'white', boxSizing: 'border-box' }}
+                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '8px', border: '1px solid hsl(var(--paper-edge))', fontSize: '12px', backgroundColor: 'hsl(var(--paper))', color: 'hsl(var(--ink))', boxSizing: 'border-box' }}
                                         >
                                             <option value="">All Roles</option>
                                             <option value="user">User</option>
@@ -706,7 +683,7 @@ export const UserTable = () => {
                                         <select
                                             value={columnFilters.status}
                                             onChange={(e) => setColumnFilters({ ...columnFilters, status: e.target.value })}
-                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '4px', border: '1px solid #e2e8f0', fontSize: '12px', backgroundColor: 'white', boxSizing: 'border-box' }}
+                                            style={{ width: '100%', padding: '6px 10px', borderRadius: '8px', border: '1px solid hsl(var(--paper-edge))', fontSize: '12px', backgroundColor: 'hsl(var(--paper))', color: 'hsl(var(--ink))', boxSizing: 'border-box' }}
                                         >
                                             <option value="">All Status</option>
                                             <option value="active">Active</option>
@@ -723,51 +700,52 @@ export const UserTable = () => {
                         <tbody>
                             {filteredAndSortedProfiles.length === 0 && (
                                 <tr>
-                                    <td colSpan={7} style={{ padding: '40px 20px', textAlign: 'center', fontSize: '14px', color: '#94a3b8' }}>
+                                    <td colSpan={7} style={{ padding: '40px 20px', textAlign: 'center', fontSize: '14px', color: 'hsl(var(--ink-soft))' }}>
                                         {profiles.length ? 'No users match your search or filters.' : 'No users yet.'}
                                     </td>
                                 </tr>
                             )}
-                            {shown.rows.map((profile, idx) => (
+                            {shown.rows.map((profile) => (
                                 <tr
                                     key={profile.id}
                                     className="user-table-row"
-                                    style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? 'white' : '#fafbfc' }}
+                                    style={{ borderBottom: '1px solid hsl(var(--paper-row-line))' }}
                                 >
-                                    <td style={{ padding: '10px 20px' }}>
+                                    <td style={{ padding: '11px 20px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <div style={{
                                                 width: '30px', height: '30px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-                                                backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                fontSize: '12px', fontWeight: 600, color: '#475569'
+                                                backgroundColor: '#2A4A12', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                fontSize: '12px', fontWeight: 700, color: '#FFEFD2'
                                             }}>
                                                 {profile.avatar_url ? (
                                                     <img src={profile.avatar_url} alt="" referrerPolicy="no-referrer" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                 ) : initialsFrom(profile.full_name, profile.email)}
                                             </div>
-                                            <div style={{ fontWeight: 500, color: '#0f172a', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '220px' }} title={profile.full_name || 'Unknown'}>
+                                            <div style={{ fontWeight: 600, color: 'hsl(var(--ink))', fontSize: '13.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '220px' }} title={profile.full_name || 'Unknown'}>
                                                 {profile.full_name || 'Unknown'}
                                             </div>
                                         </div>
                                     </td>
-                                    <td style={{ padding: '10px 20px' }}>
-                                        <div style={{ fontSize: '14px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '260px' }} title={profile.email}>{profile.email}</div>
+                                    <td style={{ padding: '11px 20px' }}>
+                                        <div style={{ fontSize: '13.5px', color: 'hsl(var(--ink-dim))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '260px' }} title={profile.email}>{profile.email}</div>
                                     </td>
-                                    <td style={{ padding: '10px 20px' }}>
+                                    <td style={{ padding: '11px 20px' }}>
                                         <span style={{
                                             display: 'inline-block',
-                                            padding: '4px 12px',
-                                            borderRadius: '12px',
-                                            fontSize: '12px',
-                                            fontWeight: 500,
+                                            padding: '3px 10px',
+                                            borderRadius: '999px',
+                                            fontSize: '11.5px',
+                                            fontWeight: 700,
                                             whiteSpace: 'nowrap',
-                                            backgroundColor: profile.system_role === 'super_admin' ? '#dbeafe' : profile.system_role === 'it_admin' ? '#fef3c7' : '#f1f5f9',
-                                            color: profile.system_role === 'super_admin' ? '#1e40af' : profile.system_role === 'it_admin' ? '#92400e' : '#475569'
+                                            backgroundColor: profile.system_role === 'super_admin' ? 'rgba(42, 74, 18, 0.14)' : profile.system_role === 'it_admin' ? 'rgba(167, 100, 0, 0.14)' : 'hsl(var(--paper-muted))',
+                                            color: profile.system_role === 'super_admin' ? '#2A4A12' : profile.system_role === 'it_admin' ? '#A76400' : 'hsl(var(--ink-dim))',
+                                            border: `1px solid ${profile.system_role === 'super_admin' ? 'rgba(42, 74, 18, 0.25)' : profile.system_role === 'it_admin' ? 'rgba(167, 100, 0, 0.25)' : 'hsl(var(--paper-edge))'}`
                                         }}>
                                             {ROLE_LABELS[profile.system_role] || profile.system_role}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '10px 20px' }}>
+                                    <td style={{ padding: '11px 20px' }}>
                                         <span style={{
                                             display: 'inline-flex',
                                             alignItems: 'center',
@@ -775,7 +753,7 @@ export const UserTable = () => {
                                             fontSize: '13px',
                                             whiteSpace: 'nowrap',
                                             color: STATUS_COLORS[getUserStatus(profile)],
-                                            fontWeight: 500
+                                            fontWeight: 600
                                         }}>
                                             <div style={{
                                                 width: '6px',
@@ -787,7 +765,7 @@ export const UserTable = () => {
                                             {STATUS_LABELS[getUserStatus(profile)]}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '10px 20px', fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                                    <td style={{ padding: '11px 20px', fontSize: '13px', color: 'hsl(var(--ink-dim))', whiteSpace: 'nowrap' }}>
                                         {profile.last_login_at ? new Date(profile.last_login_at).toLocaleString('en-US', {
                                             month: 'short',
                                             day: 'numeric',
@@ -797,17 +775,17 @@ export const UserTable = () => {
                                             hour12: true
                                         }) : '-'}
                                     </td>
-                                    <td style={{ padding: '10px 20px' }}>
+                                    <td style={{ padding: '11px 20px' }}>
                                         {profile.auth_type === 'internal' ? (
-                                            <span title="Internal (email + password)" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 500, whiteSpace: 'nowrap', backgroundColor: '#f1f5f9', color: '#475569' }}>
+                                            <span title="Internal (email + password)" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 10px', borderRadius: '999px', fontSize: '11.5px', fontWeight: 600, whiteSpace: 'nowrap', backgroundColor: 'hsl(var(--paper-muted))', border: '1px solid hsl(var(--paper-edge))', color: 'hsl(var(--ink-dim))' }}>
                                                 <Lock size={11} /> Internal
                                             </span>
                                         ) : profile.auth_type === 'microsoft' ? (
-                                            <span title="Microsoft" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 500, whiteSpace: 'nowrap', backgroundColor: '#ecfdf5', color: '#047857' }}>
+                                            <span title="Microsoft" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 10px', borderRadius: '999px', fontSize: '11.5px', fontWeight: 600, whiteSpace: 'nowrap', backgroundColor: 'rgba(42, 74, 18, 0.1)', border: '1px solid rgba(42, 74, 18, 0.22)', color: '#2A4A12' }}>
                                                 <MicrosoftMark size={11} /> Microsoft
                                             </span>
                                         ) : (
-                                            <span title="Google" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 500, whiteSpace: 'nowrap', backgroundColor: '#eff6ff', color: '#1d4ed8' }}>
+                                            <span title="Google" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 10px', borderRadius: '999px', fontSize: '11.5px', fontWeight: 600, whiteSpace: 'nowrap', backgroundColor: 'rgba(46, 125, 140, 0.1)', border: '1px solid rgba(46, 125, 140, 0.22)', color: '#2E7D8C' }}>
                                                 <Globe size={11} /> Google
                                             </span>
                                         )}
@@ -980,9 +958,9 @@ export const UserTable = () => {
             </div>
 
             {!isLoading && filteredAndSortedProfiles.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', padding: '12px 20px', borderTop: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '13px', color: '#64748b' }}>
-                        Showing <strong style={{ color: '#0f172a', fontWeight: 600 }}>{shown.first}–{shown.last}</strong> of {filteredAndSortedProfiles.length} users
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', padding: '12px 20px', borderTop: '1px solid hsl(var(--paper-edge))', background: 'hsl(var(--paper-head))' }}>
+                    <span style={{ fontSize: '13px', color: 'hsl(var(--ink-dim))' }}>
+                        Showing <strong style={{ color: 'hsl(var(--ink))', fontWeight: 600 }}>{shown.first}–{shown.last}</strong> of {filteredAndSortedProfiles.length} users
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                         <label className="admin-page-size">
@@ -1022,7 +1000,7 @@ export const UserTable = () => {
 
             <style>{`
                 .user-table-row:hover {
-                    background-color: #eef2ff !important;
+                    background-color: hsl(var(--paper-muted)) !important;
                 }
             `}</style>
 

@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { fetchDashboardStats } from '../../lib/activityStats';
 
 const WEEKS = 4;
-// Roughly five and a half rows, so the clipped row is itself the hint that the
-// list keeps going.
 const LIST_MAX_HEIGHT = 360;
 
 interface BoardRow {
@@ -27,7 +25,6 @@ const startOfToday = () => {
     return d;
 };
 
-/** "Aug 3 – 9" within one month, "Jul 28 – Aug 3" across two. */
 const weekLabel = (start: Date, end: Date) => {
     const from = start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     const to = end.toLocaleDateString(
@@ -52,9 +49,6 @@ export const ActivityLeaderboards = () => {
         setLoading(true);
         try {
             const today = startOfToday();
-
-            // Week 0 is the oldest of the four, week 3 ends today — matching the
-            // left-to-right reading order of the columns.
             const labels: string[] = [];
             for (let w = 0; w < WEEKS; w++) {
                 const end = new Date(today);
@@ -76,14 +70,14 @@ export const ActivityLeaderboards = () => {
 
     return (
         <div style={{ marginTop: '24px' }}>
-            <Section title="Trending boards" subtitle={`in the last ${WEEKS} weeks`} count={boards.length}>
+            <Section title="Trending Boards" subtitle={`in the last ${WEEKS} weeks`} count={boards.length}>
                 <table style={tableStyle}>
                     <thead>
                         <tr style={headRowStyle}>
-                            <th style={{ ...thStyle, width: '48px' }} />
+                            <th style={{ ...thStyle, width: '48px' }}>#</th>
                             <th style={thStyle}>Board</th>
-                            <th style={{ ...thStyle, ...numHeadStyle }}>Items created</th>
-                            <th style={{ ...thStyle, ...numHeadStyle }}>Updates posted</th>
+                            <th style={{ ...thStyle, ...numHeadStyle }}>Items Created</th>
+                            <th style={{ ...thStyle, ...numHeadStyle }}>Updates Posted</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -94,7 +88,7 @@ export const ActivityLeaderboards = () => {
                         ) : boards.map((b, i) => (
                             <tr key={b.boardId} style={bodyRowStyle}>
                                 <td style={{ ...tdStyle, ...rankStyle }}>{i + 1}</td>
-                                <td style={{ ...tdStyle, fontWeight: 500 }}>{b.title}</td>
+                                <td style={{ ...tdStyle, fontWeight: 600 }}>{b.title}</td>
                                 <td style={{ ...tdStyle, ...numStyle }}>{b.items.toLocaleString()}</td>
                                 <td style={{ ...tdStyle, ...numStyle }}>{b.updates.toLocaleString()}</td>
                             </tr>
@@ -103,11 +97,11 @@ export const ActivityLeaderboards = () => {
                 </table>
             </Section>
 
-            <Section title="Top creators" subtitle={`items created in the last ${WEEKS} weeks`} count={creators.length}>
+            <Section title="Top Creators" subtitle={`items created in the last ${WEEKS} weeks`} count={creators.length}>
                 <PeopleTable people={creators} weekLabels={weekLabels} loading={loading} />
             </Section>
 
-            <Section title="Top communicators" subtitle={`updates posted in the last ${WEEKS} weeks`} count={communicators.length}>
+            <Section title="Top Communicators" subtitle={`updates posted in the last ${WEEKS} weeks`} count={communicators.length}>
                 <PeopleTable people={communicators} weekLabels={weekLabels} loading={loading} />
             </Section>
         </div>
@@ -116,13 +110,20 @@ export const ActivityLeaderboards = () => {
 
 const Section = ({ title, subtitle, count, children }: { title: string; subtitle: string; count: number; children: React.ReactNode }) => (
     <div style={{ marginBottom: '24px' }}>
-        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#0f172a' }}>{title}</h3>
-        <p style={{ margin: '2px 0 12px 0', fontSize: '12px', color: '#94a3b8' }}>
-            {subtitle}{count > 0 && ` · ${count} in total`}
-        </p>
-        {/* Scrolls in both directions: down through the ranking, and sideways for the
-            week columns on a narrow screen. The header is sticky so it stays readable
-            the whole way down. */}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px' }}>
+            <h3 className="narai-heading" style={{
+                margin: 0,
+                fontFamily: 'var(--font-family-display)',
+                fontSize: '18px',
+                fontWeight: 600,
+                color: 'hsl(var(--color-text-primary))'
+            }}>
+                {title}
+            </h3>
+            <span style={{ fontSize: '12.5px', color: 'hsl(var(--color-text-tertiary))' }}>
+                {subtitle}{count > 0 && ` · ${count} total`}
+            </span>
+        </div>
         <div className="card-surface" style={{
             overflowX: 'auto',
             overflowY: 'auto',
@@ -137,7 +138,7 @@ const PeopleTable = ({ people, weekLabels, loading }: { people: PersonRow[]; wee
     <table style={tableStyle}>
         <thead>
             <tr style={headRowStyle}>
-                <th style={{ ...thStyle, width: '48px' }} />
+                <th style={{ ...thStyle, width: '48px' }}>#</th>
                 <th style={thStyle}>Person</th>
                 {weekLabels.map(label => (
                     <th key={label} style={{ ...thStyle, ...numHeadStyle }}>{label}</th>
@@ -158,13 +159,13 @@ const PeopleTable = ({ people, weekLabels, loading }: { people: PersonRow[]; wee
                                 width: '28px',
                                 height: '28px',
                                 borderRadius: '50%',
-                                backgroundColor: p.avatarUrl ? 'transparent' : '#6366f1',
-                                color: 'white',
+                                backgroundColor: p.avatarUrl ? 'transparent' : '#2A4A12',
+                                color: '#FFEFD2',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '11px',
-                                fontWeight: 600,
+                                fontWeight: 700,
                                 overflow: 'hidden',
                                 flexShrink: 0
                             }}>
@@ -179,11 +180,11 @@ const PeopleTable = ({ people, weekLabels, loading }: { people: PersonRow[]; wee
                                     (p.name[0] || '?').toUpperCase()
                                 )}
                             </div>
-                            <span style={{ fontWeight: 500 }}>{p.name}</span>
+                            <span style={{ fontWeight: 600 }}>{p.name}</span>
                         </div>
                     </td>
                     {p.weeks.map((count, w) => (
-                        <td key={w} style={{ ...tdStyle, ...numStyle, color: count === 0 ? '#cbd5e1' : '#0f172a' }}>
+                        <td key={w} style={{ ...tdStyle, ...numStyle, color: count === 0 ? 'hsl(var(--color-text-tertiary))' : 'hsl(var(--color-text-primary))' }}>
                             {count.toLocaleString()}
                         </td>
                     ))}
@@ -194,25 +195,32 @@ const PeopleTable = ({ people, weekLabels, loading }: { people: PersonRow[]; wee
 );
 
 const LoadingRow = ({ colSpan }: { colSpan: number }) => (
-    <tr><td colSpan={colSpan} style={{ padding: '32px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>Loading...</td></tr>
+    <tr><td colSpan={colSpan} style={{ padding: '32px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', fontSize: '13px' }}>Loading…</td></tr>
 );
 
 const EmptyRow = ({ colSpan }: { colSpan: number }) => (
-    <tr><td colSpan={colSpan} style={{ padding: '32px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>No activity in this period</td></tr>
+    <tr><td colSpan={colSpan} style={{ padding: '32px', textAlign: 'center', color: 'hsl(var(--color-text-tertiary))', fontSize: '13px' }}>No activity in this period</td></tr>
 );
 
 const tableStyle: React.CSSProperties = { width: '100%', borderCollapse: 'collapse' };
-const headRowStyle: React.CSSProperties = { backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' };
-const bodyRowStyle: React.CSSProperties = { borderBottom: '1px solid #f1f5f9' };
+const headRowStyle: React.CSSProperties = { backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)))', borderBottom: '1px solid var(--paper-edge, hsl(var(--color-border)))' };
+const bodyRowStyle: React.CSSProperties = { borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))' };
 const thStyle: React.CSSProperties = {
-    padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600,
-    color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap',
-    // Sticky headers don't carry their row's border through a scroll, so the rule
-    // under the header is drawn on the cells themselves.
-    position: 'sticky', top: 0, zIndex: 1,
-    backgroundColor: '#f8fafc', boxShadow: 'inset 0 -1px 0 #e2e8f0'
+    padding: '11px 20px',
+    textAlign: 'left',
+    fontSize: '10.5px',
+    fontWeight: 700,
+    color: 'hsl(var(--color-text-tertiary))',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    whiteSpace: 'nowrap',
+    position: 'sticky',
+    top: 0,
+    zIndex: 1,
+    backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)))',
+    boxShadow: 'inset 0 -1px 0 var(--paper-edge, hsl(var(--color-border)))'
 };
 const numHeadStyle: React.CSSProperties = { textAlign: 'right' };
-const tdStyle: React.CSSProperties = { padding: '14px 20px', fontSize: '14px', color: '#0f172a' };
-const numStyle: React.CSSProperties = { textAlign: 'right', fontVariantNumeric: 'tabular-nums' };
-const rankStyle: React.CSSProperties = { color: '#94a3b8', fontSize: '13px' };
+const tdStyle: React.CSSProperties = { padding: '12px 20px', fontSize: '13.5px', color: 'hsl(var(--color-text-primary))' };
+const numStyle: React.CSSProperties = { textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 };
+const rankStyle: React.CSSProperties = { color: 'hsl(var(--color-text-tertiary))', fontSize: '12.5px', fontWeight: 600 };

@@ -63,46 +63,45 @@ export const DatePicker = ({ date, onSelect, onClose, position }: DatePickerProp
     return createPortal(
         <div
             ref={pickerRef}
+            className="glass-pop"
             style={{
                 position: 'fixed',
                 top: style.top,
                 left: style.left,
-                backgroundColor: 'hsl(var(--color-bg-surface))',
-                borderRadius: '8px',
-                boxShadow: '0 6px 24px rgba(0,0,0,0.12)',
-                border: '1px solid hsl(var(--color-border))',
+                borderRadius: '16px',
                 zIndex: 9999,
                 width: '320px',
                 padding: '16px',
                 display: 'flex',
                 flexDirection: 'column',
-                fontFamily: 'Inter, sans-serif', // Enforce consistent font
+                fontFamily: 'var(--font-family-sans)',
                 color: 'hsl(var(--color-text-primary))'
             }}
             onClick={(e) => e.stopPropagation()}
         >
             {/* Custom Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <button
                     onClick={handlePrevMonth}
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px', color: 'hsl(var(--color-text-secondary))' }}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '999px', color: 'hsl(var(--color-text-secondary))' }}
                     className="hover-bg"
                 >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={18} />
                 </button>
 
                 <div style={{ display: 'flex', gap: '4px' }}>
                     <button
                         onClick={() => setView(view === 'months' ? 'calendar' : 'months')}
                         style={{
-                            background: view === 'months' ? 'hsl(var(--color-brand-light))' : 'transparent',
+                            fontFamily: 'var(--font-family-display)',
+                            background: view === 'months' ? 'hsl(var(--color-brand-primary) / 0.12)' : 'transparent',
                             color: view === 'months' ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-primary))',
                             border: 'none',
                             fontSize: '15px',
                             fontWeight: 600,
                             cursor: 'pointer',
                             padding: '4px 8px',
-                            borderRadius: '4px',
+                            borderRadius: '8px',
                             transition: 'all 0.2s'
                         }}
                     >
@@ -111,14 +110,15 @@ export const DatePicker = ({ date, onSelect, onClose, position }: DatePickerProp
                     <button
                         onClick={() => setView(view === 'years' ? 'calendar' : 'years')}
                         style={{
-                            background: view === 'years' ? 'hsl(var(--color-brand-light))' : 'transparent',
+                            fontFamily: 'var(--font-family-display)',
+                            background: view === 'years' ? 'hsl(var(--color-brand-primary) / 0.12)' : 'transparent',
                             color: view === 'years' ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-primary))',
                             border: 'none',
                             fontSize: '15px',
                             fontWeight: 600,
                             cursor: 'pointer',
                             padding: '4px 8px',
-                            borderRadius: '4px',
+                            borderRadius: '8px',
                             transition: 'all 0.2s'
                         }}
                     >
@@ -128,21 +128,21 @@ export const DatePicker = ({ date, onSelect, onClose, position }: DatePickerProp
 
                 <button
                     onClick={handleNextMonth}
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px', color: 'hsl(var(--color-text-secondary))' }}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '999px', color: 'hsl(var(--color-text-secondary))' }}
                     className="hover-bg"
                 >
-                    <ChevronRight size={20} />
+                    <ChevronRight size={18} />
                 </button>
             </div>
 
             <style>{`
-                .hover-bg:hover { background-color: hsl(var(--color-bg-surface-hover)) !important; }
+                .hover-bg:hover { background-color: hsl(var(--color-text-primary) / 0.06) !important; }
                 /* Hide Default DayPicker Navigation to avoid duplication if we wanted to use default */
                 .rdp-nav { display: none; }
                 .rdp-caption { display: none; } 
-                .rdp-day_selected:not([disabled]) { background-color: hsl(var(--color-brand-primary)); }
-                .rdp-day:hover:not(.rdp-day_selected) { background-color: hsl(var(--color-bg-surface-hover)); }
-                .rdp { margin: 0; --rdp-cell-size: 36px; }  
+                .rdp-day_selected:not([disabled]) { background-color: hsl(var(--color-brand-primary)) !important; color: #FFEFD2 !important; }
+                .rdp-day:hover:not(.rdp-day_selected) { background-color: hsl(var(--color-text-primary) / 0.06); }
+                .rdp { margin: 0; --rdp-cell-size: 36px; --rdp-accent-color: hsl(var(--color-brand-primary)); }  
             `}</style>
 
             {/* View Switching */}
@@ -222,9 +222,9 @@ export const DatePicker = ({ date, onSelect, onClose, position }: DatePickerProp
 
             {/* Footer */}
             <div style={{ 
-                marginTop: '16px', 
+                marginTop: '14px', 
                 paddingTop: '12px', 
-                borderTop: '1px solid hsl(var(--color-border))', 
+                borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))', 
                 display: 'flex', 
                 justifyContent: 'space-between',
                 alignItems: 'center'
@@ -239,11 +239,11 @@ export const DatePicker = ({ date, onSelect, onClose, position }: DatePickerProp
                             background: 'transparent',
                             border: 'none',
                             color: 'hsl(var(--color-text-secondary))',
-                            fontSize: '13px',
+                            fontSize: '12.5px',
                             fontWeight: 500,
                             cursor: 'pointer',
-                            padding: '4px 8px',
-                            borderRadius: '4px'
+                            padding: '5px 10px',
+                            borderRadius: '999px'
                         }}
                         className="hover-bg"
                     >
@@ -259,11 +259,11 @@ export const DatePicker = ({ date, onSelect, onClose, position }: DatePickerProp
                             background: 'transparent',
                             border: 'none',
                             color: 'hsl(var(--color-brand-primary))',
-                            fontSize: '13px',
+                            fontSize: '12.5px',
                             fontWeight: 600,
                             cursor: 'pointer',
-                            padding: '4px 8px',
-                            borderRadius: '4px'
+                            padding: '5px 10px',
+                            borderRadius: '999px'
                         }}
                         className="hover-bg"
                     >
@@ -275,13 +275,12 @@ export const DatePicker = ({ date, onSelect, onClose, position }: DatePickerProp
                     style={{
                         backgroundColor: 'hsl(var(--color-brand-primary))',
                         border: 'none',
-                        color: 'white',
-                        fontSize: '13px',
+                        color: '#FFEFD2',
+                        fontSize: '12.5px',
                         fontWeight: 600,
                         cursor: 'pointer',
-                        padding: '6px 16px',
-                        borderRadius: '4px',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                        padding: '6px 18px',
+                        borderRadius: '999px'
                     }}
                 >
                     Save

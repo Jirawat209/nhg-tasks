@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { useRef, useMemo, useState, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useBoardStore } from '../../store/useBoardStore';
+import { useThemeStore } from '../../store/useThemeStore';
 import { usePermission } from '../../hooks/usePermission';
 import { Header } from './Header';
 import { Row } from './Row';
@@ -100,13 +101,48 @@ const groupIdOfRow = (vi: VirtualItemData | undefined): string | null => {
     }
 };
 
-// Header.tsx's row height. The item header lives outside the virtualizer (it's
-// one frozen bar now, not one per group — see the scrollMargin/translateY note
-// below), so this has to be known up front rather than read off a measured row.
-const ITEM_HEADER_HEIGHT = 34;
+// Row types drawn as the sides of a group's card
+const CARD_MIDDLE = new Set(['item', 'subitem', 'subitem-header', 'subitem-summary', 'subitem-footer']);
+
+const DENSITY_METRICS = {
+    normal: {
+        ITEM_HEADER_HEIGHT: 36,
+        GROUP_HEADER_HEIGHT: 44,
+        GROUP_GAP: 20,
+        FIRST_GROUP_GAP: 14,
+        FOOTER_HEIGHT: 44,
+        ROW_HEIGHT: 34,
+        SUBITEM_HEADER_HEIGHT: 32,
+        SUBITEM_FOOTER_HEIGHT: 36,
+        SHEET_INSET: 10,
+    },
+    compact: {
+        ITEM_HEADER_HEIGHT: 32,
+        GROUP_HEADER_HEIGHT: 38,
+        GROUP_GAP: 12,
+        FIRST_GROUP_GAP: 8,
+        FOOTER_HEIGHT: 36,
+        ROW_HEIGHT: 28,
+        SUBITEM_HEADER_HEIGHT: 28,
+        SUBITEM_FOOTER_HEIGHT: 30,
+        SHEET_INSET: 8,
+    }
+} as const;
 
 export const Table = ({ boardId }: { boardId: string }) => {
     const board = useBoardStore(state => state.boards.find(b => b.id === boardId));
+    const density = useThemeStore(state => state.density);
+    const {
+        ITEM_HEADER_HEIGHT,
+        GROUP_HEADER_HEIGHT,
+        GROUP_GAP,
+        FIRST_GROUP_GAP,
+        FOOTER_HEIGHT,
+        ROW_HEIGHT,
+        SUBITEM_HEADER_HEIGHT,
+        SUBITEM_FOOTER_HEIGHT,
+        SHEET_INSET,
+    } = DENSITY_METRICS[density] || DENSITY_METRICS.normal;
     const toggleGroup = useBoardStore(state => state.toggleGroup);
     const moveItem = useBoardStore(state => state.moveItem);
     const reorderGroups = useBoardStore(state => state.reorderGroups);
@@ -143,12 +179,11 @@ export const Table = ({ boardId }: { boardId: string }) => {
         getScrollElement: () => parentRef.current,
         estimateSize: (index) => {
             const type = virtualItems[index]?.type;
-            const gap = 32; // var(--spacing-group-gap)
-            if (type === 'group') return (index === 0 ? 44 : 44 + gap); 
-            if (type === 'subitem-header') return 34;
-            if (type === 'subitem-footer' || type === 'subitem-summary') return 40;
-            if (type === 'footer') return 80;
-            return 30;
+            if (type === 'group') return GROUP_HEADER_HEIGHT + (index === 0 ? FIRST_GROUP_GAP : GROUP_GAP);
+            if (type === 'subitem-header') return SUBITEM_HEADER_HEIGHT;
+            if (type === 'subitem-footer' || type === 'subitem-summary') return SUBITEM_FOOTER_HEIGHT;
+            if (type === 'footer') return FOOTER_HEIGHT;
+            return ROW_HEIGHT;
         },
         overscan: 5,
         // The frozen header above sits in normal flow, pushing the virtualized
@@ -159,10 +194,10 @@ export const Table = ({ boardId }: { boardId: string }) => {
         scrollMargin: ITEM_HEADER_HEIGHT,
     });
 
-    // Force remeasure after items change to prevent gaps
+    // Force remeasure after items or density change to prevent gaps
     useEffect(() => {
         rowVirtualizer.measure();
-    }, [virtualItems, rowVirtualizer]);
+    }, [virtualItems, density, rowVirtualizer]);
 
     // SCROLL TO HIGHLIGHTED ITEM
     const highlightedItemId = useBoardStore(state => state.highlightedItemId);
@@ -246,11 +281,6 @@ export const Table = ({ boardId }: { boardId: string }) => {
         subColsByGroup.forEach((cols, groupId) => { if (shown.has(groupId)) widest = Math.max(widest, widthOf(cols)); });
         return widest;
     }, [itemCols, subColsByGroup, board?.groups]);
-    // The summary/footer rows belong to the items, so they use the item set's own width.
-    const itemColumnsWidth = useMemo(
-        () => itemCols.reduce((total, col) => total + (col.width || 150), 0),
-        [itemCols]
-    );
 
     const totalWidth = useMemo(() => {
         if (!board) return 0;
@@ -268,9 +298,18 @@ export const Table = ({ boardId }: { boardId: string }) => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >
+            {/* The sheet's frame is drawn on a wrapper with an inset, rather than on the
+                scroll container itself, so the frozen header, the group cards and the
+                scrollbars sit a little inside the frame instead of running into its
+                edges. The scroll container stays padding-free, which keeps the sticky
+                header/column offsets and the virtualizer's measurements untouched. */}
+            <div
+                className="board-sheet"
+                style={{ height: '100%', width: '100%', padding: SHEET_INSET, display: 'flex', flexDirection: 'column', minHeight: 0 }}
+            >
             <div
                 ref={parentRef}
-                className="table-container board-sheet"
+                className="table-container"
                 // A stacking context of its own, so the z-indexes inside the table
                 // (the frozen header's 100, a dragged row's 99, sticky columns) only
                 // order things within the table and can't lift any of it above the
@@ -278,7 +317,17 @@ export const Table = ({ boardId }: { boardId: string }) => {
                 // backdrops and dropdowns opened elsewhere: dimmed page, bright bar.
                 // Every menu the table opens is portaled to <body>, so nothing
                 // inside needs to escape.
-                style={{ height: '100%', overflow: 'auto', width: '100%', isolation: 'isolate' }}
+                style={{ flex: 1, minHeight: 0, overflow: 'auto', width: '100%', isolation: 'isolate' }}
+                // The card chrome (styles/board_glass.css) starts at the horizontal
+                // scroll offset so cards keep their rounded left edge in view, and
+                // data-scrolled-x activates the frozen first column's right drop shadow.
+                // Set directly on the DOM node, not through state, so scrolling never re-renders.
+                onScroll={(e) => {
+                    const sx = e.currentTarget.scrollLeft;
+                    e.currentTarget.style.setProperty('--table-sx', `${sx}px`);
+                    if (sx > 0) e.currentTarget.setAttribute('data-scrolled-x', 'true');
+                    else e.currentTarget.removeAttribute('data-scrolled-x');
+                }}
             >
                 {/* The item columns' header. One bar for the whole table rather than one
                     per group — item columns are the same set everywhere — pinned to the
@@ -286,8 +335,7 @@ export const Table = ({ boardId }: { boardId: string }) => {
                 <div style={{
                     position: 'sticky',
                     top: 0,
-                    zIndex: 100,
-                    backgroundColor: 'hsl(var(--color-table-header-bg))'
+                    zIndex: 100
                 }}>
                     <Header columns={itemCols} />
                 </div>
@@ -314,6 +362,7 @@ export const Table = ({ boardId }: { boardId: string }) => {
                             return (
                                 <div
                                     key={vItem.id}
+                                    className={CARD_MIDDLE.has(vItem.type) ? 'gcard' : undefined}
                                     style={{
                                         position: 'absolute',
                                         top: 0,
@@ -344,7 +393,7 @@ export const Table = ({ boardId }: { boardId: string }) => {
                                                         display: 'flex', 
                                                         flexDirection: 'column', 
                                                         justifyContent: 'flex-end',
-                                                        paddingTop: virtualRow.index === 0 ? 0 : '32px' 
+                                                        paddingTop: virtualRow.index === 0 ? FIRST_GROUP_GAP : GROUP_GAP
                                                     }}>
                                                         <GroupRow
                                                             data={vItem.data as any}
@@ -352,172 +401,45 @@ export const Table = ({ boardId }: { boardId: string }) => {
                                                             isCollapsed={(board.collapsedGroups || []).includes(vItem.id)}
                                                             onToggle={() => toggleGroup(board.id, vItem.id)}
                                                             dragHandleProps={listeners}
+                                                            columns={itemCols}
+                                                            itemColumnWidth={itemColumnWidth}
                                                         />
                                                     </div>
                                                 ) : isFooter ? (
-                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                        <div style={{
-                                                            display: 'flex',
-                                                            height: '36px',
-                                                            position: 'relative',
-                                                        }}>
-                                                            {vItem.groupColor && (
-                                                                <div style={{
-                                                                    position: 'absolute',
-                                                                    left: '0px',
-                                                                    top: '0px',
-                                                                    bottom: '-44px',
-                                                                    width: '6px',
-                                                                    backgroundColor: vItem.groupColor,
-                                                                    zIndex: 80,
-                                                                    borderTopLeftRadius: '0px',
-                                                                    borderBottomLeftRadius: '6px'
-                                                                }} />
+                                                    // The foot of the group's card: the quick-add line in the
+                                                    // sticky first column, and the per-column roll-ups across the rest.
+                                                    <div className="gcard gcard-bottom" style={{ display: 'flex', alignItems: 'center', height: '100%', boxSizing: 'border-box' }}>
+                                                        <div className="gf-add" style={{ width: `${itemColumnWidth}px` }}>
+                                                            <Plus size={15} />
+                                                            {can('edit_items') ? (
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Add item"
+                                                                    aria-label="Add item to this group"
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            const input = e.currentTarget;
+                                                                            const val = input.value.trim();
+                                                                            if (val) {
+                                                                                useBoardStore.getState().addItem(val, vItem.data.groupId);
+                                                                                input.value = '';
+                                                                            }
+                                                                        } else if (e.key === 'Escape') {
+                                                                            e.currentTarget.value = '';
+                                                                            e.currentTarget.blur();
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            ) : (
+                                                                <span style={{ fontSize: '13px' }}>{vItem.data.count} items</span>
                                                             )}
-                                                            <div className="sticky-col" style={{
-                                                                width: `${itemColumnWidth}px`,
-                                                                position: 'sticky',
-                                                                left: 0,
-                                                                zIndex: 55,
-                                                                backgroundColor: 'hsl(var(--color-bg-canvas))',
-                                                                borderRight: 'none',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                paddingLeft: vItem.groupColor ? '24px' : '8px',
-                                                                borderBottom: '1px solid hsl(var(--color-border))',
-                                                                boxSizing: 'border-box',
-                                                                flexShrink: 0,
-                                                                gap: '8px',
-                                                                boxShadow: '2px 0 5px -2px rgba(0,0,0,0.1)'
-                                                            }}>
-                                                                <div style={{ display: 'flex', alignItems: 'center', width: '100%', height: '100%', gap: '8px' }}>
-                                                                    <div style={{
-                                                                        width: '16px',
-                                                                        height: '16px',
-                                                                        flexShrink: 0
-                                                                    }} />
-                                                                    {can('edit_items') && (
-                                                                        <input
-                                                                            type="text"
-                                                                            placeholder=" + Add Item"
-                                                                            className="cell-input"
-                                                                            style={{ fontSize: '13px', color: 'hsl(var(--color-text-secondary))', width: '100%', background: 'transparent', height: '100%' }}
-                                                                            onKeyDown={(e) => {
-                                                                                if (e.key === 'Enter') {
-                                                                                    const val = (e.currentTarget as HTMLInputElement).value;
-                                                                                    if (val.trim()) {
-                                                                                        useBoardStore.getState().addItem(val.trim(), vItem.data.groupId);
-                                                                                        (e.currentTarget as HTMLInputElement).value = '';
-                                                                                    }
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                            {itemCols.map(col => (
-                                                                <div key={col.id} style={{
-                                                                    width: `${col.width || 150}px`,
-                                                                    borderRight: 'none',
-                                                                    borderBottom: '1px solid hsl(var(--color-border))',
-                                                                    boxSizing: 'border-box',
-                                                                    flexShrink: 0
-                                                                }} />
-                                                            ))}
-                                                            <div style={{ width: '50px', borderBottom: '1px solid hsl(var(--color-border))', flexShrink: 0 }} />
                                                         </div>
-
-                                                        <div style={{
-                                                            display: 'flex',
-                                                            height: '40px',
-                                                            position: 'relative',
-                                                            marginTop: '4px'
-                                                        }}>
-                                                            <div className="sticky-col" style={{
-                                                                width: `${itemColumnWidth}px`,
-                                                                position: 'sticky',
-                                                                left: 0,
-                                                                zIndex: 70,
-                                                                backgroundColor: 'hsl(var(--color-bg-canvas))',
-                                                                flexShrink: 0,
-                                                                borderRight: 'none',
-                                                                boxShadow: 'none',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'flex-end',
-                                                                paddingRight: 0,
-                                                            }}>
-                                                                <div style={{
-                                                                    height: '36px',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                    padding: '0 16px',
-                                                                    // Nudged up 2px so its frame lines up with the top edge
-                                                                    // of the aggregate box beside it (the row centres this
-                                                                    // 36px pill in 40px, the aggregate box sits at the top).
-                                                                    // position/top rather than a margin: a margin on a
-                                                                    // centred flex item only moves it half as far, and this
-                                                                    // must not shift layout.
-                                                                    position: 'relative',
-                                                                    top: '-2px',
-                                                                    backgroundColor: 'hsl(var(--color-bg-surface))',
-                                                                    borderRadius: '8px 0 0 8px',
-                                                                    border: `1px solid ${vItem.groupColor || 'hsl(var(--color-border))'}`,
-                                                                    borderRight: 'none',
-                                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                                                                    color: 'hsl(var(--color-text-secondary))',
-                                                                    fontSize: '12px',
-                                                                    minWidth: '100px',
-                                                                }}>
-                                                                    {board.items.filter(i => i.groupId === vItem.data.groupId).length} items
-                                                                </div>
+                                                        {itemCols.map(col => (
+                                                            <div key={col.id} className="gh-summary" style={{ width: `${col.width || 150}px` }}>
+                                                                <SummaryCell col={col} agg={vItem.data.aggregates?.[col.id]} totalCount={vItem.data.count || 0} color={vItem.groupColor} />
                                                             </div>
-                                                            <div style={{
-                                                                display: 'flex',
-                                                                border: `1px solid ${vItem.groupColor || 'hsl(var(--color-border))'}`,
-                                                                borderLeft: 'none',
-                                                                borderRadius: '0 8px 8px 0',
-                                                                backgroundColor: 'hsl(var(--color-bg-surface))',
-
-                                                                overflow: 'hidden',
-                                                                height: '36px',
-                                                                marginTop: '0px',
-                                                                boxSizing: 'border-box',
-                                                                flexShrink: 0,
-                                                                // Pinned to the column grid rather than fit-content. The
-                                                                // box is already border-box above, so its 1px frame is
-                                                                // drawn inside this width: fit-content plus that border
-                                                                // made the row finish a pixel right of every other row.
-                                                                width: `${itemColumnsWidth}px`,
-                                                                minWidth: '100px' // Ensure it has some width
-                                                            }}>
-                                                                {itemCols.map((col, idx) => {
-                                                                    const agg = vItem.data.aggregates?.[col.id];
-                                                                    const totalCount = vItem.data.count || 0;
-                                                                    return (
-                                                                        <div key={col.id} style={{
-                                                                            width: `${col.width || 150}px`,
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            justifyContent: 'center',
-                                                                            padding: '0 8px',
-                                                                            borderRight: idx < itemCols.length - 1 ? '1px solid hsl(var(--color-border))' : 'none',
-                                                                            height: '100%',
-                                                                            boxSizing: 'border-box',
-                                                                            flexShrink: 0
-                                                                        }}>
-                                                                            <SummaryCell col={col} agg={agg} totalCount={totalCount} color={vItem.groupColor} />
-                                                                        </div>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                            {/* The header and the add-item row both end with this 50px
-                                                                add-column cell, and totalWidth counts it. The summary
-                                                                row did not have it, so it stopped 50px short and its
-                                                                right edge sat inside every other row's. */}
-                                                            <div style={{ width: '50px', flexShrink: 0 }} />
-                                                        </div>
+                                                        ))}
+                                                        <div style={{ width: '50px', flexShrink: 0 }} />
                                                     </div>
                                                 ) : vItem.type === 'subitem-header' ? (
                                                     // The sub-items' own header: their columns, editable like the
@@ -526,16 +448,13 @@ export const Table = ({ boardId }: { boardId: string }) => {
                                                     <Header scope="subitem" columns={subColsFor(vItem.columnGroupId)} groupId={vItem.columnGroupId} groupColor={vItem.groupColor} />
                                                 ) : vItem.type === 'subitem-summary' ? (
                                                     // Totals for this parent's sub-items, over the sub-item columns.
-                                                    <div className="table-row subitem-summary" style={{ display: 'flex', height: '40px', position: 'relative', alignItems: 'center' }}>
-                                                        {vItem.groupColor && (
-                                                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '6px', backgroundColor: vItem.groupColor, zIndex: 80 }} />
-                                                        )}
+                                                    <div className="table-row subitem-summary" style={{ display: 'flex', height: '100%', position: 'relative', alignItems: 'center' }}>
                                                         <div className="sticky-col" style={{
                                                             width: `${itemColumnWidth}px`,
                                                             position: 'sticky',
                                                             left: 0,
                                                             zIndex: 55,
-                                                            backgroundColor: 'hsl(var(--color-bg-canvas))',
+                                                            backgroundColor: 'hsl(var(--paper, var(--color-bg-canvas)))',
                                                             flexShrink: 0,
                                                             height: '100%',
                                                             display: 'flex',
@@ -555,18 +474,16 @@ export const Table = ({ boardId }: { boardId: string }) => {
                                                             flexShrink: 0,
                                                             boxSizing: 'border-box',
                                                             overflow: 'hidden',
-                                                            border: `1px solid ${vItem.groupColor || 'hsl(var(--color-border))'}`,
-                                                            borderRadius: '8px',
-                                                            backgroundColor: 'hsl(var(--color-bg-surface))'
+                                                            borderRadius: '999px',
+                                                            backgroundColor: 'hsl(var(--color-text-primary) / 0.04)'
                                                         }}>
-                                                            {subColsFor(vItem.columnGroupId).map((col, idx, cols) => (
+                                                            {subColsFor(vItem.columnGroupId).map((col) => (
                                                                 <div key={col.id} style={{
                                                                     width: `${col.width || 150}px`,
                                                                     display: 'flex',
                                                                     alignItems: 'center',
                                                                     justifyContent: 'center',
                                                                     padding: '0 8px',
-                                                                    borderRight: idx < cols.length - 1 ? '1px solid hsl(var(--color-border))' : 'none',
                                                                     height: '100%',
                                                                     boxSizing: 'border-box',
                                                                     flexShrink: 0,
@@ -579,53 +496,63 @@ export const Table = ({ boardId }: { boardId: string }) => {
                                                     </div>
                                                 ) : vItem.type === 'subitem-footer' ? (
                                                     <div className="table-row subitem-footer" style={{
-                                                        height: '40px',
+                                                        height: '100%',
                                                         display: 'flex',
                                                         paddingLeft: 0,
                                                         backgroundColor: 'transparent',
                                                         position: 'relative',
                                                         alignItems: 'center'
                                                     }}>
-                                                        {vItem.groupColor && (
-                                                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '6px', backgroundColor: vItem.groupColor, opacity: 1, zIndex: 80 }} />
-                                                        )}
                                                         {/* Typed straight in, like "+ Add Item" under a group: click, type the
                                                             name, Enter. It used to create a sub-item called "New Sub-item"
                                                             that then had to be renamed. The box stays focused after Enter so
                                                             several can be added in a row; Escape leaves it. */}
-                                                        {can('edit_items') && (
-                                                            <input
-                                                                type="text"
-                                                                placeholder="+ Add subitem"
-                                                                className="cell-input"
-                                                                onKeyDown={(e) => {
-                                                                    const input = e.currentTarget;
-                                                                    if (e.key === 'Enter') {
-                                                                        const title = input.value.trim();
-                                                                        if (!title) return;
-                                                                        useBoardStore.getState().addItem(title, vItem.data.groupId, vItem.data.parentId);
-                                                                        input.value = '';
-                                                                    } else if (e.key === 'Escape') {
-                                                                        input.value = '';
-                                                                        input.blur();
-                                                                    }
-                                                                }}
-                                                                style={{
-                                                                    fontSize: '13px',
-                                                                    color: 'hsl(var(--color-text-primary))',
-                                                                    background: 'transparent',
-                                                                    border: 'none',
-                                                                    outline: 'none',
-                                                                    height: '28px',
-                                                                    padding: '4px 8px',
-                                                                    borderRadius: '4px',
-                                                                    marginLeft: vItem.groupColor ? '116px' : '106px', // Indent further to match new Row.tsx (86px/76px + base margin)
-                                                                    width: `${Math.max(160, itemColumnWidth - (vItem.groupColor ? 116 : 106) - 16)}px`
-                                                                }}
-                                                                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'; }}
-                                                                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                                                            />
-                                                        )}
+                                                        <div className="sticky-col" style={{
+                                                            width: `${itemColumnWidth}px`,
+                                                            position: 'sticky',
+                                                            left: 0,
+                                                            zIndex: 55,
+                                                            backgroundColor: 'hsl(var(--paper, var(--color-bg-canvas)))',
+                                                            flexShrink: 0,
+                                                            height: '100%',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            boxSizing: 'border-box'
+                                                        }}>
+                                                            {can('edit_items') && (
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="+ Add subitem"
+                                                                    className="cell-input"
+                                                                    onKeyDown={(e) => {
+                                                                        const input = e.currentTarget;
+                                                                        if (e.key === 'Enter') {
+                                                                            const title = input.value.trim();
+                                                                            if (!title) return;
+                                                                            useBoardStore.getState().addItem(title, vItem.data.groupId, vItem.data.parentId);
+                                                                            input.value = '';
+                                                                        } else if (e.key === 'Escape') {
+                                                                            input.value = '';
+                                                                            input.blur();
+                                                                        }
+                                                                    }}
+                                                                    style={{
+                                                                        fontSize: '13px',
+                                                                        color: 'hsl(var(--color-text-primary))',
+                                                                        background: 'transparent',
+                                                                        border: 'none',
+                                                                        outline: 'none',
+                                                                        height: '28px',
+                                                                        padding: '4px 8px',
+                                                                        borderRadius: '4px',
+                                                                        marginLeft: '106px', // Lines up with a sub-item's title in Row.tsx
+                                                                        width: `${Math.max(160, itemColumnWidth - 106 - 16)}px`
+                                                                    }}
+                                                                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'; }}
+                                                                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                                                                />
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 ) : (
                                                     <Row
@@ -660,13 +587,13 @@ export const Table = ({ boardId }: { boardId: string }) => {
                         {activeItem && (
                             <div style={{
                                 height: '40px',
-                                background: 'hsl(var(--color-bg-surface))',
-                                border: '1px solid hsl(var(--color-brand-primary))',
-                                borderRadius: '4px',
+                                background: 'hsl(var(--paper, var(--color-bg-surface)))',
+                                border: '1px solid hsl(var(--color-brand-primary) / 0.35)',
+                                borderRadius: '12px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                paddingLeft: '8px',
-                                boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                                paddingLeft: '14px',
+                                boxShadow: '0 16px 32px -14px rgba(21, 42, 0, 0.45)'
                             }}>
                                 <span style={{ fontWeight: 600 }}>{activeItem.title}</span>
                             </div>
@@ -675,40 +602,29 @@ export const Table = ({ boardId }: { boardId: string }) => {
                     document.body
                 )}
 
+                {/* As wide as the table so the button, pinned to the left edge, can
+                    follow a sideways scroll all the way across. */}
                 <div style={{
-                    paddingTop: '24px',
+                    paddingTop: `${GROUP_GAP}px`,
                     paddingBottom: '40px',
-                    paddingLeft: '32px',
                     display: 'flex',
-                    justifyContent: 'flex-start'
+                    justifyContent: 'flex-start',
+                    width: `${totalWidth}px`
                 }}>
                     {can('group_ungroup') && (
                         <button
+                            className="new-group-btn glass-chip"
+                            style={{ position: 'sticky', left: 0 }}
                             onClick={() => {
-                                useBoardStore.getState().addGroup("Group Title");
+                                useBoardStore.getState().addGroup("New group");
                             }}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '6px 16px',
-                                borderRadius: '8px',
-                                border: '1px solid var(--card-border)',
-                                backgroundColor: 'var(--card-solid)',
-                                color: 'hsl(var(--color-text-primary))',
-                                cursor: 'pointer',
-                                transition: 'background-color 0.2s',
-                                fontWeight: 400,
-                                fontSize: '14px'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--card-row-hover)'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--card-solid)'}
                         >
-                            <Plus size={16} strokeWidth={1.5} />
-                            <span>Add new group</span>
+                            <Plus size={16} />
+                            <span>New group</span>
                         </button>
                     )}
                 </div>
+            </div>
             </div>
         </DndContext>
     );

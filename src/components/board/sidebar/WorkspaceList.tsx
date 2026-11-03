@@ -329,7 +329,9 @@ export const WorkspaceList = ({ searchQuery }: WorkspaceListProps) => {
                                     <SortableBoardItem
                                         key={board.id}
                                         board={board}
-                                        activeBoardId={activeBoardId}
+                                        // activeBoardId stays set after leaving a board (it's the last one opened),
+                                        // so only highlight it while a board is actually on screen.
+                                        activeBoardId={activePage === 'board' ? activeBoardId : null}
                                         setActiveBoard={setActiveBoard}
                                         editingBoardId={editingBoardId}
                                         setEditingBoardId={setEditingBoardId}
@@ -399,13 +401,14 @@ export const WorkspaceList = ({ searchQuery }: WorkspaceListProps) => {
                                 ) : (
                                     <div
                                         className="tree-sidebar-item"
-                                        style={{ color: 'var(--color-nav-accent, #7c3aed)', opacity: 0.8 }}
+                                        style={{ color: 'hsl(var(--color-text-tertiary))' }}
                                         onClick={() => {
                                             setActiveWorkspace(ws.id);
                                             setCreatingBoardInWorkspaceId(ws.id);
                                         }}
                                     >
-                                        <Plus size={14} />
+                                        <div style={{ width: '12px', marginRight: '4px' }}></div>
+                                        <Plus size={15} className="item-icon" />
                                         <span>Add board</span>
                                     </div>
                                 )}

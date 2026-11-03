@@ -23,7 +23,7 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
 }
 
 function wrapEmail(bodyContent: string) {
-  return `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">saturday.com</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;">${bodyContent}</div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
+  return `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;"><div style="text-align: center; margin-bottom: 20px;"><img src="https://guideline.lubd.com/wp-content/uploads/2025/11/NHG128-1.png" alt="NARAI" style="width: 80px; height: 80px; background-color: #1f291e; object-fit: contain; margin: 0 auto; display: block;" /></div><div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="text-align: center; padding: 20px 20px 10px;"><a href="https://saturday.naraihospitalitygroup.com" style="color: #2563eb; text-decoration: underline; font-weight: bold; font-size: 16px;">NHG Tasks</a></div><div style="border-bottom: 2px solid #1e293b; margin: 0 20px;"></div><div style="padding: 30px 40px; text-align: center;">${bodyContent}</div></div><div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">Powered by <strong>NHG BusinessTech Team</strong></div></div>`;
 }
 
 Deno.serve(async (req) => {
@@ -87,8 +87,8 @@ Deno.serve(async (req) => {
       }
       newUserId = data.user.id;
 
-      subject = "Your Saturday.com account is ready";
-      bodyHtml = wrapEmail(`<p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;">An account has been created for you on <strong>Saturday.com</strong>. Sign in with <strong>Continue with Google</strong> using this email address (<strong>${email}</strong>).</p><a href="${origin}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">Go to Saturday.com</a>`);
+      subject = "Your NHG Tasks account is ready";
+      bodyHtml = wrapEmail(`<p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;">An account has been created for you on <strong>NHG Tasks</strong>. Sign in with <strong>Continue with Google</strong> using this email address (<strong>${email}</strong>).</p><a href="${origin}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">Go to NHG Tasks</a>`);
     } else {
       const { data, error } = await supabaseAdmin.auth.admin.generateLink({
         type: 'invite',
@@ -109,8 +109,8 @@ Deno.serve(async (req) => {
       }
       newUserId = data.user.id;
 
-      subject = "Set up your Saturday.com account";
-      bodyHtml = wrapEmail(`<p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;">An account has been created for you on <strong>Saturday.com</strong>. Click below to set your password and get started.</p><a href="${data.properties.action_link}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">Set up your password</a>`);
+      subject = "Set up your NHG Tasks account";
+      bodyHtml = wrapEmail(`<p style="font-size: 15px; color: #475569; line-height: 1.5; margin-bottom: 24px;">An account has been created for you on <strong>NHG Tasks</strong>. Click below to set your password and get started.</p><a href="${data.properties.action_link}" style="background-color: #a86315; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 15px; display: inline-block;">Set up your password</a>`);
     }
 
     const { error: profileError } = await supabaseAdmin
@@ -144,7 +144,7 @@ Deno.serve(async (req) => {
           tls: { rejectUnauthorized: false }
         });
         await transporter.sendMail({
-          from: `"${smtpConfig.fromName || 'NHG Saturday'}" <${smtpConfig.fromEmail || smtpConfig.user}>`,
+          from: `"${smtpConfig.fromName || 'NHG Tasks'}" <${smtpConfig.fromEmail || smtpConfig.user}>`,
           to: email,
           subject,
           html: bodyHtml

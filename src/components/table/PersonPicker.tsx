@@ -106,40 +106,46 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
         return createPortal(
             <div
                 ref={menuRef}
+                className="glass-pop"
                 style={{
                     position: 'fixed',
                     top: listTop, // Keep same position as simple picker
                     left: position.left,
                     width: 320,
                     zIndex: 9999,
-                    backgroundColor: 'white',
-                    border: '1px solid hsl(var(--color-border))',
-                    borderRadius: '8px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                    borderRadius: '16px',
                     display: 'flex',
                     flexDirection: 'column',
                     padding: '16px'
                 }}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                    <h3 style={{ fontSize: '14px', fontWeight: 600, margin: 0 }}>Share Board?</h3>
-                    <button onClick={() => setInviteCandidate(null)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
+                    <h3 style={{ fontFamily: 'var(--font-family-display)', fontSize: '16px', fontWeight: 600, margin: 0, color: 'hsl(var(--color-text-primary))' }}>Share Board?</h3>
+                    <button onClick={() => setInviteCandidate(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'hsl(var(--color-text-secondary))' }}>
                         <X size={16} />
                     </button>
                 </div>
 
-                <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px', lineHeight: 1.4 }}>
-                    <strong>{inviteCandidate.full_name || inviteCandidate.email}</strong> is not a member of this board.
+                <p style={{ fontSize: '13px', color: 'hsl(var(--color-text-secondary))', marginBottom: '16px', lineHeight: 1.4 }}>
+                    <strong style={{ color: 'hsl(var(--color-text-primary))' }}>{inviteCandidate.full_name || inviteCandidate.email}</strong> is not a member of this board.
                     <br />
                     Share this board with them to assign this item?
                 </p>
 
                 <div style={{ marginBottom: '16px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Role</label>
+                    <label style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'hsl(var(--color-text-tertiary))', display: 'block', marginBottom: '4px' }}>Role</label>
                     <select
                         value={inviteRole}
                         onChange={(e) => setInviteRole(e.target.value)}
-                        style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={{
+                            width: '100%',
+                            padding: '6px 8px',
+                            borderRadius: '8px',
+                            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                            backgroundColor: 'hsl(var(--paper, var(--color-bg-surface)))',
+                            color: 'hsl(var(--color-text-primary))',
+                            fontSize: '13px'
+                        }}
                     >
                         <option value="viewer">Viewer (Read Only)</option>
                         <option value="member">Editor</option>
@@ -149,13 +155,31 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                     <button
                         onClick={() => setInviteCandidate(null)}
-                        style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #ddd', background: 'white', cursor: 'pointer', fontSize: '13px' }}
+                        style={{
+                            padding: '6px 14px',
+                            borderRadius: '999px',
+                            border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                            background: 'hsl(var(--paper, var(--color-bg-surface)))',
+                            color: 'hsl(var(--color-text-primary))',
+                            cursor: 'pointer',
+                            fontSize: '12.5px',
+                            fontWeight: 500
+                        }}
                     >
                         Cancel
                     </button>
                     <button
                         onClick={confirmInvite}
-                        style={{ padding: '6px 12px', borderRadius: '4px', border: 'none', background: 'hsl(var(--color-brand-primary))', color: 'white', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
+                        style={{
+                            padding: '6px 16px',
+                            borderRadius: '999px',
+                            border: 'none',
+                            background: 'hsl(var(--color-brand-primary))',
+                            color: '#FFEFD2',
+                            cursor: 'pointer',
+                            fontSize: '12.5px',
+                            fontWeight: 600
+                        }}
                     >
                         Invite & Assign
                     </button>
@@ -168,16 +192,14 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
     return createPortal(
         <div
             ref={menuRef}
+            className="glass-pop"
             style={{
                 position: 'fixed',
                 top: listTop,
                 left: position.left,
                 width: Math.max(position.width, 280),
                 zIndex: 9999,
-                backgroundColor: 'hsl(var(--color-bg-surface))',
-                border: '1px solid hsl(var(--color-border))',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                borderRadius: '16px',
                 display: 'flex',
                 flexDirection: 'column',
                 maxHeight: '450px',
@@ -185,16 +207,16 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
             }}
         >
             {/* Search */}
-            <div style={{ padding: '8px', borderBottom: '1px solid hsl(var(--color-border))' }}>
+            <div style={{ padding: '10px', borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))' }}>
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    padding: '6px 8px',
-                    backgroundColor: 'hsl(var(--color-bg-base))',
-                    borderRadius: '4px',
-                    border: '1px solid hsl(var(--color-border))'
+                    padding: '6px 10px',
+                    backgroundColor: 'hsl(var(--paper, var(--color-bg-base)))',
+                    borderRadius: '999px',
+                    border: '1px solid var(--paper-edge, hsl(var(--color-border)))'
                 }}>
-                    <Search size={14} className="text-tertiary mr-2" />
+                    <Search size={14} style={{ color: 'hsl(var(--color-text-tertiary))', marginRight: '8px' }} />
                     <input
                         autoFocus
                         type="text"
@@ -206,24 +228,26 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
                             outline: 'none',
                             backgroundColor: 'transparent',
                             width: '100%',
-                            fontSize: '13px'
+                            fontSize: '13px',
+                            color: 'hsl(var(--color-text-primary))'
                         }}
                     />
                 </div>
             </div>
 
             {/* List */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '4px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '6px' }}>
 
                 {/* SECTION: Board Members */}
-                <div style={{ padding: '4px 8px', fontSize: '11px', fontWeight: 600, color: '#888', textTransform: 'uppercase' }}>
+                <div style={{ padding: '4px 8px', fontSize: '10px', fontWeight: 600, color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
                     Board Members
                 </div>
-                {filteredMembers.map(member => {
+                {filteredMembers.map((member, idx) => {
                     const isSelected = currentValue.includes(member.user_id);
                     const profileData = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
                     const profile = profileData || {};
                     const initial = (profile.full_name || profile.email || '?')[0]?.toUpperCase();
+                    const avatarBg = idx % 2 === 0 ? 'hsl(var(--color-brand-primary))' : '#A76400';
 
                     return (
                         <div
@@ -232,20 +256,20 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
                             style={{
                                 padding: '6px 8px',
                                 cursor: 'pointer',
-                                borderRadius: '4px',
+                                borderRadius: '8px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '10px',
                                 marginBottom: '2px',
-                                backgroundColor: isSelected ? 'hsl(var(--color-bg-subtle))' : 'transparent',
+                                backgroundColor: isSelected ? 'hsl(var(--color-text-primary) / 0.06)' : 'transparent',
                             }}
-                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'; }}
+                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--color-text-primary) / 0.04)'; }}
                             onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
                         >
                             <div style={{
-                                width: '24px', height: '24px', borderRadius: '28%',
-                                backgroundColor: profile.avatar_url ? 'transparent' : 'hsl(var(--color-brand-primary))',
-                                color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                width: '24px', height: '24px', borderRadius: '50%',
+                                backgroundColor: profile.avatar_url ? 'transparent' : avatarBg,
+                                color: '#FFEFD2', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 fontSize: '11px', fontWeight: 600, overflow: 'hidden', flexShrink: 0
                             }}>
                                 {profile.avatar_url ? (
@@ -258,11 +282,11 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
                                 ) : initial}
                             </div>
                             <div style={{ flex: 1, overflow: 'hidden' }}>
-                                <div style={{ fontSize: '13px', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                <div style={{ fontSize: '13px', fontWeight: 500, color: 'hsl(var(--color-text-primary))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {profile.full_name || profile.email}
                                 </div>
                             </div>
-                            {isSelected && <Check size={14} className="text-brand-primary" />}
+                            {isSelected && <Check size={14} style={{ color: 'hsl(var(--color-brand-primary))' }} />}
                         </div>
                     );
                 })}
@@ -270,7 +294,7 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
                 {/* SECTION: Search Results (Non-Members) */}
                 {searchTerm && searchResults.length > 0 && (
                     <>
-                        <div style={{ padding: '8px 8px 4px', fontSize: '11px', fontWeight: 600, color: '#888', textTransform: 'uppercase', borderTop: '1px solid #eee', marginTop: '4px' }}>
+                        <div style={{ padding: '8px 8px 4px', fontSize: '10px', fontWeight: 600, color: 'hsl(var(--color-text-tertiary))', textTransform: 'uppercase', letterSpacing: '0.12em', borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))', marginTop: '4px' }}>
                             Other People
                         </div>
                         {searchResults.map(user => {
@@ -282,20 +306,20 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
                                     style={{
                                         padding: '6px 8px',
                                         cursor: 'pointer',
-                                        borderRadius: '4px',
+                                        borderRadius: '8px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '10px',
                                         marginBottom: '2px',
                                         backgroundColor: 'transparent',
                                     }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-bg-hover))'}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--color-text-primary) / 0.04)'}
                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                 >
                                     <div style={{
-                                        width: '24px', height: '24px', borderRadius: '28%',
-                                        backgroundColor: user.avatar_url ? 'transparent' : 'hsl(var(--color-brand-primary))', // Different color for non-members
-                                        color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        width: '24px', height: '24px', borderRadius: '50%',
+                                        backgroundColor: user.avatar_url ? 'transparent' : 'hsl(var(--color-brand-primary))',
+                                        color: '#FFEFD2', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         fontSize: '11px', fontWeight: 600, overflow: 'hidden', flexShrink: 0
                                     }}>
                                         {user.avatar_url ? (
@@ -308,12 +332,12 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
                                         ) : initial}
                                     </div>
                                     <div style={{ flex: 1, overflow: 'hidden' }}>
-                                        <div style={{ fontSize: '13px', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        <div style={{ fontSize: '13px', fontWeight: 500, color: 'hsl(var(--color-text-primary))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {user.full_name || user.email}
                                         </div>
-                                        <div style={{ fontSize: '11px', color: '#999' }}>Invite to Board</div>
+                                        <div style={{ fontSize: '11px', color: 'hsl(var(--color-text-tertiary))' }}>Invite to Board</div>
                                     </div>
-                                    <UserPlus size={14} color="#999" />
+                                    <UserPlus size={14} color="hsl(var(--color-text-tertiary))" />
                                 </div>
                             );
                         })}
@@ -332,11 +356,11 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
                                     }}
                                     style={{
                                         cursor: 'pointer',
-                                        padding: '8px 12px',
+                                        padding: '7px 14px',
                                         backgroundColor: 'hsl(var(--color-brand-primary))',
-                                        color: 'white',
-                                        borderRadius: '4px',
-                                        fontWeight: 500,
+                                        color: '#FFEFD2',
+                                        borderRadius: '999px',
+                                        fontWeight: 600,
                                         display: 'inline-block'
                                     }}
                                 >
@@ -348,19 +372,19 @@ export const PersonPicker = ({ currentValue = [], position, onSelect, onSelectNe
             </div>
 
             {/* OK Button */}
-            <div style={{ padding: '12px', borderTop: '1px solid hsl(var(--color-border))', display: 'flex', justifyContent: 'center', backgroundColor: 'hsl(var(--color-bg-surface))' }}>
+            <div style={{ padding: '10px 12px', borderTop: '1px solid var(--paper-row-line, hsl(var(--color-border)))', display: 'flex', justifyContent: 'center' }}>
                 <button
                     onClick={onClose}
                     style={{
-                        padding: '8px 32px',
+                        padding: '7px 28px',
                         backgroundColor: 'hsl(var(--color-brand-primary))',
-                        color: 'white',
+                        color: '#FFEFD2',
                         border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '14px',
+                        borderRadius: '999px',
+                        fontSize: '13px',
                         fontWeight: 600,
                         cursor: 'pointer',
-                        transition: 'opacity 0.2s',
+                        transition: 'opacity 0.15s',
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}

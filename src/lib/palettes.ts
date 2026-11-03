@@ -20,16 +20,16 @@ export interface Palette {
 
 export const PALETTES: Palette[] = [
     {
-        id: 'saturday',
-        name: 'Saturday',
-        blurb: 'Violet on white — the original look',
-        swatch: { canvas: '#ffffff', sidebar: '#f0eef8', line: '#e4e1f0', brand: '#7c3fe4', brandSoft: '#f0eeff', accent: '#c03fe4', text: '#1a1728' },
-    },
-    {
         id: 'narai',
         name: 'Narai',
-        blurb: 'Crystal glass in pale sage green',
-        swatch: { canvas: '#ffffff', sidebar: '#dfeecd', line: '#e9f0de', brand: '#4f7f43', brandSoft: '#eaf5d9', accent: '#9cc472', text: '#222b1b' },
+        blurb: 'Narai Green on warm paper — the real brand',
+        swatch: { canvas: '#fffaf0', sidebar: '#FFEFD2', line: '#f6e3c1', brand: '#152A00', brandSoft: '#f6e3c1', accent: '#A76400', text: '#152A00' },
+    },
+    {
+        id: 'saturday',
+        name: 'Classic',
+        blurb: 'Violet on white — the legacy look',
+        swatch: { canvas: '#ffffff', sidebar: '#f0eef8', line: '#e4e1f0', brand: '#7c3fe4', brandSoft: '#f0eeff', accent: '#c03fe4', text: '#1a1728' },
     },
 ];
 

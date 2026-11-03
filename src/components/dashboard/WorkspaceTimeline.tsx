@@ -9,16 +9,17 @@ import {
 import { NAME_COL_WIDTH, ROW_INNER_HEIGHT, BAR_V_INSET } from '../table/timelineGeometry';
 
 const navBtnStyle: CSSProperties = {
-    height: '32px',
-    display: 'flex',
+    height: '30px',
+    display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '8px',
-    border: '1px solid var(--card-border)',
-    background: 'var(--card-solid)',
+    borderRadius: '999px',
     cursor: 'pointer',
-    color: 'hsl(var(--color-text-secondary))',
-    padding: '0 8px'
+    color: 'hsl(var(--color-text-primary))',
+    padding: '0 12px',
+    fontSize: '12.5px',
+    fontWeight: 500,
+    transition: 'background-color 0.15s, color 0.15s'
 };
 
 /**
@@ -29,7 +30,7 @@ const navBtnStyle: CSSProperties = {
  * Read-only on purpose — dragging a bar to reschedule or linking items needs a
  * board's permissions and dependency state; do that on the board itself.
  */
-export const WorkspaceTimeline = ({ items, columns, boards, groupsByBoard, isLoading, filterControl, onOpenItem, storageKey, fillHeight }: {
+export const WorkspaceTimeline = ({ items, columns, boards, groupsByBoard, isLoading, filterControl, onOpenItem, onOpenBoard, storageKey, fillHeight }: {
     items: TimelineSourceItem[];
     columns: TimelineSourceColumn[];
     boards: { id: string; title: string }[];
@@ -37,7 +38,8 @@ export const WorkspaceTimeline = ({ items, columns, boards, groupsByBoard, isLoa
     isLoading: boolean;
     // The board → group picker, drawn as a Filter button beside the Day / Month / Year switch.
     filterControl: ReactNode;
-    onOpenItem: (itemId: string) => void;
+    onOpenItem: (itemId: string, boardId?: string) => void;
+    onOpenBoard?: (boardId: string) => void;
     // localStorage key for the collapsed state, so it is remembered per workspace.
     storageKey: string;
     // The card was resized by the user: use the room it has instead of the 520px cap.
@@ -92,47 +94,108 @@ export const WorkspaceTimeline = ({ items, columns, boards, groupsByBoard, isLoa
 
     const renderRow = (row: TimelineRow) => {
         const bar = bars.get(row.id);
+        const isNarrowBar = bar ? bar.width < 68 : false;
         const dates = `${format(row.start, 'd MMM yyyy')} – ${format(row.end, 'd MMM yyyy')}`;
         const where = [row.boardTitle, row.groupTitle].filter(Boolean).join(' · ');
         return (
-            <div key={row.id} style={{ display: 'flex', height: `${ROW_INNER_HEIGHT}px`, borderBottom: '1px solid var(--card-grid)', alignItems: 'center' }}>
+            <div key={row.id} style={{ display: 'flex', height: `${ROW_INNER_HEIGHT}px`, borderBottom: '1px solid var(--paper-row-line, var(--card-grid))', alignItems: 'center' }}>
                 <div
-                    onClick={() => onOpenItem(row.id)}
+                    onClick={() => onOpenItem(row.id, row.boardId)}
                     title={`${row.title}\n${where}`}
                     style={{
-                        position: 'sticky', left: 0, zIndex: 6, backgroundColor: 'var(--card-solid)',
+                        position: 'sticky', left: 0, zIndex: 6, backgroundColor: 'hsl(var(--paper, var(--card-solid)))',
                         width: `${NAME_COL_WIDTH}px`, flexShrink: 0, height: '100%', boxSizing: 'border-box',
-                        borderRight: '1px solid var(--card-grid)', padding: '0 16px', display: 'flex', alignItems: 'center',
-                        fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                        cursor: 'pointer', color: 'hsl(var(--color-brand-primary))', fontWeight: 500
+                        borderRight: '1px solid var(--paper-edge, var(--card-grid))', padding: '0 12px 0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+                        fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden',
+                        cursor: 'pointer', color: 'hsl(var(--color-text-primary))', fontWeight: 500
                     }}
                 >
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+                        <span style={{
+                            width: '7px',
+                            height: '7px',
+                            borderRadius: '50%',
+                            backgroundColor: row.groupColor || 'hsl(var(--color-brand-primary))',
+                            flexShrink: 0
+                        }} />
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title}</span>
+                    </div>
+                    {row.boardTitle && boards.length > 1 && (
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                if (onOpenBoard) {
+                                    e.stopPropagation();
+                                    onOpenBoard(row.boardId);
+                                }
+                            }}
+                            title={`Open board "${row.boardTitle}"`}
+                            style={{
+                                flexShrink: 0,
+                                maxWidth: '84px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                padding: '2px 7px',
+                                borderRadius: '999px',
+                                border: '1px solid var(--paper-edge, hsl(var(--color-border)))',
+                                backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)))',
+                                color: 'hsl(var(--color-text-secondary))',
+                                fontSize: '10px',
+                                fontWeight: 600,
+                                cursor: onOpenBoard ? 'pointer' : 'default'
+                            }}
+                        >
+                            {row.boardTitle}
+                        </button>
+                    )}
                 </div>
                 <div style={{
                     position: 'relative', flexShrink: 0, width: `${gridWidth}px`, height: '100%',
                     // One unit-wide line repeated, instead of a div per cell per row.
-                    backgroundImage: 'linear-gradient(to right, transparent calc(100% - 1px), var(--card-grid) calc(100% - 1px))',
+                    backgroundImage: 'linear-gradient(to right, transparent calc(100% - 1px), var(--paper-row-line, var(--card-grid)) calc(100% - 1px))',
                     backgroundSize: `${unitWidth}px 100%`
                 }}>
                     {bar && (
                         <>
                             <div
-                                onClick={() => onOpenItem(row.id)}
+                                onClick={() => onOpenItem(row.id, row.boardId)}
                                 title={`${row.title}\n${where}\n${dates}`}
                                 style={{
                                     position: 'absolute', top: `${BAR_V_INSET}px`, bottom: `${BAR_V_INSET}px`,
-                                    left: `${bar.left}px`, width: `${bar.width}px`,
+                                    left: `${bar.left}px`, width: `${bar.width}px`, boxSizing: 'border-box',
                                     backgroundColor: row.groupColor || 'hsl(var(--color-brand-primary))',
-                                    borderRadius: '12px', opacity: 0.8,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    color: 'white', fontSize: '11px', fontWeight: 500, padding: '0 8px',
-                                    whiteSpace: 'nowrap', overflow: 'hidden', zIndex: 5, cursor: 'pointer',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                    borderRadius: '6px', opacity: 0.94,
+                                    display: 'flex', alignItems: 'center', justifyContent: isNarrowBar ? 'center' : 'flex-start',
+                                    color: '#FFEFD2', fontSize: '11px', fontWeight: 600, letterSpacing: '0.01em', padding: isNarrowBar ? 0 : '0 8px',
+                                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', zIndex: 5, cursor: 'pointer',
+                                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 6px -2px rgba(21, 42, 0, 0.28)'
                                 }}
                             >
-                                {row.title}
+                                {!isNarrowBar && (
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title}</span>
+                                )}
                             </div>
+                            {isNarrowBar && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        left: `${bar.left + bar.width + 7}px`,
+                                        top: 0,
+                                        bottom: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        fontSize: '11.5px',
+                                        fontWeight: 500,
+                                        color: 'hsl(var(--color-text-secondary))',
+                                        whiteSpace: 'nowrap',
+                                        pointerEvents: 'none',
+                                        zIndex: 4
+                                    }}
+                                >
+                                    {row.title}
+                                </div>
+                            )}
                             {bar.clippedStart && (
                                 <div title="Starts before what's shown" style={{ position: 'absolute', left: `${bar.left + 2}px`, top: `${BAR_V_INSET}px`, bottom: `${BAR_V_INSET}px`, display: 'flex', alignItems: 'center', color: 'rgba(255,255,255,0.85)', fontSize: '10px', zIndex: 6, pointerEvents: 'none' }}>«</div>
                             )}
@@ -154,35 +217,50 @@ export const WorkspaceTimeline = ({ items, columns, boards, groupsByBoard, isLoa
             overflow: 'hidden'
         }}>
             {/* Navigator. Left padding leaves room for the card's drag handle. */}
-            <div className="widget-header-with-space" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px 16px', padding: '12px 20px 12px 36px' }}>
+            <div className="widget-header-with-space" style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '8px 12px',
+                padding: '12px 20px',
+                transition: 'padding-left 0.18s ease',
+                backgroundColor: 'hsl(var(--paper-head, var(--color-bg-subtle)))'
+            }}>
                 <button
+                    type="button"
+                    className="glass-chip"
                     onClick={toggleCollapsed}
                     aria-expanded={!collapsed}
                     aria-label={collapsed ? 'Expand timeline' : 'Collapse timeline'}
                     title={collapsed ? 'Expand' : 'Collapse'}
-                    style={{ ...navBtnStyle, width: '32px', padding: 0 }}
+                    style={{ ...navBtnStyle, width: '30px', padding: 0 }}
                 >
-                    <ChevronDown size={18} style={{ transform: collapsed ? 'rotate(-90deg)' : 'none', transition: 'transform 0.15s' }} />
+                    <ChevronDown size={16} style={{ transform: collapsed ? 'rotate(-90deg)' : 'none', transition: 'transform 0.15s' }} />
                 </button>
-                <h3 style={{ fontSize: '18px', fontWeight: 600, margin: 0, color: 'hsl(var(--color-text-primary))' }}>{title}</h3>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                    <button onClick={() => shift(-1)} style={navBtnStyle} aria-label="Previous"><ChevronLeft size={18} /></button>
-                    <button onClick={() => shift(1)} style={navBtnStyle} aria-label="Next"><ChevronRight size={18} /></button>
+                <h3 className="narai-heading" style={{
+                    fontFamily: 'var(--font-family-display)',
+                    fontSize: '21px',
+                    fontWeight: 500,
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1.1,
+                    margin: 0,
+                    color: 'hsl(var(--color-text-primary))'
+                }}>
+                    {title}
+                </h3>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                    <button type="button" className="glass-chip" onClick={() => shift(-1)} style={{ ...navBtnStyle, width: '30px', padding: 0 }} aria-label="Previous"><ChevronLeft size={16} /></button>
+                    <button type="button" className="glass-chip" onClick={() => shift(1)} style={{ ...navBtnStyle, width: '30px', padding: 0 }} aria-label="Next"><ChevronRight size={16} /></button>
                 </div>
-                <button onClick={() => setViewDate(new Date())} style={{ ...navBtnStyle, fontSize: '14px', padding: '0 12px' }}>Today</button>
-                <div style={{ display: 'flex', backgroundColor: 'var(--card-row-hover)', borderRadius: '10px', padding: '2px' }}>
+                <button type="button" className="glass-chip" onClick={() => setViewDate(new Date())} style={navBtnStyle}>Today</button>
+                <div className="seg glass-chip">
                     {(['day', 'month', 'year'] as const).map(type => (
                         <button
                             key={type}
+                            type="button"
+                            className={`seg-btn${viewType === type ? ' is-active' : ''}`}
                             onClick={() => setViewType(type)}
-                            style={{
-                                border: 'none', padding: '4px 12px', borderRadius: '8px', fontSize: '13px',
-                                fontWeight: viewType === type ? 600 : 400,
-                                backgroundColor: viewType === type ? 'var(--card-solid)' : 'transparent',
-                                color: viewType === type ? 'hsl(var(--color-text-primary))' : 'hsl(var(--color-text-tertiary))',
-                                cursor: 'pointer', boxShadow: viewType === type ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                                textTransform: 'capitalize'
-                            }}
+                            style={{ textTransform: 'capitalize', height: '26px', padding: '0 12px', fontSize: '12px' }}
                         >
                             {type}
                         </button>
@@ -194,13 +272,15 @@ export const WorkspaceTimeline = ({ items, columns, boards, groupsByBoard, isLoa
             </div>
 
             {/* Grid. Capped and scrolled: a workspace's timeline can run to hundreds of rows. */}
-            {!collapsed && <div style={{ flex: 1, minHeight: 0, maxHeight: fillHeight ? undefined : '520px', overflow: 'auto', borderTop: '1px solid var(--card-border)' }}>
+            {!collapsed && <div style={{ flex: 1, minHeight: 0, maxHeight: fillHeight ? undefined : '520px', overflow: 'auto', borderTop: '1px solid var(--paper-edge, var(--card-border))' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', minWidth: 'max-content', position: 'relative' }}>
-                    <div style={{ display: 'flex', borderBottom: '1px solid var(--card-border)', position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'var(--card-solid)' }}>
+                    <div style={{ display: 'flex', borderBottom: '1px solid var(--paper-edge, var(--card-border))', position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'hsl(var(--paper, var(--card-solid)))' }}>
                         <div style={{
-                            position: 'sticky', left: 0, zIndex: 11, backgroundColor: 'var(--card-solid)',
+                            position: 'sticky', left: 0, zIndex: 11, backgroundColor: 'hsl(var(--paper, var(--card-solid)))',
                             width: `${NAME_COL_WIDTH}px`, flexShrink: 0, boxSizing: 'border-box',
-                            borderRight: '1px solid var(--card-border)', padding: '12px 16px', fontWeight: 600, fontSize: '13px', color: 'hsl(var(--color-text-primary))'
+                            borderRight: '1px solid var(--paper-edge, var(--card-border))', padding: '10px 16px',
+                            display: 'flex', alignItems: 'center',
+                            fontWeight: 600, fontSize: '10.5px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'hsl(var(--color-text-tertiary))'
                         }}>
                             Item Name
                         </div>
@@ -208,14 +288,17 @@ export const WorkspaceTimeline = ({ items, columns, boards, groupsByBoard, isLoa
                             const isCurrent = isCurrentUnit(viewType, unit);
                             return (
                                 <div key={unit.toISOString()} style={{
-                                    width: `${unitWidth}px`, flexShrink: 0, boxSizing: 'border-box', textAlign: 'center', padding: '12px 0', fontSize: '12px',
-                                    borderRight: '1px solid var(--card-grid)',
-                                    color: isCurrent ? 'hsl(var(--color-brand-primary))' : 'inherit',
-                                    fontWeight: isCurrent ? 700 : 400
+                                    width: `${unitWidth}px`, flexShrink: 0, boxSizing: 'border-box', textAlign: 'center', padding: '8px 0', fontSize: '11px',
+                                    borderRight: '1px solid var(--paper-row-line, var(--card-grid))',
+                                    backgroundColor: isCurrent ? 'rgba(21, 42, 0, 0.045)' : 'transparent',
+                                    color: isCurrent ? 'hsl(var(--color-brand-primary))' : 'hsl(var(--color-text-secondary))',
+                                    fontWeight: isCurrent ? 700 : 600,
+                                    letterSpacing: '0.06em',
+                                    textTransform: 'uppercase'
                                 }}>
                                     <div>{viewType === 'day' ? format(unit, 'd') : viewType === 'month' ? format(unit, 'MMM') : format(unit, 'yyyy')}</div>
-                                    {viewType === 'day' && <div style={{ fontSize: '10px', opacity: 0.5 }}>{format(unit, 'EEE')}</div>}
-                                    {viewType === 'month' && <div style={{ fontSize: '10px', opacity: 0.5 }}>{format(unit, 'yyyy')}</div>}
+                                    {viewType === 'day' && <div style={{ fontSize: '9.5px', opacity: 0.65, marginTop: '1px' }}>{format(unit, 'EEE')}</div>}
+                                    {viewType === 'month' && <div style={{ fontSize: '9.5px', opacity: 0.65, marginTop: '1px', fontWeight: isCurrent ? 600 : 500 }}>{format(unit, 'yyyy')}</div>}
                                 </div>
                             );
                         })}
@@ -233,8 +316,8 @@ export const WorkspaceTimeline = ({ items, columns, boards, groupsByBoard, isLoa
                         <div style={{ position: 'relative' }}>
                             {todayLeft !== null && (
                                 <div style={{
-                                    position: 'absolute', left: `${NAME_COL_WIDTH + todayLeft}px`, top: 0, bottom: 0, width: '2px',
-                                    backgroundColor: '#f00', zIndex: 4, pointerEvents: 'none', opacity: 0.6
+                                    position: 'absolute', left: `${NAME_COL_WIDTH + todayLeft}px`, top: 0, bottom: 0, width: '1.5px',
+                                    backgroundColor: '#9E2A2B', zIndex: 4, pointerEvents: 'none', opacity: 0.75
                                 }} />
                             )}
                             {rows.map(renderRow)}

@@ -11,9 +11,7 @@
 
 .table-row {
     display: flex;
-    height: 30px;
-    min-height: 30px;
-    max-height: 30px;
+    height: 100%;
     min-width: min-content;
     background-color: hsl(var(--color-bg-canvas));
     border-bottom: 1px solid hsl(var(--color-cell-border));

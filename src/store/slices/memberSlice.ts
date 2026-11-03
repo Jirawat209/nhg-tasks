@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand';
+import { APP_URL } from '../../lib/appUrl';
 import { supabase } from '../../lib/supabase';
 // import { v4 as uuidv4 } from 'uuid';
 import type { Notification } from '../../types';
@@ -129,7 +130,7 @@ export const createMemberSlice: StateCreator<
             // Ensure workspace access as board-guest if they don't have workspace access
             // NOTE: Removed insertion of `board-guest` to `workspace_members` per user request.
 
-            const workspaceTitle = get().workspaces.find(w => w.id === boardData?.workspace_id)?.title || 'NHG Saturday';
+            const workspaceTitle = get().workspaces.find(w => w.id === boardData?.workspace_id)?.title || 'NHG Tasks';
 
             // Existing users are added straight away with nothing to accept, so
             // this is an access-granted notice rather than an invitation — the
@@ -147,8 +148,8 @@ export const createMemberSlice: StateCreator<
                     workspaceId: boardData?.workspace_id,
                     workspaceName: workspaceTitle,
                     inviterName,
-                    accessLink: `https://saturdaycom.vercel.app/?boardId=${boardId}`,
-                    redirectTo: `https://saturdaycom.vercel.app/board/${boardId}`
+                    accessLink: `${APP_URL}/?boardId=${boardId}`,
+                    redirectTo: `${APP_URL}/board/${boardId}`
                 }
             });
 
@@ -165,7 +166,7 @@ export const createMemberSlice: StateCreator<
                 { role, boardName: boardData?.title || 'Board', workspaceName: workspaceTitle, board_id: boardId }
             );
         } else {
-            const workspaceTitle = get().workspaces.find(w => w.id === boardData?.workspace_id)?.title || 'NHG Saturday';
+            const workspaceTitle = get().workspaces.find(w => w.id === boardData?.workspace_id)?.title || 'NHG Tasks';
             
             // Call Edge Function to send email invite and record pending
             const { data: responseData, error: fnError } = await supabase.functions.invoke('invite-user', {
@@ -176,7 +177,7 @@ export const createMemberSlice: StateCreator<
                     workspaceId: boardData?.workspace_id,
                     workspaceName: workspaceTitle,
                     inviterName,
-                    redirectTo: `https://saturdaycom.vercel.app/board/${boardId}`
+                    redirectTo: `${APP_URL}/board/${boardId}`
                 }
             });
             
@@ -330,7 +331,7 @@ export const createMemberSlice: StateCreator<
         const { data: profile } = await supabase.from('profiles').select('email').eq('id', userId).single();
         const { data: boardData } = await supabase.from('boards').select('workspace_id, title').eq('id', boardId).single();
         
-        const workspaceTitle = get().workspaces.find(w => w.id === boardData?.workspace_id)?.title || 'NHG Saturday';
+        const workspaceTitle = get().workspaces.find(w => w.id === boardData?.workspace_id)?.title || 'NHG Tasks';
         
         if (profile?.email) {
             await supabase.functions.invoke('invite-user', {
@@ -339,7 +340,7 @@ export const createMemberSlice: StateCreator<
                     boardId, 
                     workspaceId: boardData?.workspace_id,
                     workspaceName: workspaceTitle,
-                    redirectTo: `https://saturdaycom.vercel.app/board/${boardId}`,
+                    redirectTo: `${APP_URL}/board/${boardId}`,
                     action: 'invite'
                 }
             });
@@ -349,7 +350,7 @@ export const createMemberSlice: StateCreator<
     inviteNewEmailToItem: async (boardId, email, role, itemId, columnId) => {
         const { data: boardData } = await supabase.from('boards').select('workspace_id, title').eq('id', boardId).single();
         
-        const workspaceTitle = get().workspaces.find(w => w.id === boardData?.workspace_id)?.title || 'NHG Saturday';
+        const workspaceTitle = get().workspaces.find(w => w.id === boardData?.workspace_id)?.title || 'NHG Tasks';
         
         // 1. Call Edge Function to create/generate auth link and push New User email
         const { data: responseData, error: fnError } = await supabase.functions.invoke('invite-user', {
@@ -358,7 +359,7 @@ export const createMemberSlice: StateCreator<
                 boardId, 
                 workspaceId: boardData?.workspace_id,
                 workspaceName: workspaceTitle,
-                redirectTo: `https://saturdaycom.vercel.app/board/${boardId}`,
+                redirectTo: `${APP_URL}/board/${boardId}`,
                 action: 'invite'
             }
         });
@@ -415,7 +416,7 @@ export const createMemberSlice: StateCreator<
             }
 
             const { data: profile } = await supabase.from('profiles').select('email').eq('id', userId).single();
-            const workspaceTitle = get().workspaces.find(w => w.id === board?.workspaceId)?.title || 'NHG Saturday';
+            const workspaceTitle = get().workspaces.find(w => w.id === board?.workspaceId)?.title || 'NHG Tasks';
             const groupName = board?.groups.find(g => g.id === item?.groupId)?.title || '';
 
             if (profile?.email && item?.title && board?.title) {
@@ -428,8 +429,8 @@ export const createMemberSlice: StateCreator<
                         groupName,
                         workspaceName: workspaceTitle,
                         inviterName,
-                        itemLink: `https://saturdaycom.vercel.app/?boardId=${boardId}&itemId=${itemId}`,
-                        redirectTo: `https://saturdaycom.vercel.app/board/${boardId}`
+                        itemLink: `${APP_URL}/?boardId=${boardId}&itemId=${itemId}`,
+                        redirectTo: `${APP_URL}/board/${boardId}`
                     }
                 });
             }

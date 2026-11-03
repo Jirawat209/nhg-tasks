@@ -2,11 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 const STORAGE_KEY = 'saturday-side-panel-width';
-const MIN_WIDTH = 420;
-// Long enough to read as a slide rather than a jump, short enough that the
-// board underneath is usable again almost at once.
-const CLOSE_MS = 280;
-const maxAllowedWidth = () => Math.round(window.innerWidth * 0.9);
+const MIN_WIDTH = 520;
+const CLOSE_MS = 180;
+const maxAllowedWidth = () => Math.round(window.innerWidth * 0.92);
 
 interface SidePanelProps {
     isOpen: boolean;
@@ -15,8 +13,8 @@ interface SidePanelProps {
     width?: string;
 }
 
-export const SidePanel = ({ isOpen, onClose, children, width = '800px' }: SidePanelProps) => {
-    const defaultWidth = parseInt(width, 10) || 800;
+export const SidePanel = ({ isOpen, onClose, children, width = '860px' }: SidePanelProps) => {
+    const defaultWidth = parseInt(width, 10) || 860;
 
     const [panelWidth, setPanelWidth] = useState<number>(() => {
         const stored = Number(localStorage.getItem(STORAGE_KEY));
@@ -63,7 +61,7 @@ export const SidePanel = ({ isOpen, onClose, children, width = '800px' }: SidePa
         return () => window.removeEventListener('keydown', handleEsc);
     }, [isOpen, onClose]);
 
-    const handleResizeStart = (e: React.MouseEvent) => {
+    const handleResizeStart = (side: 'left' | 'right') => (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -72,9 +70,12 @@ export const SidePanel = ({ isOpen, onClose, children, width = '800px' }: SidePa
         let latest = startWidth;
         setIsResizing(true);
 
-        // The panel is anchored to the right, so dragging left widens it.
+        // The modal is centered, so dragging either edge scales width symmetrically.
         const onMouseMove = (moveEvent: MouseEvent) => {
-            const next = startWidth - (moveEvent.clientX - startX);
+            const delta = side === 'right'
+                ? (moveEvent.clientX - startX) * 2
+                : (startX - moveEvent.clientX) * 2;
+            const next = startWidth + delta;
             latest = Math.min(maxAllowedWidth(), Math.max(MIN_WIDTH, next));
             setPanelWidth(latest);
         };
@@ -114,14 +115,17 @@ export const SidePanel = ({ isOpen, onClose, children, width = '800px' }: SidePa
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 100, // High z-index
+            zIndex: 1000,
             display: 'flex',
-            justifyContent: 'flex-end',
-            backgroundColor: 'rgba(0,0,0,0.5)', // Dim background
-            backdropFilter: 'blur(2px)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+            background: 'radial-gradient(60% 50% at 50% 45%, rgba(21, 42, 0, 0.28), rgba(15, 22, 10, 0.54))',
+            backdropFilter: 'blur(8px) saturate(125%)',
+            WebkitBackdropFilter: 'blur(8px) saturate(125%)',
             animation: isClosing
                 ? `sidePanelFadeOut ${CLOSE_MS}ms ease forwards`
-                : 'sidePanelFadeIn 0.3s ease',
+                : 'sidePanelFadeIn 0.22s ease',
             // Clicks fall through to the board while it's on its way out.
             pointerEvents: isClosing ? 'none' : 'auto'
         }} onClick={(e) => {
@@ -130,23 +134,27 @@ export const SidePanel = ({ isOpen, onClose, children, width = '800px' }: SidePa
         }}>
             <div className="side-panel-content" style={{
                 width: `${panelWidth}px`,
-                height: '100%',
-                backgroundColor: 'hsl(var(--color-bg-surface))',
-                boxShadow: '-4px 0 24px rgba(0,0,0,0.15)',
+                maxWidth: 'calc(100vw - 48px)',
+                height: 'min(820px, calc(100vh - 56px))',
+                background: 'transparent',
+                borderRadius: '24px',
+                border: '1px solid var(--glass-panel-edge, hsl(var(--color-border)))',
+                boxShadow: '0 36px 84px -24px rgba(21, 42, 0, 0.50), 0 6px 20px rgba(21, 42, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.78)',
+                overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative',
+                isolation: 'isolate',
                 // Suppressed mid-drag: the entry animation uses a transform and
                 // would fight the width changes on every mousemove frame.
                 animation: isClosing
-                    ? `slideOut ${CLOSE_MS}ms cubic-bezier(0.4, 0, 1, 1) forwards`
-                    : isResizing ? 'none' : 'slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                maxWidth: '90vw'
+                    ? `windowPopOut ${CLOSE_MS}ms cubic-bezier(0.4, 0, 1, 1) forwards`
+                    : isResizing ? 'none' : 'windowPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1)'
             }}>
                 <div
-                    onMouseDown={handleResizeStart}
+                    onMouseDown={handleResizeStart('left')}
                     onDoubleClick={resetWidth}
-                    className="side-panel-resize-handle"
+                    className="side-panel-resize-handle side-panel-resize-handle-left"
                     title="Drag to resize · double-click to reset"
                     style={{
                         position: 'absolute',
@@ -158,17 +166,53 @@ export const SidePanel = ({ isOpen, onClose, children, width = '800px' }: SidePa
                         zIndex: 5
                     }}
                 />
+                <div
+                    onMouseDown={handleResizeStart('right')}
+                    onDoubleClick={resetWidth}
+                    className="side-panel-resize-handle side-panel-resize-handle-right"
+                    title="Drag to resize · double-click to reset"
+                    style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: '6px',
+                        cursor: 'col-resize',
+                        zIndex: 5
+                    }}
+                />
                 {isOpen ? children : lastChildrenRef.current}
             </div>
 
             <style>{`
-                @keyframes slideIn {
-                    from { transform: translateX(100%); }
-                    to { transform: translateX(0); }
+                .side-panel-content::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    z-index: -1;
+                    border-radius: inherit;
+                    background:
+                        radial-gradient(52% 40% at 6% 0%, rgba(170, 160, 36, 0.20), transparent 70%),
+                        radial-gradient(44% 36% at 96% 4%, rgba(167, 100, 0, 0.16), transparent 70%),
+                        radial-gradient(50% 42% at 80% 100%, rgba(225, 255, 179, 0.35), transparent 70%),
+                        var(--glass-pop, rgba(255, 250, 240, 0.84));
+                    -webkit-backdrop-filter: blur(32px) saturate(160%);
+                    backdrop-filter: blur(32px) saturate(160%);
+                    pointer-events: none;
                 }
-                @keyframes slideOut {
-                    from { transform: translateX(0); }
-                    to { transform: translateX(100%); }
+                .dark .side-panel-content::before {
+                    background:
+                        radial-gradient(52% 40% at 6% 0%, rgba(37, 7, 25, 0.45), transparent 70%),
+                        radial-gradient(44% 36% at 96% 4%, rgba(167, 100, 0, 0.16), transparent 70%),
+                        var(--glass-pop, rgba(20, 31, 13, 0.88));
+                }
+                @keyframes windowPopIn {
+                    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+                    to { opacity: 1; transform: scale(1) translateY(0); }
+                }
+                @keyframes windowPopOut {
+                    from { opacity: 1; transform: scale(1) translateY(0); }
+                    to { opacity: 0; transform: scale(0.96) translateY(8px); }
                 }
                 @keyframes sidePanelFadeIn {
                     from { opacity: 0; }
@@ -181,12 +225,17 @@ export const SidePanel = ({ isOpen, onClose, children, width = '800px' }: SidePa
                 .side-panel-resize-handle::after {
                     content: '';
                     position: absolute;
-                    top: 0;
-                    bottom: 0;
-                    left: 0;
+                    top: 16px;
+                    bottom: 16px;
                     width: 2px;
                     background-color: transparent;
                     transition: background-color 0.15s;
+                }
+                .side-panel-resize-handle-left::after {
+                    left: 0;
+                }
+                .side-panel-resize-handle-right::after {
+                    right: 0;
                 }
                 .side-panel-resize-handle:hover::after {
                     background-color: hsl(var(--color-brand-primary));

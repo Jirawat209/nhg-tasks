@@ -9,36 +9,36 @@ export const TopBar = () => {
     // Find active workspace or fallback to the first one available
     const activeWorkspace = workspaces.find(w => w.id === activeWorkspaceId) || workspaces[0];
 
+    const getTopBarEyebrow = () => {
+        if (activePage === 'home') return 'NHG TASKS · HOME';
+        if (activePage === 'favorites') return 'NHG TASKS · FAVORITES';
+        if (activePage === 'notifications') return 'NHG TASKS · NOTIFICATIONS';
+        if (activePage === 'dashboard') return `${(activeWorkspace?.title || 'WORKSPACE').toUpperCase()} · DASHBOARD`;
+        return 'NHG TASKS';
+    };
+
     return (
-        <div style={{
-            height: '50px',
-            width: '100%',
-            // Same reasoning as BoardHeader: this sits at the top of the floating
-            // main panel, at its rounded corner — -surface is close enough to the
-            // panel's backdrop to camouflage that corner instead of reading as
-            // part of the white card.
-            backgroundColor: 'hsl(var(--color-bg-canvas))',
-            borderBottom: '1px solid hsl(var(--color-border))',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 24px',
-            gap: '12px',
-            flexShrink: 0,
-            zIndex: 50 // Ensure above table sticky headers if any conflict
-        }}>
-            {/* Left side: Title (only for dashboard or home) */}
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                {(activePage === 'dashboard' || activePage === 'home') && (
-                    <h1 style={{ 
-                        fontSize: '18px', 
-                        fontWeight: 600, 
-                        color: 'hsl(var(--color-text-primary))', 
-                        margin: 0 
-                    }}>
-                        {activeWorkspace?.title || 'Finance'} Dashboard
-                    </h1>
-                )}
+        <div
+            className="app-topbar"
+            style={{
+                height: '52px',
+                width: '100%',
+                backgroundColor: 'transparent',
+                borderBottom: '1px solid var(--paper-row-line, hsl(var(--color-border)))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 24px',
+                gap: '12px',
+                flexShrink: 0,
+                zIndex: 50
+            }}
+        >
+            {/* Left side: Context Eyebrow / Title */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span className="bh-eyebrow" style={{ margin: 0 }}>
+                    {getTopBarEyebrow()}
+                </span>
             </div>
 
             {/* Right side: Global Actions */}

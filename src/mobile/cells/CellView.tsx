@@ -6,6 +6,7 @@ import { linkDisplayText } from '../../lib/utils';
 import { AvatarStack, Avatar, peopleIds, type PersonInfo } from '../ui';
 import { formatDateCell, formatTimelineRange, isOverdue } from './format';
 import { ONEDRIVE_ICON } from '../../lib/fileLinks';
+import { LOCAL_ICONS } from '../../lib/localIcons';
 import './cells.css';
 import { tintLabel } from '../../lib/labelTint';
 
@@ -22,7 +23,7 @@ export interface CellViewProps {
 }
 
 // The Google Drive mark desktop FilesCell uses for Drive files.
-export const DRIVE_ICON = 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png';
+export const DRIVE_ICON = LOCAL_ICONS.drive;
 
 const EMPTY_STATUS = '#c4c4c4';
 

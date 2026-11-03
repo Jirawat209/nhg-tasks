@@ -231,9 +231,9 @@ export const BoardTable = () => {
     return (
         <div className="card-surface" style={{ overflow: 'hidden' }}>
             {/* Header */}
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                    <Search size={18} color="#64748b" />
+            <div style={{ padding: '14px 20px', background: 'hsl(var(--paper-head))', borderBottom: '1px solid hsl(var(--paper-edge))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, maxWidth: '380px', padding: '7px 14px', borderRadius: '999px', background: 'hsl(var(--paper))', border: '1px solid hsl(var(--paper-edge))' }}>
+                    <Search size={15} color="hsl(var(--ink-soft))" />
                     <input
                         type="text"
                         placeholder="Search boards..."
@@ -242,86 +242,80 @@ export const BoardTable = () => {
                         style={{
                             border: 'none',
                             outline: 'none',
-                            fontSize: '14px',
+                            fontSize: '13.5px',
                             flex: 1,
-                            color: '#0f172a'
+                            background: 'transparent',
+                            color: 'hsl(var(--ink))'
                         }}
                     />
                 </div>
-                <label
-                    title="Deleted boards live in Trash and can't be opened until restored"
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        marginRight: '12px',
-                        fontSize: '13px',
-                        color: '#475569',
-                        cursor: 'pointer',
-                        userSelect: 'none',
-                        whiteSpace: 'nowrap'
-                    }}
-                >
-                    <input
-                        type="checkbox"
-                        checked={showDeleted}
-                        onChange={(e) => setShowDeleted(e.target.checked)}
-                        style={{ width: '15px', height: '15px', cursor: 'pointer', accentColor: '#4f46e5' }}
-                    />
-                    Show deleted boards
-                    {hiddenDeletedCount > 0 && (
-                        <span style={{ color: '#94a3b8' }}>({hiddenDeletedCount} hidden)</span>
-                    )}
-                </label>
-                <button
-                    onClick={fetchBoards}
-                    style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#f1f5f9',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        fontSize: '13px',
-                        color: '#475569'
-                    }}
-                >
-                    <RefreshCw size={14} />
-                    Refresh
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <label
+                        title="Deleted boards live in Trash and can't be opened until restored"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '13px',
+                            color: 'hsl(var(--ink-dim))',
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={showDeleted}
+                            onChange={(e) => setShowDeleted(e.target.checked)}
+                            style={{ width: '15px', height: '15px', cursor: 'pointer', accentColor: '#2A4A12' }}
+                        />
+                        Show deleted boards
+                        {hiddenDeletedCount > 0 && (
+                            <span style={{ color: 'hsl(var(--ink-soft))' }}>({hiddenDeletedCount} hidden)</span>
+                        )}
+                    </label>
+                    <button
+                        onClick={fetchBoards}
+                        className="glass-chip"
+                        style={{
+                            padding: '6px 14px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            color: 'hsl(var(--ink))'
+                        }}
+                    >
+                        <RefreshCw size={14} />
+                        Refresh
+                    </button>
+                </div>
             </div>
 
             {/* Table */}
             {loading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading boards...</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--ink-dim))' }}>Loading boards...</div>
             ) : error ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#ef4444' }}>Error: {error}</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: '#C83E2B' }}>Error: {error}</div>
             ) : (
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Board</th>
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Workspace</th>
-                                {/* Says "workspace owner" because that's what it is — the
-                                    boards table has no owner of its own. Labelled plain
-                                    "Owner" it read as the person who runs the board, which
-                                    is often someone else entirely in the Members column. */}
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Workspace Owner</th>
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Members</th>
-                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Created</th>
-                                <th style={{ padding: '12px 20px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Actions</th>
+                            <tr style={{ backgroundColor: 'hsl(var(--paper-head))', borderBottom: '1px solid hsl(var(--paper-edge))' }}>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Board</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Workspace</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Workspace Owner</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Members</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Created</th>
+                                <th style={{ padding: '12px 20px', textAlign: 'right', fontSize: '11px', fontWeight: 700, color: 'hsl(var(--ink-soft))', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {visibleBoards.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
-                                        {/* Without this, a search that only matches deleted boards reads
-                                            as "this user has no boards at all", which is a different and
-                                            much more alarming thing than "they're all in Trash". */}
+                                    <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: 'hsl(var(--ink-soft))' }}>
                                         {hiddenDeletedCount > 0
                                             ? `No live boards found — ${hiddenDeletedCount} deleted ${hiddenDeletedCount === 1 ? 'board matches' : 'boards match'}. Tick "Show deleted boards" to see them.`
                                             : 'No boards found'}
@@ -329,21 +323,21 @@ export const BoardTable = () => {
                                 </tr>
                             ) : (
                                 visibleBoards.map((board) => (
-                                    <tr key={board.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '16px 20px' }}>
+                                    <tr key={board.id} style={{ borderBottom: '1px solid hsl(var(--paper-row-line))' }}>
+                                        <td style={{ padding: '14px 20px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <div style={{ fontWeight: 500, color: board.is_archived ? '#64748b' : '#0f172a', fontSize: '14px' }}>{board.title}</div>
+                                                <div style={{ fontWeight: 600, color: board.is_archived ? 'hsl(var(--ink-soft))' : 'hsl(var(--ink))', fontSize: '14px' }}>{board.title}</div>
                                                 {board.is_archived && (
                                                     <span
                                                         title="This board was deleted — restore it from Trash to open it again"
                                                         style={{
                                                             fontSize: '11px',
-                                                            fontWeight: 600,
-                                                            color: '#b91c1c',
-                                                            backgroundColor: '#fee2e2',
-                                                            border: '1px solid #fecaca',
-                                                            borderRadius: '4px',
-                                                            padding: '1px 6px',
+                                                            fontWeight: 700,
+                                                            color: '#C83E2B',
+                                                            backgroundColor: 'rgba(200, 62, 43, 0.1)',
+                                                            border: '1px solid rgba(200, 62, 43, 0.25)',
+                                                            borderRadius: '999px',
+                                                            padding: '2px 8px',
                                                             whiteSpace: 'nowrap'
                                                         }}
                                                     >
@@ -352,14 +346,14 @@ export const BoardTable = () => {
                                                 )}
                                             </div>
                                         </td>
-                                        <td style={{ padding: '16px 20px' }}>
-                                            <div style={{ fontSize: '14px', color: '#64748b' }}>{board.workspace_title}</div>
+                                        <td style={{ padding: '14px 20px' }}>
+                                            <div style={{ fontSize: '13.5px', color: 'hsl(var(--ink-dim))' }}>{board.workspace_title}</div>
                                         </td>
-                                        <td style={{ padding: '16px 20px' }}>
-                                            <div style={{ fontSize: '14px', color: '#0f172a' }}>{board.owner_name}</div>
-                                            <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{board.owner_email}</div>
+                                        <td style={{ padding: '14px 20px' }}>
+                                            <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'hsl(var(--ink))' }}>{board.owner_name}</div>
+                                            <div style={{ fontSize: '12px', color: 'hsl(var(--ink-dim))', marginTop: '2px' }}>{board.owner_email}</div>
                                         </td>
-                                        <td style={{ padding: '16px 20px' }}>
+                                        <td style={{ padding: '14px 20px' }}>
                                             <button
                                                 onClick={() => setManagingBoard({ id: board.id, title: board.title })}
                                                 title={membersTooltip(board)}
@@ -379,7 +373,7 @@ export const BoardTable = () => {
                                                         alignItems: 'center',
                                                         gap: '6px',
                                                         fontSize: '13px',
-                                                        color: '#94a3b8'
+                                                        color: 'hsl(var(--ink-soft))'
                                                     }}>
                                                         <Users size={14} />
                                                         No members
@@ -395,15 +389,15 @@ export const BoardTable = () => {
                                                                         width: '26px',
                                                                         height: '26px',
                                                                         borderRadius: '50%',
-                                                                        backgroundColor: member.avatar_url ? 'transparent' : '#6366f1',
-                                                                        color: 'white',
+                                                                        backgroundColor: member.avatar_url ? 'transparent' : '#2A4A12',
+                                                                        color: '#FFEFD2',
                                                                         display: 'flex',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
                                                                         fontSize: '11px',
                                                                         fontWeight: 600,
                                                                         overflow: 'hidden',
-                                                                        border: '2px solid white',
+                                                                        border: '2px solid hsl(var(--paper))',
                                                                         marginLeft: idx === 0 ? 0 : '-8px',
                                                                         flexShrink: 0
                                                                     }}
@@ -422,31 +416,26 @@ export const BoardTable = () => {
                                                             ))}
                                                         </div>
                                                         {board.members.length > 4 && (
-                                                            <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>
+                                                            <span style={{ fontSize: '12px', color: 'hsl(var(--ink-dim))', fontWeight: 600 }}>
                                                                 +{board.members.length - 4}
                                                             </span>
                                                         )}
-                                                        <span style={{ fontSize: '12px', color: '#94a3b8' }}>
+                                                        <span style={{ fontSize: '12px', color: 'hsl(var(--ink-soft))' }}>
                                                             ({board.members.length})
                                                         </span>
                                                     </>
                                                 )}
                                             </button>
                                         </td>
-                                        <td style={{ padding: '16px 20px', fontSize: '14px', color: '#64748b' }}>
+                                        <td style={{ padding: '14px 20px', fontSize: '13.5px', color: 'hsl(var(--ink-dim))' }}>
                                             {new Date(board.created_at).toLocaleDateString()}
                                         </td>
-                                        <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                                        <td style={{ padding: '14px 20px', textAlign: 'right' }}>
                                             <button
                                                 onClick={() => {
                                                     const username = slugify(currentUser.name || 'u');
                                                     const wsName = slugify(board.workspace_title);
                                                     const bName = buildBoardSlug(board.title, board.id);
-                                                    // requirePin makes the new tab re-ask for a private board's PIN.
-                                                    // Admin rights open the board; they are not the PIN, and a tab
-                                                    // opened with window.open inherits a copy of this tab's
-                                                    // sessionStorage — so without this an unlock earned here would
-                                                    // carry over and the lock screen would never appear.
                                                     const url = `/${username}/${wsName}/${bName}?requirePin=${board.id}`;
                                                     window.open(url, '_blank');
                                                 }}
@@ -454,33 +443,21 @@ export const BoardTable = () => {
                                                 title={board.is_archived
                                                     ? 'This board is deleted — restore it from Trash to open it'
                                                     : 'Open board in a new tab'}
+                                                className="glass-chip"
                                                 style={{
                                                     padding: '6px 12px',
-                                                    backgroundColor: '#f1f5f9',
-                                                    border: '1px solid #cbd5e1',
-                                                    borderRadius: '6px',
                                                     cursor: board.is_archived ? 'not-allowed' : 'pointer',
                                                     opacity: board.is_archived ? 0.45 : 1,
                                                     display: 'inline-flex',
                                                     alignItems: 'center',
                                                     gap: '6px',
-                                                    fontSize: '13px',
-                                                    fontWeight: 500,
-                                                    color: '#334155',
+                                                    fontSize: '12.5px',
+                                                    fontWeight: 600,
+                                                    color: 'hsl(var(--ink))',
                                                     transition: 'all 0.2s'
                                                 }}
-                                                onMouseEnter={(e) => {
-                                                    if (board.is_archived) return;
-                                                    e.currentTarget.style.backgroundColor = '#e2e8f0';
-                                                    e.currentTarget.style.color = '#0f172a';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    if (board.is_archived) return;
-                                                    e.currentTarget.style.backgroundColor = '#f1f5f9';
-                                                    e.currentTarget.style.color = '#334155';
-                                                }}
                                             >
-                                                <ExternalLink size={14} />
+                                                <ExternalLink size={13} />
                                                 Access
                                             </button>
                                             <button
@@ -492,29 +469,21 @@ export const BoardTable = () => {
                                                 style={{
                                                     marginLeft: '8px',
                                                     padding: '6px 12px',
-                                                    backgroundColor: canDelete && !board.is_archived ? '#fef2f2' : '#f8fafc',
-                                                    border: canDelete && !board.is_archived ? '1px solid #fecaca' : '1px solid #e2e8f0',
-                                                    borderRadius: '6px',
+                                                    backgroundColor: canDelete && !board.is_archived ? 'rgba(200, 62, 43, 0.08)' : 'hsl(var(--paper-muted))',
+                                                    border: canDelete && !board.is_archived ? '1px solid rgba(200, 62, 43, 0.28)' : '1px solid hsl(var(--paper-edge))',
+                                                    borderRadius: '999px',
                                                     cursor: canDelete && !board.is_archived && deletingId !== board.id ? 'pointer' : 'not-allowed',
                                                     display: 'inline-flex',
                                                     alignItems: 'center',
                                                     gap: '6px',
-                                                    fontSize: '13px',
-                                                    fontWeight: 500,
-                                                    color: canDelete && !board.is_archived ? '#dc2626' : '#94a3b8',
+                                                    fontSize: '12.5px',
+                                                    fontWeight: 600,
+                                                    color: canDelete && !board.is_archived ? '#C83E2B' : 'hsl(var(--ink-soft))',
                                                     opacity: deletingId === board.id ? 0.6 : 1,
                                                     transition: 'all 0.2s'
                                                 }}
-                                                onMouseEnter={(e) => {
-                                                    if (!canDelete || board.is_archived) return;
-                                                    e.currentTarget.style.backgroundColor = '#fee2e2';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    if (!canDelete || board.is_archived) return;
-                                                    e.currentTarget.style.backgroundColor = '#fef2f2';
-                                                }}
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 size={13} />
                                                 {deletingId === board.id ? 'Deleting...' : 'Delete'}
                                             </button>
                                         </td>
@@ -541,34 +510,29 @@ export const BoardTable = () => {
                         style={{ position: 'fixed', inset: 0, zIndex: 9999 }}
                         onClick={() => setDeletePopover(null)}
                     />
-                    <div style={{
+                    <div className="glass-pop" style={{
                         position: 'fixed',
                         top: deletePopover.top,
                         left: deletePopover.left,
                         zIndex: 10000,
-                        backgroundColor: 'white',
                         padding: '16px',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                        border: '1px solid #e2e8f0',
                         width: '260px'
                     }}>
-                        <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 600 }}>
+                        <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 700, color: 'hsl(var(--ink))' }}>
                             Delete "{deletePopover.boardTitle}"?
                         </h4>
-                        <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#64748b' }}>
+                        <p style={{ margin: '0 0 16px 0', fontSize: '12.5px', color: 'hsl(var(--ink-dim))' }}>
                             The board will be moved to Trash and can be restored later by a Super Admin.
                         </p>
                         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                             <button
                                 onClick={() => setDeletePopover(null)}
+                                className="glass-chip"
                                 style={{
                                     padding: '6px 12px',
-                                    border: '1px solid #e2e8f0',
-                                    backgroundColor: 'white',
-                                    borderRadius: '4px',
                                     cursor: 'pointer',
-                                    fontSize: '13px'
+                                    fontSize: '12.5px',
+                                    fontWeight: 600
                                 }}
                             >
                                 Cancel
@@ -576,14 +540,14 @@ export const BoardTable = () => {
                             <button
                                 onClick={handleConfirmDelete}
                                 style={{
-                                    padding: '6px 12px',
+                                    padding: '6px 14px',
                                     border: 'none',
-                                    backgroundColor: '#dc2626',
+                                    backgroundColor: '#C83E2B',
                                     color: 'white',
-                                    borderRadius: '4px',
+                                    borderRadius: '999px',
                                     cursor: 'pointer',
-                                    fontSize: '13px',
-                                    fontWeight: 500
+                                    fontSize: '12.5px',
+                                    fontWeight: 600
                                 }}
                             >
                                 Delete
